@@ -1,0 +1,10 @@
+version: '3.9'
+
+services:
+  service_frontend:
+    image: 121113815220.dkr.ecr.us-west-2.amazonaws.com/charging-prod-us-west-2-ecr-consumer-frontend:frontend-latest
+    build: .
+    ports:
+      - 8081:80
+    volumes:
+      - .:/apps/frontend

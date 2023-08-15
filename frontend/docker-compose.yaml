@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  service_frontend:
+    image: 101265448075.dkr.ecr.us-west-2.amazonaws.com/charging/charging-ui:latest
+    build: .
+    ports:
+      - 8081:80
+    env_file:
+      - ./app/.env
+    volumes:
+      - .:/apps/frontend
+    command: sh -c "npm rebuild esbuild && npm run start"

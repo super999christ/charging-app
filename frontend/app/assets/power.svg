@@ -1,0 +1,10 @@
+
+<svg width="24px" height="40px" viewBox="0 0 24 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Consumer-web-app" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
+        <g id="Charging-Dashboard" transform="translate(-66, -395)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="power_FILL0_wght400_GRAD0_opsz48" transform="translate(66, 395)">
+                <path d="M10.1,36.6666667 L13.9,36.6666667 L13.9,32.1111111 L21,23.4444444 L21,12.8333333 L3,12.8333333 L3,23.4444444 L10.1,32.0945 L10.1,36.6666667 Z M7.1,40 L7.1,33.4444444 L0,24.7777778 L0,12.8333333 C0,11.9166667 0.29375,11.1319444 0.88125,10.4791667 C1.46875,9.82638889 2.175,9.5 3,9.5 L6.6,9.5 L5.1,11.1666667 L5.1,0 L8.1,0 L8.1,9.5 L15.9,9.5 L15.9,0 L18.9,0 L18.9,11.1666667 L17.4,9.5 L21,9.5 C21.825,9.5 22.53125,9.82638889 23.11875,10.4791667 C23.70625,11.1319444 24,11.9166667 24,12.8333333 L24,24.7777778 L16.9,33.4444444 L16.9,40 L7.1,40 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
