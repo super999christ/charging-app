@@ -10,9 +10,6 @@ const AuthResetPasswordPage = React.lazy(
   () => import("../pages/Auth/ResetPassword")
 );
 const ChargingLoginPage = React.lazy(() => import("../pages/Charging/Login"));
-const ConfirmRegisterPage = React.lazy(
-  () => import("../pages/Auth/ConfirmSignUp")
-);
 
 export const publicRoutes = [
   {
@@ -44,10 +41,5 @@ export const publicRoutes = [
     path: "/set-password",
     component: AuthResetPasswordPage,
     role: "none",
-  },
-  {
-    path: "/confirm-register",
-    component: ConfirmRegisterPage,
-    role: "protected",
   },
 ];

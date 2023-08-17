@@ -48,17 +48,14 @@ const Login: FC = () => {
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center md:justify-center">
+    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center justify-center">
       <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl border-b border-b-nxu-charging-black">
-          Get Code To Charge
-        </div>
         <div className="flex flex-col w-full gap-5 mb-5">
           <div className="flex flex-col">
             <input
               type="number"
               className={inputStyle}
-              placeholder="Charger ID"
+              placeholder="Enter Charger ID"
               value={stationId}
               onChange={(e) => {
                 setErrors(undefined);

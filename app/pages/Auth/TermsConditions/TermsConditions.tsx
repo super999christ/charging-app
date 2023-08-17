@@ -25,7 +25,7 @@ const TermsConditions: FC<ITermsConditions> = ({ onConfirm }) => {
         <div className="w-full text-left text-white" dangerouslySetInnerHTML={{__html: html}}>
         </div>
         <div
-          className="w-full md:max-w-[350px] md:mt-[40px] md:mb-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
+          className="w-full md:max-w-[350px] mt-[40px] mb-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
           onClick={onConfirm}
         >
           <ConfirmIcon />

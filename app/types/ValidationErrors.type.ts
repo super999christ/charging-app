@@ -10,6 +10,10 @@ export interface ISignUpFormValidation {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  cardNumber: string;
+  cardExpDate: string;
+  cardCvv: string;
+  authCode: string;
 }
 
 export interface IForgotPasswordFormValidation {
@@ -19,6 +23,10 @@ export interface IForgotPasswordFormValidation {
 
 export interface IConfirmRegisterFormValidation {
   validationResult: boolean;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
   password: string;
   confirmPassword: string;
   authCode: string;

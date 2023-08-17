@@ -30,7 +30,7 @@ const SignIn: FC = () => {
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
 
-  const onSubmit = async () => {
+  const onSubmit = async (redirect: boolean) => {
     // validation
     const validationResult = validateSignInForm(phoneNumber, authCode);
     if (!validationResult.validationResult) {
@@ -41,7 +41,7 @@ const SignIn: FC = () => {
     // token check
     try {
       await getAuthToken(phoneNumber, authCode, notificationId);
-      navigate("/dashboard");
+      navigate(redirect ? "/charging-login" : "/dashboard");
     } catch (err) {
       if (err instanceof AxiosError)
         setErrors({ page: err.response?.data });
@@ -72,11 +72,8 @@ const SignIn: FC = () => {
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center md:justify-center">
-      <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl border-b border-b-nxu-charging-black">
-          Sign In
-        </div>
+    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center justify-center">
+      <div className="w-[90%] md:max-w-[350px] mt-[15px] flex flex-col justify-center gap-[30px]">
         <div className="flex flex-col w-full gap-5 mb-5">
           <div className="flex flex-col">
             <InputMask
@@ -123,8 +120,15 @@ const SignIn: FC = () => {
         </div>
       </div>
       <button
-        className="w-full md:max-w-[350px] md:mt-[10px] md:mb-[20px] mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={onSubmit}
+        className="w-[90%] md:max-w-[350px] mt-[10px] mb-[5px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
+        onClick={() => onSubmit(true)}
+        disabled={!validateSignInForm(phoneNumber, authCode).validationResult}
+      >
+        <span>Charge</span>
+      </button>
+      <button
+        className="w-[90%] md:max-w-[350px] mt-[5px] mb-[20px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
+        onClick={() => onSubmit(false)}
         disabled={!validateSignInForm(phoneNumber, authCode).validationResult}
       >
         <span>Sign In</span>

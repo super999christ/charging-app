@@ -1,4 +1,3 @@
-export * from "./registerUser.helper";
 export * from "./setPassword.helper";
 export * from "./getRegistraionInfo.helper";
 export * from "./deleteRegistrationInfo.helper";
