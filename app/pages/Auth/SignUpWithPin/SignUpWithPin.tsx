@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { validateSignInForm, validateSignUpForm } from "../../../validations";
-import { registerUser } from "../../../helpers";
+import { registerUser, registerUserWithPIN } from "../../../helpers";
 import { ISignUpFormValidation } from "../../../types/ValidationErrors.type";
 import { AxiosError } from "axios";
 import InputMask from "react-input-mask";
@@ -13,7 +13,7 @@ import { setRequestHeader } from "@root/utils/setRequestHeader";
 
 type ISignUpErrors = ISignUpFormValidation & { page: string };
 
-const SignUp: FC = () => {
+const SignUpWithPin: FC = () => {
   const [errors, setErrors] = useState<Partial<ISignUpErrors>>({});
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -24,10 +24,8 @@ const SignUp: FC = () => {
   const [cardCvv, setCardCvv] = useState("");
   const [isTnCOpen, setTnCOpen] = useState(false);
   const [isTnCChecked, setTnCChecked] = useState(false);
-  const [authCode, setAuthCode] = useState("");
-  const [alertMsg, setAlertMsg] = useState("");
-  const [sendCodeEnabled, setSendCodeEnabled] = useState(true);
-  const [notificationId, setNotificationId] = useState(NaN);
+  const [pinCode, setPinCode] = useState("");
+  const [pinConfirmCode, setPinConfirmCode] = useState("");
   const [validationTriggered, setValidationTriggered] = useState(false);
 
   const navigate = useNavigate();
@@ -42,6 +40,8 @@ const SignUp: FC = () => {
       cardNumber,
       cardExpDate,
       cardCvv,
+      pinCode,
+      pinConfirmCode,
     );
     if (validationResult.validationResult) {
       setErrors({});
@@ -50,7 +50,7 @@ const SignUp: FC = () => {
     if (validationTriggered && !validationResult.validationResult) {
       setErrors(validationResult);
     }
-  }, [firstName, lastName, email, phoneNumber, cardNumber, cardExpDate, cardCvv, authCode]);
+  }, [firstName, lastName, email, phoneNumber, cardNumber, cardExpDate, cardCvv, pinCode, pinConfirmCode]);
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
@@ -71,10 +71,12 @@ const SignUp: FC = () => {
       firstName,
       lastName,
       phoneNumber,
-      authCode,
+      '111111',
       cardNumber,
       cardExpDate,
       cardCvv,
+      pinCode,
+      pinConfirmCode,
     );
     if (!validationResult.validationResult) {
       setErrors(validationResult);
@@ -89,13 +91,12 @@ const SignUp: FC = () => {
 
     //  Registration
     try {
-      const { data } = await registerUser(
+      const { data } = await registerUserWithPIN(
         email,
         firstName,
         lastName,
         phoneNumber,
-        Number(notificationId),
-        authCode,
+        pinCode,
         cardNumber,
         cardExpDate,
         cardCvv,
@@ -110,41 +111,6 @@ const SignUp: FC = () => {
       if (err instanceof AxiosError) {
         setErrors({ page: err.response?.data });
       }
-    }
-  };
-
-  const onSendSMS = async () => {
-    // validation
-    setValidationTriggered(true);
-    const validationResult = validateSignUpForm(
-      email,
-      firstName,
-      lastName,
-      phoneNumber,
-      '111111',
-      cardNumber,
-      cardExpDate,
-      cardCvv,
-    );
-    console.log(validationResult);
-    setErrors({});
-    if (!validationResult.validationResult) {
-      setErrors(validationResult);
-      return;
-    }
-    try {
-      setSendCodeEnabled(false);
-      const response = await sendRegisterAuthCode(phoneNumber);
-      setTimeout(() => {
-        setSendCodeEnabled(true);
-        setAlertMsg('');
-      }, 120000);
-      setAlertMsg('SMS code requested, once received please enter the code in SMS code box and click SignIn. To re-request SMS code please wait 2mins.');
-      setNotificationId(response.data.id);
-    } catch (err) {
-      setSendCodeEnabled(true);
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data });
     }
   };
 
@@ -196,6 +162,48 @@ const SignUp: FC = () => {
                 {errors.email && (
                   <label className="text-nxu-charging-red text-[12px]">
                     {errors.email}
+                  </label>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <InputMask
+                  mask="999-999-9999"
+                  className={inputStyle}
+                  placeholder="Phone Number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                />
+                {errors.phoneNumber && (
+                  <label className="text-nxu-charging-red text-[12px]">
+                    {errors.phoneNumber}
+                  </label>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <input
+                  type="password"
+                  className={inputStyle}
+                  placeholder="PIN"
+                  value={pinCode}
+                  onChange={(e) => setPinCode(e.target.value)}
+                />
+                {errors.pinCode && (
+                  <label className="text-nxu-charging-red text-[12px]">
+                    {errors.pinCode}
+                  </label>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <input
+                  type="password"
+                  className={inputStyle}
+                  placeholder="Confirm PIN"
+                  value={pinConfirmCode}
+                  onChange={(e) => setPinConfirmCode(e.target.value)}
+                />
+                {errors.pinConfirmCode && (
+                  <label className="text-nxu-charging-red text-[12px]">
+                    {errors.pinConfirmCode}
                   </label>
                 )}
               </div>
@@ -254,46 +262,8 @@ const SignUp: FC = () => {
                   {errors.page}
                 </label>
               )}
-              <div className="flex flex-col">
-                <InputMask
-                  mask="999-999-9999"
-                  className={inputStyle}
-                  placeholder="Phone Number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-                {errors.phoneNumber && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.phoneNumber}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <input
-                  type="text"
-                  className={inputStyle}
-                  placeholder="SMS Code"
-                  value={authCode}
-                  onChange={(e) => setAuthCode(e.target.value)}
-                />
-                {errors.authCode && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.authCode}
-                  </label>
-                )}
-                <label className="text-nxu-charging-white text-[12px] mt-[10px]">
-                  {alertMsg}
-                </label>
-              </div>
             </div>
           </div>
-          <button
-            className="w-[90%] md:max-w-[350px] mt-[10px] mb-[5px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:bg-nxu-charging-disabled"
-            onClick={onSendSMS}
-            disabled={!sendCodeEnabled}
-          >
-            <span>Get SMS Code</span>
-          </button>
           <button
             className="w-[90%] md:max-w-[350px] mt-[5px] mb-[10px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
             onClick={onSubmit}
@@ -306,4 +276,4 @@ const SignUp: FC = () => {
   );
 };
 
-export default SignUp;
+export default SignUpWithPin;

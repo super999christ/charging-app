@@ -2,6 +2,7 @@ export interface ISignInFormValidation {
   validationResult: boolean;
   phoneNumber: string;
   authCode: string;
+  pinCode: string;
 }
 
 export interface ISignUpFormValidation {
@@ -14,6 +15,8 @@ export interface ISignUpFormValidation {
   cardExpDate: string;
   cardCvv: string;
   authCode: string;
+  pinCode: string;
+  pinConfirmCode: string;
 }
 
 export interface IForgotPasswordFormValidation {
@@ -33,6 +36,8 @@ export interface IConfirmRegisterFormValidation {
   cardNumber: string;
   cardExpDate: string;
   cardCvv: string;
+  pinCode: string;
+  pinConfirmCode: string;
 }
 
 export interface IResetPasswordFormValidation {

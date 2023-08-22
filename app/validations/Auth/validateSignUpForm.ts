@@ -9,7 +9,9 @@ export const validateSignUpForm = (
   authCode: string,
   cardNumber: string,
   cardExpDate: string,
-  cardCvv: string
+  cardCvv: string,
+  pinCode?: string,
+  pinConfirmCode?: string,
 ) => {
   let errors: Partial<IConfirmRegisterFormValidation> = {};
   const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,14 +45,14 @@ export const validateSignUpForm = (
     errors = {
       ...errors,
       validationResult: false,
-      email: VALIDATION_ERROR_MESSAGE.firstname_required
+      firstName: VALIDATION_ERROR_MESSAGE.firstname_required
     };
   }
   if (!lastName) {
     errors = {
       ...errors,
       validationResult: false,
-      email: VALIDATION_ERROR_MESSAGE.lastname_required
+      lastName: VALIDATION_ERROR_MESSAGE.lastname_required
     };
   }
   const authCodeRegExp = /^\d{6}$/;
@@ -117,7 +119,46 @@ export const validateSignUpForm = (
       validationResult: false,
       cardCvv: VALIDATION_ERROR_MESSAGE.cardcvv_invalid,
     };
-
+  
+  const pinCodeRegExp = /^\d{4}$/;
+  if (pinCode !== undefined && pinConfirmCode !== undefined) {
+    let pinCodeOk = false, pinConfirmCodeOk = false;
+    if (!pinCode)
+      errors = {
+        ...errors,
+        validationResult: false,
+        pinCode: VALIDATION_ERROR_MESSAGE.pincode_required,
+      };
+    else if (!pinCodeRegExp.test(pinCode))
+      errors = {
+        ...errors,
+        validationResult: false,
+        pinCode: VALIDATION_ERROR_MESSAGE.pincode_invalid,
+      };
+    else pinCodeOk = true;
+    if (!pinConfirmCode) {
+      errors = {
+        ...errors,
+        validationResult: false,
+        pinConfirmCode: VALIDATION_ERROR_MESSAGE.pinconfirmcode_required,
+      };
+    }
+    else if (!pinCodeRegExp.test(pinConfirmCode)) {
+      errors = {
+        ...errors,
+        validationResult: false,
+        pinConfirmCode: VALIDATION_ERROR_MESSAGE.pinconfirmcode_invalid,
+      };
+    }
+    else pinConfirmCodeOk = true;
+    if (pinCodeOk && pinConfirmCodeOk && pinCode !== pinConfirmCode) {
+      errors = {
+        ...errors,
+        validationResult: false,
+        pinConfirmCode: VALIDATION_ERROR_MESSAGE.pincode_notmatch,
+      };
+    }
+  }
   if (Object.keys(errors).length === 0) return { validationResult: true };
   return errors;
 };

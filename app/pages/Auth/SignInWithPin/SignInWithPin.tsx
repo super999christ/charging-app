@@ -3,23 +3,20 @@ import { useNavigate } from "react-router";
 import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
 
 import { validateSignInForm, validateToken } from "../../../validations";
-import { getAuthToken } from "../../../helpers";
+import { getAuthToken, getAuthTokenWithPIN } from "../../../helpers";
 import { ISignInFormValidation } from "../../../types/ValidationErrors.type";
 import { Link } from "react-router-dom";
 import InputMask from "react-input-mask";
-import { sendLoginAuthCode } from "@root/helpers/Auth/sendAuthCode.helper";
 import { AxiosError } from "axios";
 
 type ISignInErrors = ISignInFormValidation & { page: string };
 
-const SignIn: FC = () => {
+const SignInWithPin: FC = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [authCode, setAuthCode] = useState("");
   const [errors, setErrors] = useState<Partial<ISignInErrors>>({});
   const [notificationId, setNotificationId] = useState(NaN);
-  const [alertMsg, setAlertMsg] = useState('');
-  const [sendCodeEnabled, setSendCodeEnabled] = useState(true);
   const [validationTriggered, setValidationTriggered] = useState(false);
+  const [pinCode, setPinCode] = useState('');
 
   const navigate = useNavigate();
 
@@ -29,7 +26,7 @@ const SignIn: FC = () => {
   }, [isTokenValid]);
 
   useEffect(() => {
-    const validationResult = validateSignInForm(phoneNumber, '111111');
+    const validationResult = validateSignInForm(phoneNumber, '111111', pinCode);
     if (validationResult.validationResult) {
       setErrors({});
       return;
@@ -37,7 +34,7 @@ const SignIn: FC = () => {
     if (validationTriggered && !validationResult.validationResult) {
       setErrors(validationResult);
     }
-  }, [phoneNumber, authCode]);
+  }, [phoneNumber, pinCode]);
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
@@ -45,7 +42,7 @@ const SignIn: FC = () => {
   const onSubmit = async (redirect: boolean) => {
     // validation
     setValidationTriggered(true);
-    const validationResult = validateSignInForm(phoneNumber, authCode);
+    const validationResult = validateSignInForm(phoneNumber, '111111', pinCode);
     if (!validationResult.validationResult) {
       setErrors(validationResult);
       return;
@@ -53,34 +50,9 @@ const SignIn: FC = () => {
 
     // token check
     try {
-      await getAuthToken(phoneNumber, authCode, notificationId);
+      await getAuthTokenWithPIN(phoneNumber, pinCode, notificationId);
       navigate(redirect ? "/charging-login" : "/dashboard");
     } catch (err) {
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data });
-    }
-  };
-
-  const onSendSMS = async () => {
-    // validation
-    setValidationTriggered(true);
-    const validationResult = validateSignInForm(phoneNumber);
-    setErrors({});
-    if (!validationResult.validationResult) {
-      setErrors(validationResult);
-      return;
-    }
-    try {
-      setSendCodeEnabled(false);
-      const response = await sendLoginAuthCode(phoneNumber);
-      setTimeout(() => {
-        setSendCodeEnabled(true);
-        setAlertMsg('');
-      }, 120000);
-      setAlertMsg('SMS code requested, once received please enter the code in SMS code box and click SignIn. To re-request SMS code please wait 2mins.');
-      setNotificationId(response.data.id);
-    } catch (err) {
-      setSendCodeEnabled(true);
       if (err instanceof AxiosError)
         setErrors({ page: err.response?.data });
     }
@@ -104,23 +76,17 @@ const SignIn: FC = () => {
               </label>
             )}
           </div>
-          <button
-            className="w-full md:max-w-[350px] md:mt-[10px] mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:bg-nxu-charging-disabled"
-            onClick={onSendSMS}
-            disabled={!sendCodeEnabled}
-          >
-            <span>Get SMS Code</span>
-          </button>
           <div className="flex flex-col">
             <input
+              type="password"
+              placeholder="Enter PIN"
               className={inputStyle}
-              placeholder="Enter SMS Code"
-              value={authCode}
-              onChange={(e) => setAuthCode(e.target.value)}
+              value={pinCode}
+              onChange={(e) => setPinCode(e.target.value)}
             />
-            {errors.authCode && (
+            {errors.pinCode && (
               <label className="text-nxu-charging-red text-[12px]">
-                {errors.authCode}
+                {errors.pinCode}
               </label>
             )}
           </div>
@@ -129,9 +95,6 @@ const SignIn: FC = () => {
               {errors.page}
             </label>
           )}
-          <label className="text-nxu-charging-white text-[12px]">
-            {alertMsg}
-          </label>
         </div>
       </div>
       <button
@@ -158,4 +121,4 @@ const SignIn: FC = () => {
   );
 };
 
-export default SignIn;
+export default SignInWithPin;

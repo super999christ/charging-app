@@ -1,8 +1,8 @@
 import React from "react";
 
 const EntryPage = React.lazy(() => import("../pages/EntryPage"));
-const AuthSignInPage = React.lazy(() => import("../pages/Auth/SignIn"));
-const AuthSignUpPage = React.lazy(() => import("../pages/Auth/SignUp"));
+const AuthSignInPage = React.lazy(() => import("../pages/Auth/SignInWithPin"));
+const AuthSignUpPage = React.lazy(() => import("../pages/Auth/SignUpWithPin"));
 const AuthForgotPasswordPage = React.lazy(
   () => import("../pages/Auth/ForgotPassword")
 );
