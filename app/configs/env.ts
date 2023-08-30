@@ -6,6 +6,7 @@ const Environment = {
   VITE_SERVICE_CHARGING_EVENT_URL: String(import.meta.env.VITE_SERVICE_CHARGING_EVENT_URL),
   VITE_SERVICE_PAYMENT_URL: String(import.meta.env.VITE_SERVICE_PAYMENT_URL),
   VITE_CHARGE_STATUS_INTERVAL: Number(import.meta.env.VITE_CHARGE_STATUS_INTERVAL),
+  VITE_STRIPE_PUBLISHABLE_KEY: String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 };
 
 export default Environment;

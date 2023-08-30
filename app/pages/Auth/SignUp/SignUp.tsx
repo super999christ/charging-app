@@ -1,12 +1,10 @@
 import { useState, FC, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { validateSignInForm, validateSignUpForm } from "../../../validations";
+import { validateSignUpForm } from "../../../validations";
 import { registerUser } from "../../../helpers";
 import { ISignUpFormValidation } from "../../../types/ValidationErrors.type";
 import { AxiosError } from "axios";
 import InputMask from "react-input-mask";
-import { MaskedInput } from "react-hook-mask";
-import { creditCardMask, expDateMask } from "@root/utils/creditCard";
 import { sendRegisterAuthCode } from "@root/helpers/Auth/sendAuthCode.helper";
 import TermsConditions from "../TermsConditions";
 import { setRequestHeader } from "@root/utils/setRequestHeader";
@@ -19,9 +17,6 @@ const SignUp: FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpDate, setCardExpDate] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
   const [isTnCOpen, setTnCOpen] = useState(false);
   const [isTnCChecked, setTnCChecked] = useState(false);
   const [authCode, setAuthCode] = useState("");
@@ -38,10 +33,7 @@ const SignUp: FC = () => {
       firstName,
       lastName,
       phoneNumber,
-      '111111',
-      cardNumber,
-      cardExpDate,
-      cardCvv,
+      "111111"
     );
     if (validationResult.validationResult) {
       setErrors({});
@@ -50,7 +42,7 @@ const SignUp: FC = () => {
     if (validationTriggered && !validationResult.validationResult) {
       setErrors(validationResult);
     }
-  }, [firstName, lastName, email, phoneNumber, cardNumber, cardExpDate, cardCvv, authCode]);
+  }, [firstName, lastName, email, phoneNumber, authCode]);
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
@@ -62,7 +54,7 @@ const SignUp: FC = () => {
       setErrors({});
     }
   };
-  
+
   const onSubmit = async () => {
     //  Validation
     setValidationTriggered(true);
@@ -71,10 +63,7 @@ const SignUp: FC = () => {
       firstName,
       lastName,
       phoneNumber,
-      authCode,
-      cardNumber,
-      cardExpDate,
-      cardCvv,
+      authCode
     );
     if (!validationResult.validationResult) {
       setErrors(validationResult);
@@ -82,7 +71,7 @@ const SignUp: FC = () => {
     }
     if (!isTnCChecked) {
       setErrors({
-        page: 'Please check the Terms and Conditions to continue',
+        page: "Please check the Terms and Conditions to continue",
       });
       return;
     }
@@ -95,10 +84,7 @@ const SignUp: FC = () => {
         lastName,
         phoneNumber,
         Number(notificationId),
-        authCode,
-        cardNumber,
-        cardExpDate,
-        cardCvv,
+        authCode
       );
 
       if (data.message === "User registration confirmed") {
@@ -121,10 +107,7 @@ const SignUp: FC = () => {
       firstName,
       lastName,
       phoneNumber,
-      '111111',
-      cardNumber,
-      cardExpDate,
-      cardCvv,
+      "111111"
     );
     console.log(validationResult);
     setErrors({});
@@ -137,22 +120,21 @@ const SignUp: FC = () => {
       const response = await sendRegisterAuthCode(phoneNumber);
       setTimeout(() => {
         setSendCodeEnabled(true);
-        setAlertMsg('');
+        setAlertMsg("");
       }, 120000);
-      setAlertMsg('SMS code requested, once received please enter the code in SMS code box and click SignIn. To re-request SMS code please wait 2mins.');
+      setAlertMsg(
+        "SMS code requested, once received please enter the code in SMS code box and click SignIn. To re-request SMS code please wait 2mins."
+      );
       setNotificationId(response.data.id);
     } catch (err) {
       setSendCodeEnabled(true);
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data });
+      if (err instanceof AxiosError) setErrors({ page: err.response?.data });
     }
   };
 
   return (
     <>
-      {isTnCOpen && (
-        <TermsConditions onConfirm={onConfirmTNC} />
-      )}
+      {isTnCOpen && <TermsConditions onConfirm={onConfirmTNC} />}
       {!isTnCOpen && (
         <div className="w-full flex flex-col items-center md:justify-center overflow-y-auto">
           <div className="w-[90%] md:max-w-[350px] flex flex-col justify-center gap-[30px]">
@@ -199,54 +181,22 @@ const SignUp: FC = () => {
                   </label>
                 )}
               </div>
-              <div className="flex flex-col">
-                <MaskedInput
-                  className={inputStyle}
-                  placeholder="Card Number"
-                  value={cardNumber}
-                  onChange={setCardNumber}
-                  maskGenerator={creditCardMask}
-                />
-                {errors.cardNumber && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.cardNumber}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-row gap-5">
-                <div className="flex flex-col w-[calc((100%_-_20px)_/_2)]">
-                  <MaskedInput
-                    className={inputStyle}
-                    placeholder="MM / YY"
-                    value={cardExpDate}
-                    onChange={setCardExpDate}
-                    maskGenerator={expDateMask}
-                  />
-                  {errors.cardExpDate && (
-                    <label className="text-nxu-charging-red text-[12px]">
-                      {errors.cardExpDate}
-                    </label>
-                  )}
-                </div>
-                <div className="flex flex-col w-[calc((100%_-_20px)_/_2)]">
-                  <input
-                    type="text"
-                    className={inputStyle}
-                    placeholder="CVV"
-                    value={cardCvv}
-                    onChange={(e) => setCardCvv(e.target.value)}
-                  />
-                  {errors.cardCvv && (
-                    <label className="text-nxu-charging-red text-[12px]">
-                      {errors.cardCvv}
-                    </label>
-                  )}
-                </div>
-              </div>
+
               <div className="flex items-center gap-[5px]">
-                <input id="tnc-checkbox" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" checked={isTnCChecked} />
-                <div onClick={() => setTnCOpen(true)} className="cursor-pointer">
-                  <p className="text-nxu-charging-white">Terms and Conditions</p>
+                <input
+                  id="tnc-checkbox"
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  checked={isTnCChecked}
+                  onChange={() => setTnCOpen(true)}
+                />
+                <div
+                  onClick={() => setTnCOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <p className="text-nxu-charging-white">
+                    Terms and Conditions
+                  </p>
                 </div>
               </div>
               {errors.page && (

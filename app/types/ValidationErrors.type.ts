@@ -11,9 +11,6 @@ export interface ISignUpFormValidation {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  cardNumber: string;
-  cardExpDate: string;
-  cardCvv: string;
   authCode: string;
   pinCode: string;
   pinConfirmCode: string;
@@ -33,9 +30,6 @@ export interface IConfirmRegisterFormValidation {
   password: string;
   confirmPassword: string;
   authCode: string;
-  cardNumber: string;
-  cardExpDate: string;
-  cardCvv: string;
   pinCode: string;
   pinConfirmCode: string;
 }
@@ -71,11 +65,4 @@ export interface IProfilePasswordValidation {
   validationResult: boolean;
   password: string;
   confirmPassword: string;
-}
-
-export interface IProfileCreditValidation {
-  validationResult: boolean;
-  cardNumber: string;
-  cardExpDate: string;
-  cardCvv: string;
 }

@@ -23,8 +23,6 @@ const Profile: FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [creditCardNumber, setCreditCardNumber] = useState("");
-  const [expDate, setExpDate] = useState("");
   const [userId, setUserId] = useState("");
 
   const navigate = useNavigate();
@@ -41,22 +39,12 @@ const Profile: FC = () => {
     const getData = async () => {
       try {
         const userData = await getUserProfile();
-        const {
-          email,
-          firstName,
-          lastName,
-          phoneNumber,
-          id,
-          last4,
-          expMonth,
-          expYear,
-        } = userData as IProfileData;
+        const { email, firstName, lastName, phoneNumber, id } =
+          userData as IProfileData;
         setEmail(email);
         setFirstName(firstName);
         setLastName(lastName);
         setPhoneNumber(phoneNumber);
-        setCreditCardNumber(`**** **** **** ${last4}`);
-        setExpDate(`${expMonth} / ${expYear}`);
         setUserId(id);
       } catch (err) {
         setErrors({ page: "Error while fetch the user data" });
@@ -114,24 +102,6 @@ const Profile: FC = () => {
             />
           </div>
 
-          <div className="flex flex-col">
-            <input
-              type="text"
-              className={inputStyle}
-              placeholder="CreditCard Number"
-              value={creditCardNumber}
-              readOnly={true}
-            />
-          </div>
-          <div className="flex flex-col">
-            <input
-              type="text"
-              className={inputStyle}
-              placeholder="Exp Date"
-              value={expDate}
-              readOnly={true}
-            />
-          </div>
           <div className="flex flex-row gap-5">
             <button
               className="bg-none border border-white hover:bg-nxu-charging-darkwhite w-[calc(50%_-_10px)] px-[23px] text-white font-semibold text-[16px]"

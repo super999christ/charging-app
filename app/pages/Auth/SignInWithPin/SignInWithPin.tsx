@@ -1,7 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
-
 import { validateSignInForm, validateToken } from "../../../validations";
 import { getAuthToken, getAuthTokenWithPIN } from "../../../helpers";
 import { ISignInFormValidation } from "../../../types/ValidationErrors.type";
@@ -79,7 +77,7 @@ const SignInWithPin: FC = () => {
           <div className="flex flex-col">
             <input
               type="password"
-              placeholder="Enter PIN"
+              placeholder="Enter Password"
               className={inputStyle}
               value={pinCode}
               onChange={(e) => setPinCode(e.target.value)}
@@ -101,20 +99,14 @@ const SignInWithPin: FC = () => {
         className="w-[90%] md:max-w-[350px] mt-[10px] mb-[5px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:bg-nxu-charging-disabled"
         onClick={() => onSubmit(true)}
       >
-        <span>Charge</span>
-      </button>
-      <button
-        className="w-[90%] md:max-w-[350px] mt-[5px] mb-[20px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:bg-nxu-charging-disabled"
-        onClick={() => onSubmit(false)}
-      >
         <span>Sign In</span>
       </button>
-      <div className="flex gap-4">
-        <Link to="/change-phone">
-          <p className="text-nxu-charging-white">Change Phone No.</p>
+      <div className="flex gap-4 flex-col">
+        <Link to="/forgot-password">
+          <p className="text-nxu-charging-white">Forgot Password</p>
         </Link>
         <Link to="/auth-sign-up">
-          <p className="text-nxu-charging-white">Sign Up</p>
+          <p className="text-nxu-charging-white">Don't have an account? Sign Up</p>
         </Link>
       </div>
     </div>

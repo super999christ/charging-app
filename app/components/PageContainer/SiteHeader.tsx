@@ -1,20 +1,30 @@
-import { FC } from "react";
-import { Link } from "react-router-dom";
+import { FC, useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { ReactComponent as LogoIcon } from "../../assets/logo.svg";
 import { ReactComponent as AppIcon } from "../../assets/appTitle.svg";
 import { ReactComponent as FlagIcon } from "../../assets/flag.svg";
+import { ReactComponent as ProfileIcon } from "../../assets/profile.svg";
+import { validateToken } from "@root/validations";
 
 const SiteHeader: FC = () => {
+  const currentLocation = useLocation();
   return (
     <div className="w-full h-[75px] bg-nxu-charging-black flex justify-between items-center px-5">
-      <Link to="/" className="cursor-pointer">
+      <Link to="/charging-login" className="cursor-pointer">
         <LogoIcon className="hover:opacity-80" />
       </Link>
       <Link to="/charging-login" className="cursor-pointer">
         <AppIcon />
       </Link>
-      <FlagIcon />
+      <div className="flex gap-[10px]">
+        <FlagIcon className="cursor-pointer" />
+        {currentLocation.pathname !== '/' && (
+          <Link to="/dashboard">
+            <ProfileIcon className="cursor-pointer hover:opacity-80" />
+          </Link>
+        )}
+      </div>
     </div>
   );
 };

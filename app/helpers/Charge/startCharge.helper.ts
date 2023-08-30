@@ -9,3 +9,8 @@ export const startCharge = async (stationId: string) => {
 
   return await axios.post(url, body);
 };
+
+export const findActiveSession = () => {
+  const url = `${Environment.VITE_SERVICE_CHARGING_EVENT_URL}/active-session`;
+  return axios.get(url);
+};

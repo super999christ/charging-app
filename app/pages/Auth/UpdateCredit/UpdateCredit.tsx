@@ -3,22 +3,82 @@ import { useNavigate } from "react-router";
 import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
 import { useSearchParams } from "react-router-dom";
 
-import { validateProfileCreditForm, validateToken } from "../../../validations";
-import { IProfileCreditValidation } from "../../../types/ValidationErrors.type";
-import { updateUserCreditCard } from "../../../helpers";
-import { AxiosError } from "axios";
-import { MaskedInput } from "react-hook-mask";
-import { creditCardMask } from "@root/utils/creditCard";
+import { validateToken } from "../../../validations";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  PaymentElement,
+  Elements,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import Environment from "@root/configs/env";
+import { getCreditCard, updateUserCreditCard } from "@root/helpers";
+import useToast from "@root/hooks/useToast";
 
-type IUpdateCreditErrors = IProfileCreditValidation & { page: string };
+const stripePromise = loadStripe(Environment.VITE_STRIPE_PUBLISHABLE_KEY);
+
+function CreditCardWidget() {
+  const toast = useToast();
+  const stripe = useStripe();
+  const elements = useElements();
+  const navigate = useNavigate();
+  const [cc, setCC] = useState();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    getCreditCard()
+      .then(setCC)
+      .catch((err) => {});
+  }, []);
+
+  function onSubmit() {
+    if (!stripe || !elements) return;
+
+    elements.submit();
+
+    setLoading(true);
+    stripe
+      ?.createPaymentMethod({ elements })
+      .then((res) => {
+        updateUserCreditCard(res.paymentMethod!.id).then(() => {
+          toast("Successfully updated credit card", "success");
+          navigate("/profile");
+        });
+      })
+      .catch(() => toast("Failed to update credit card"))
+      .finally(() => setLoading(false));
+  }
+
+  return (
+    <>
+      <PaymentElement
+        id="payment-element"
+        options={{
+          terms: {
+            card: "never",
+          },
+        }}
+      />
+
+      <button
+        className="w-full md:max-w-[350px] md:mt-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:opacity-25"
+        disabled={loading}
+        onClick={onSubmit}
+      >
+        <ConfirmIcon />
+        <span>Confirm</span>
+      </button>
+      <button
+        className="w-full md:max-w-[350px] md:mt-[10px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
+        onClick={() => navigate("/profile")}
+      >
+        <span>Cancel</span>
+      </button>
+    </>
+  );
+}
 
 const UpdateCredit: FC = () => {
-  const [creditCard, setCreditCard] = useState("");
-  const [expYear, setExpYear] = useState("");
-  const [expMonth, setExpMonth] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [errors, setErrors] = useState<Partial<IUpdateCreditErrors>>({});
-
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId") || "";
@@ -32,116 +92,21 @@ const UpdateCredit: FC = () => {
     if (!isTokenValid) navigate("/");
   }, [isTokenValid]);
 
-  const inputStyle =
-    "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
-
-  const onSubmit = async () => {
-    // validation
-    const validationResult = validateProfileCreditForm(
-      creditCard,
-      expMonth,
-      expYear,
-      cardCvv
-    );
-    if (!validationResult.validationResult) {
-      setErrors(validationResult);
-      return;
-    }
-
-    // token check
-    try {
-      await updateUserCreditCard(
-        userId,
-        creditCard,
-        cardCvv,
-        expYear,
-        expMonth
-      );
-      navigate("/profile");
-    } catch (err) {
-      if (err instanceof AxiosError) setErrors({ page: err.response?.data });
-      else setErrors({ page: "User profile update failed" });
-    }
-  };
-
   return (
     <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center md:justify-center">
-      <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl border-b border-b-nxu-charging-black">
-          Update Credit Card
-        </div>
-        <div className="flex flex-col w-full gap-5 mb-5">
-          <div className="flex flex-col">
-            <MaskedInput
-              className={inputStyle}
-              placeholder="Credit Card"
-              value={creditCard}
-              onChange={setCreditCard}
-              maskGenerator={creditCardMask}
-            />
-            {errors.cardNumber && (
-              <label className="text-nxu-charging-red text-[12px]">
-                {errors.cardNumber}
-              </label>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <div className="flex gap-5">
-              <input
-                type="number"
-                className={`${inputStyle} w-[calc(50%_-_10px)]`}
-                placeholder="Exp Month"
-                value={expMonth}
-                onChange={(e) => setExpMonth(e.target.value)}
-              />
-              <input
-                type="number"
-                className={`${inputStyle} w-[calc(50%_-_10px)]`}
-                placeholder="Exp Year"
-                value={expYear}
-                onChange={(e) => setExpYear(e.target.value)}
-              />
-            </div>
-            {errors.cardExpDate && (
-              <label className="text-nxu-charging-red text-[12px]">
-                {errors.cardExpDate}
-              </label>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <input
-              type="text"
-              className={inputStyle}
-              placeholder="CVV"
-              value={cardCvv}
-              onChange={(e) => setCardCvv(e.target.value)}
-            />
-            {errors.cardCvv && (
-              <label className="text-nxu-charging-red text-[12px]">
-                {errors.cardCvv}
-              </label>
-            )}
-          </div>
-          {errors.page && (
-            <label className="text-nxu-charging-red text-[12px]">
-              {errors.page}
-            </label>
-          )}
-        </div>
-      </div>
-      <div
-        className="w-full md:max-w-[350px] md:mt-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={onSubmit}
+      <Elements
+        stripe={stripePromise}
+        options={{
+          mode: "setup",
+          currency: "usd",
+          appearance: {
+            theme: "night",
+          },
+          paymentMethodCreation: "manual",
+        }}
       >
-        <ConfirmIcon />
-        <span>Confirm</span>
-      </div>
-      <button
-        className="w-full md:max-w-[350px] md:mt-[10px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={() => navigate('/profile')}
-      >
-        <span>Cancel</span>
-      </button>
+        <CreditCardWidget />
+      </Elements>
     </div>
   );
 };

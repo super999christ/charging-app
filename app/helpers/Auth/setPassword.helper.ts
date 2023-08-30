@@ -1,6 +1,5 @@
 import axios from "axios";
 
-import { getExpirationDate } from "../../utils";
 import Environment from "@root/configs/env";
 
 export const registerUser = async (
@@ -9,15 +8,9 @@ export const registerUser = async (
   lastName: string,
   phoneNumber: string,
   smsNotificationId: number,
-  smsAuthCode: string,
-  cardNumber: string,
-  cardExpDate: string,
-  cardCvv: string,
+  smsAuthCode: string
 ) => {
-  const url = `${
-    Environment.VITE_SERVICE_USER_MANAGEMENT_URL
-  }/register-confirm`;
-  const { expYear, expMonth } = getExpirationDate(cardExpDate);
+  const url = `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/register-confirm`;
   const body = {
     email,
     firstName,
@@ -25,10 +18,6 @@ export const registerUser = async (
     phoneNumber,
     smsNotificationId,
     smsAuthCode,
-    cardNumber,
-    expYear,
-    expMonth,
-    cvv: cardCvv,
   };
   return await axios.post(url, body);
 };
@@ -38,25 +27,15 @@ export const registerUserWithPIN = async (
   firstName: string,
   lastName: string,
   phoneNumber: string,
-  pinCode: string,
-  cardNumber: string,
-  cardExpDate: string,
-  cardCvv: string,
+  pinCode: string
 ) => {
-  const url = `${
-    Environment.VITE_SERVICE_USER_MANAGEMENT_URL
-  }/register-confirm-with-pin`;
-  const { expYear, expMonth } = getExpirationDate(cardExpDate);
+  const url = `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/register-confirm-with-pin`;
   const body = {
     email,
     firstName,
     lastName,
     phoneNumber,
     pinCode,
-    cardNumber,
-    expYear,
-    expMonth,
-    cvv: cardCvv,
   };
   return await axios.post(url, body);
 };

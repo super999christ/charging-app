@@ -1,22 +1,19 @@
 import Environment from "@root/configs/env";
 import axios from "axios";
 
-export const updateUserCreditCard = async (
-  userId: string,
-  cardNumber: string,
-  cvc: string,
-  expYear: number,
-  expMonth: number
-) => {
+export const updateUserCreditCard = async (pmId: string) => {
   const { data } = await axios.put(
-    `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/profile/creditcard`,
+    `${Environment.VITE_SERVICE_PAYMENT_URL}/update-cc`,
     {
-      userId,
-      cardNumber,
-      cvc,
-      expYear,
-      expMonth,
+      pmId,
     }
+  );
+  return data;
+};
+
+export const getCreditCard = async () => {
+  const { data } = await axios.get(
+    `${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`
   );
   return data;
 };

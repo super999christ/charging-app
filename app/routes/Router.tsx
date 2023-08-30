@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 import { privateRoutes } from "./PrivateRoutes";
 import { publicRoutes } from "./PublicRoutes";
 import WithSuspense from "./WithSuspense";
+import ToastProvider from "./ToastProvider";
 
 type RouteParam = {
   path: string;
@@ -11,26 +12,34 @@ type RouteParam = {
   redirect?: string;
 };
 
-export const allRoutes = [...publicRoutes, ...privateRoutes].map((route: RouteParam) => {
-  const Component = WithSuspense(route.component);
-  function WrapperComponent() {
-    return <Component />
-  }
+export const allRoutes = [...publicRoutes, ...privateRoutes].map(
+  (route: RouteParam) => {
+    const Component = WithSuspense(route.component);
+    function WrapperComponent() {
+      return <Component />;
+    }
 
-  return {
-    ...route,
-    component: memo(WrapperComponent)
+    return {
+      ...route,
+      component: memo(WrapperComponent),
+    };
   }
-});
+);
 
 function GlobalRouter() {
   return (
-    <Routes>
-      {allRoutes.map((route) => (
-        <Route key={route.path} path={route.path} element={<route.component />} />
-      ))}
-    </Routes>
-  )
+    <ToastProvider>
+      <Routes>
+        {allRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<route.component />}
+          />
+        ))}
+      </Routes>
+    </ToastProvider>
+  );
 }
 
 export default GlobalRouter;

@@ -1,13 +1,10 @@
 import { useState, FC, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { validateSignInForm, validateSignUpForm } from "../../../validations";
-import { registerUser, registerUserWithPIN } from "../../../helpers";
+import { validateSignUpForm } from "../../../validations";
+import { registerUserWithPIN } from "../../../helpers";
 import { ISignUpFormValidation } from "../../../types/ValidationErrors.type";
 import { AxiosError } from "axios";
 import InputMask from "react-input-mask";
-import { MaskedInput } from "react-hook-mask";
-import { creditCardMask, expDateMask } from "@root/utils/creditCard";
-import { sendRegisterAuthCode } from "@root/helpers/Auth/sendAuthCode.helper";
 import TermsConditions from "../TermsConditions";
 import { setRequestHeader } from "@root/utils/setRequestHeader";
 
@@ -19,9 +16,6 @@ const SignUpWithPin: FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpDate, setCardExpDate] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
   const [isTnCOpen, setTnCOpen] = useState(false);
   const [isTnCChecked, setTnCChecked] = useState(false);
   const [pinCode, setPinCode] = useState("");
@@ -36,12 +30,9 @@ const SignUpWithPin: FC = () => {
       firstName,
       lastName,
       phoneNumber,
-      '111111',
-      cardNumber,
-      cardExpDate,
-      cardCvv,
+      "111111",
       pinCode,
-      pinConfirmCode,
+      pinConfirmCode
     );
     if (validationResult.validationResult) {
       setErrors({});
@@ -50,7 +41,7 @@ const SignUpWithPin: FC = () => {
     if (validationTriggered && !validationResult.validationResult) {
       setErrors(validationResult);
     }
-  }, [firstName, lastName, email, phoneNumber, cardNumber, cardExpDate, cardCvv, pinCode, pinConfirmCode]);
+  }, [firstName, lastName, email, phoneNumber, pinCode, pinConfirmCode]);
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
@@ -62,7 +53,7 @@ const SignUpWithPin: FC = () => {
       setErrors({});
     }
   };
-  
+
   const onSubmit = async () => {
     //  Validation
     setValidationTriggered(true);
@@ -71,12 +62,9 @@ const SignUpWithPin: FC = () => {
       firstName,
       lastName,
       phoneNumber,
-      '111111',
-      cardNumber,
-      cardExpDate,
-      cardCvv,
+      "111111",
       pinCode,
-      pinConfirmCode,
+      pinConfirmCode
     );
     if (!validationResult.validationResult) {
       setErrors(validationResult);
@@ -84,7 +72,7 @@ const SignUpWithPin: FC = () => {
     }
     if (!isTnCChecked) {
       setErrors({
-        page: 'Please check the Terms and Conditions to continue',
+        page: "Please check the Terms and Conditions to continue",
       });
       return;
     }
@@ -96,10 +84,7 @@ const SignUpWithPin: FC = () => {
         firstName,
         lastName,
         phoneNumber,
-        pinCode,
-        cardNumber,
-        cardExpDate,
-        cardCvv,
+        pinCode
       );
 
       if (data.message === "User registration confirmed") {
@@ -116,9 +101,7 @@ const SignUpWithPin: FC = () => {
 
   return (
     <>
-      {isTnCOpen && (
-        <TermsConditions onConfirm={onConfirmTNC} />
-      )}
+      {isTnCOpen && <TermsConditions onConfirm={onConfirmTNC} />}
       {!isTnCOpen && (
         <div className="w-full flex flex-col items-center md:justify-center overflow-y-auto">
           <div className="w-[90%] md:max-w-[350px] flex flex-col justify-center gap-[30px]">
@@ -183,7 +166,7 @@ const SignUpWithPin: FC = () => {
                 <input
                   type="password"
                   className={inputStyle}
-                  placeholder="PIN"
+                  placeholder="Password"
                   value={pinCode}
                   onChange={(e) => setPinCode(e.target.value)}
                 />
@@ -197,7 +180,7 @@ const SignUpWithPin: FC = () => {
                 <input
                   type="password"
                   className={inputStyle}
-                  placeholder="Confirm PIN"
+                  placeholder="Confirm Password"
                   value={pinConfirmCode}
                   onChange={(e) => setPinConfirmCode(e.target.value)}
                 />
@@ -207,54 +190,22 @@ const SignUpWithPin: FC = () => {
                   </label>
                 )}
               </div>
-              <div className="flex flex-col">
-                <MaskedInput
-                  className={inputStyle}
-                  placeholder="Card Number"
-                  value={cardNumber}
-                  onChange={setCardNumber}
-                  maskGenerator={creditCardMask}
-                />
-                {errors.cardNumber && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.cardNumber}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-row gap-5">
-                <div className="flex flex-col w-[calc((100%_-_20px)_/_2)]">
-                  <MaskedInput
-                    className={inputStyle}
-                    placeholder="MM / YY"
-                    value={cardExpDate}
-                    onChange={setCardExpDate}
-                    maskGenerator={expDateMask}
-                  />
-                  {errors.cardExpDate && (
-                    <label className="text-nxu-charging-red text-[12px]">
-                      {errors.cardExpDate}
-                    </label>
-                  )}
-                </div>
-                <div className="flex flex-col w-[calc((100%_-_20px)_/_2)]">
-                  <input
-                    type="text"
-                    className={inputStyle}
-                    placeholder="CVV"
-                    value={cardCvv}
-                    onChange={(e) => setCardCvv(e.target.value)}
-                  />
-                  {errors.cardCvv && (
-                    <label className="text-nxu-charging-red text-[12px]">
-                      {errors.cardCvv}
-                    </label>
-                  )}
-                </div>
-              </div>
+
               <div className="flex items-center gap-[5px]">
-                <input id="tnc-checkbox" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" checked={isTnCChecked} />
-                <div onClick={() => setTnCOpen(true)} className="cursor-pointer">
-                  <p className="text-nxu-charging-white">Terms and Conditions</p>
+                <input
+                  id="tnc-checkbox"
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  checked={isTnCChecked}
+                  onChange={() => setTnCOpen(true)}
+                />
+                <div
+                  onClick={() => setTnCOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <p className="text-nxu-charging-white">
+                    Terms and Conditions
+                  </p>
                 </div>
               </div>
               {errors.page && (
