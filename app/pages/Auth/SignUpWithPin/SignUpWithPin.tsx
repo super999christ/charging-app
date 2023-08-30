@@ -3,10 +3,10 @@ import { useNavigate } from "react-router";
 import { validateSignUpForm } from "../../../validations";
 import { registerUserWithPIN } from "../../../helpers";
 import { ISignUpFormValidation } from "../../../types/ValidationErrors.type";
-import { AxiosError } from "axios";
 import InputMask from "react-input-mask";
 import TermsConditions from "../TermsConditions";
 import { setRequestHeader } from "@root/utils/setRequestHeader";
+import useToast from "@root/hooks/useToast";
 
 type ISignUpErrors = ISignUpFormValidation & { page: string };
 
@@ -22,6 +22,7 @@ const SignUpWithPin: FC = () => {
   const [pinConfirmCode, setPinConfirmCode] = useState("");
   const [validationTriggered, setValidationTriggered] = useState(false);
 
+  const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,26 +78,14 @@ const SignUpWithPin: FC = () => {
       return;
     }
 
-    //  Registration
-    try {
-      const { data } = await registerUserWithPIN(
-        email,
-        firstName,
-        lastName,
-        phoneNumber,
-        pinCode
-      );
-
-      if (data.message === "User registration confirmed") {
-        setRequestHeader(data.token);
-        localStorage.setItem("appToken", data.token);
-        navigate("/charging-login?signup=success");
-      }
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        setErrors({ page: err.response?.data });
-      }
-    }
+    registerUserWithPIN(email, firstName, lastName, phoneNumber, pinCode)
+      .then((res) => {
+        setRequestHeader(res.data.token);
+        localStorage.setItem("appToken", res.data.token);
+        navigate("/profile-creditcard");
+      })
+      .then(() => toast("Successfully signed up", "success"))
+      .catch((err) => toast("Failed to sign up"));
   };
 
   return (

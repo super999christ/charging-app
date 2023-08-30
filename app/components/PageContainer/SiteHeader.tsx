@@ -9,17 +9,21 @@ import { validateToken } from "@root/validations";
 
 const SiteHeader: FC = () => {
   const currentLocation = useLocation();
+
+  const shouldShowProfile = () => {
+    if (['/', '/auth-sign-up'].includes(currentLocation.pathname))
+      return false;
+    return true;
+  };
+
   return (
     <div className="w-full h-[75px] bg-nxu-charging-black flex justify-between items-center px-5">
       <Link to="/charging-login" className="cursor-pointer">
         <LogoIcon className="hover:opacity-80" />
       </Link>
-      <Link to="/charging-login" className="cursor-pointer">
-        <AppIcon />
-      </Link>
       <div className="flex gap-[10px]">
         <FlagIcon className="cursor-pointer" />
-        {currentLocation.pathname !== '/' && (
+        {shouldShowProfile() && (
           <Link to="/dashboard">
             <ProfileIcon className="cursor-pointer hover:opacity-80" />
           </Link>
