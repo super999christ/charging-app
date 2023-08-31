@@ -21,7 +21,14 @@ export const updateUserCreditCard = async (pmId: string) => {
 export const getCreditCard = async () => {
   const { data } = await axios.get(
     `${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`,
-    { "axios-retry": { retries: 10 } }
+    {
+      "axios-retry": {
+        retries: 10,
+        retryDelay: (retryCount) => {
+          return retryCount * 2000;
+        },
+      },
+    }
   );
   return data;
 };
