@@ -11,7 +11,12 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import Environment from "@root/configs/env";
-import { CreditCard, getCreditCard, updateUserCreditCard } from "@root/helpers";
+import {
+  CreditCard,
+  getCreditCard,
+  getCreditCardWithRetry,
+  updateUserCreditCard,
+} from "@root/helpers";
 import useToast from "@root/hooks/useToast";
 import { useSearchParams } from "react-router-dom";
 
@@ -42,13 +47,15 @@ function CreditCardWidget() {
     stripe
       ?.createPaymentMethod({ elements })
       .then((res) => {
-        updateUserCreditCard(res.paymentMethod!.id).then(() => {
-          toast("Successfully updated credit card", "success");
-          if (searchParams.get('signup'))
-            navigate("/charging-login");
-          else
-            navigate("/profile");
-        }).catch((_err) => toast("Failed to update credit card"));
+        updateUserCreditCard(res.paymentMethod!.id)
+          .then(() => {
+            getCreditCardWithRetry().then(() => {
+              toast("Successfully updated credit card", "success");
+              if (!creditCard) navigate("/charging-login");
+              else navigate("/profile");
+            });
+          })
+          .catch((_err) => toast("Failed to update credit card"));
       })
       .catch((_err) => {})
       .finally(() => setLoading(false));
@@ -159,12 +166,14 @@ function CreditCardPreview({
 const UpdateCredit: FC = () => {
   const navigate = useNavigate();
   const isTokenValid = validateToken();
-  const [alertMsg, setAlertMsg] = useState('');
+  const [alertMsg, setAlertMsg] = useState("");
   const [searchParams] = useSearchParams();
-  
+
   useEffect(() => {
     if (searchParams.get("signup")) {
-      setAlertMsg("Credit Card is required for charging. Please enter your credit card information below.");
+      setAlertMsg(
+        "Credit Card is required for charging. Please enter your credit card information below."
+      );
     }
   }, []);
 
@@ -174,7 +183,9 @@ const UpdateCredit: FC = () => {
 
   return (
     <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center md:justify-center">
-      <div className="text-nxu-charging-green w-full md:max-w-[350px] mb-[10px]">{alertMsg}</div>
+      <div className="text-nxu-charging-green w-full md:max-w-[350px] mb-[10px]">
+        {alertMsg}
+      </div>
       <Elements
         stripe={stripePromise}
         options={{
