@@ -3,6 +3,7 @@ import GlobalRouter from "../../routes/Router";
 import PageContainer from "../PageContainer";
 import "./App.css";
 import { validateToken } from "../../validations";
+import ToastProvider from "@root/routes/ToastProvider";
 
 function App() {
   const appToken = localStorage.getItem("appToken");
@@ -11,9 +12,11 @@ function App() {
 
   return (
     <div className="h-screen">
-      <PageContainer>
-        <GlobalRouter />
-      </PageContainer>
+      <ToastProvider>
+        <PageContainer>
+          <GlobalRouter />
+        </PageContainer>
+      </ToastProvider>
     </div>
   );
 }
