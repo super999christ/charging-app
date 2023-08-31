@@ -41,19 +41,6 @@ const Login: FC = () => {
       .catch((_err) => {});
   }, []);
 
-  // useEffect(() => {
-  //   const fetchCC = () => {
-  //     getCreditCard()
-  //       .then(setCreditCard)
-  //       .catch((err) => {});
-  //   };
-  //   fetchCC();
-  //   const timerId = setInterval(() => {
-  //     fetchCC();
-  //   }, 3000);
-  //   return () => clearInterval(timerId);
-  // }, []);
-
   useEffect(() => {
     const syncSession = async () => {
       try {
