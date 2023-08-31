@@ -1,9 +1,10 @@
-import React, { memo } from "react";
+import React, { Suspense, memo } from "react";
 import { Route, Routes } from "react-router";
 import { privateRoutes } from "./PrivateRoutes";
 import { publicRoutes } from "./PublicRoutes";
 import WithSuspense from "./WithSuspense";
 import ToastProvider from "./ToastProvider";
+import Spinner from "@root/components/Spinner";
 
 // type RouteParam = {
 //   path: string;
@@ -34,7 +35,11 @@ function GlobalRouter() {
           <Route
             key={route.path}
             path={route.path}
-            element={<route.component />}
+            element={
+              <Suspense fallback={<Spinner />}>
+                <route.component />
+              </Suspense>
+            }
           />
         ))}
       </Routes>
