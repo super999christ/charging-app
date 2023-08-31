@@ -8,16 +8,19 @@ export type CreditCard = {
   postalCode: string;
 };
 
-const client = axios.create({ baseURL: Environment.VITE_SERVICE_PAYMENT_URL });
-
 export const updateUserCreditCard = async (pmId: string) => {
-  const { data } = await client.put("/update-cc", {
-    pmId,
-  });
+  const { data } = await axios.put(
+    `${Environment.VITE_SERVICE_PAYMENT_URL}/update-cc`,
+    {
+      pmId,
+    }
+  );
   return data;
 };
 
 export const getCreditCard = async () => {
-  const { data } = await client.get("/get-cc");
+  const { data } = await axios.get(
+    `${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`
+  );
   return data;
 };
