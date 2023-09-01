@@ -14,7 +14,7 @@ const SignInWithPin: FC = () => {
   const [errors, setErrors] = useState<Partial<ISignInErrors>>({});
   const [notificationId, setNotificationId] = useState(NaN);
   const [validationTriggered, setValidationTriggered] = useState(false);
-  const [pinCode, setPinCode] = useState('');
+  const [pinCode, setPinCode] = useState("");
 
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ const SignInWithPin: FC = () => {
   }, [isTokenValid]);
 
   useEffect(() => {
-    const validationResult = validateSignInForm(phoneNumber, '111111', pinCode);
+    const validationResult = validateSignInForm(phoneNumber, "111111", pinCode);
     if (validationResult.validationResult) {
       setErrors({});
       return;
@@ -40,7 +40,7 @@ const SignInWithPin: FC = () => {
   const onSubmit = async (redirect: boolean) => {
     // validation
     setValidationTriggered(true);
-    const validationResult = validateSignInForm(phoneNumber, '111111', pinCode);
+    const validationResult = validateSignInForm(phoneNumber, "111111", pinCode);
     if (!validationResult.validationResult) {
       setErrors(validationResult);
       return;
@@ -51,8 +51,7 @@ const SignInWithPin: FC = () => {
       await getAuthTokenWithPIN(phoneNumber, pinCode, notificationId);
       navigate(redirect ? "/charging-login" : "/dashboard");
     } catch (err) {
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data });
+      if (err instanceof AxiosError) setErrors({ page: err.response?.data });
     }
   };
 
@@ -99,14 +98,16 @@ const SignInWithPin: FC = () => {
         className="w-[90%] md:max-w-[350px] mt-[10px] mb-[5px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:bg-nxu-charging-disabled"
         onClick={() => onSubmit(true)}
       >
-        <span>Sign In</span>
+        <span>Sign In Update</span>
       </button>
       <div className="flex gap-4 flex-col">
         <Link to="/forgot-password">
           <p className="text-nxu-charging-white">Forgot Password</p>
         </Link>
         <Link to="/auth-sign-up">
-          <p className="text-nxu-charging-white">Don't have an account? Sign Up</p>
+          <p className="text-nxu-charging-white">
+            Don't have an account? Sign Up
+          </p>
         </Link>
       </div>
     </div>
