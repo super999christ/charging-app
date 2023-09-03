@@ -9,6 +9,9 @@ import { AwsRum, AwsRumConfig } from "aws-rum-web";
 try {
   const config: AwsRumConfig = {
     sessionSampleRate: 1,
+    guestRoleArn:
+      "arn:aws:iam::101265448075:role/stage-charging-cognito_unauthenticated",
+    identityPoolId: "us-west-2:de501351-32cb-442d-a8a9-8743ade67f09",
     endpoint: "https://dataplane.rum.us-west-2.amazonaws.com",
     telemetries: ["performance", "http", "errors"],
     allowCookies: true,
