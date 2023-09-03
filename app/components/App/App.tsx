@@ -13,12 +13,12 @@ try {
       "arn:aws:iam::101265448075:role/stage-charging-cognito_unauthenticated",
     identityPoolId: "us-west-2:de501351-32cb-442d-a8a9-8743ade67f09",
     endpoint: "https://dataplane.rum.us-west-2.amazonaws.com",
-    telemetries: ["performance", "http", "errors"],
+    telemetries: ["performance", "errors", "http"],
     allowCookies: true,
-    enableXRay: true,
+    enableXRay: false,
   };
 
-  const APPLICATION_ID: string = "7ee76bc6-276f-4497-834b-1df09ff6313b";
+  const APPLICATION_ID: string = "9df9af97-ea9a-431d-9d9d-602956ee56dd";
   const APPLICATION_VERSION: string = "1.0.0";
   const APPLICATION_REGION: string = "us-west-2";
 
