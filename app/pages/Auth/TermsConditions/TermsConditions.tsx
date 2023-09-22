@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
+import Button from "@root/components/Button";
 
 interface ITermsConditions {
   onConfirm: () => void;
@@ -7,8 +8,8 @@ interface ITermsConditions {
 
 const TermsConditions: FC<ITermsConditions> = ({ onConfirm }) => {
   return (
-    <div className="w-full max-h-[calc(100vh_-_75px)] flex justify-center overflow-y-auto">
-      <div className="w-1/2">
+    <div className="w-full max-h-full flex justify-center overflow-y-auto">
+      <div className="w-3/4">
         <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl">
           TERMS OF SERVICE: NXU CHARGING
         </div>
@@ -16,13 +17,9 @@ const TermsConditions: FC<ITermsConditions> = ({ onConfirm }) => {
         <TermsAndConditionsText />
 
         <div className="flex justify-center py-20">
-          <button
-            className="w-full md:max-w-[350px] bg-black text-white uppercase font-semibold flex flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-            onClick={onConfirm}
-          >
-            <ConfirmIcon />
-            <span>Confirm</span>
-          </button>
+          <Button onClick={onConfirm} iconLeft={<ConfirmIcon />}>
+            Confirm
+          </Button>
         </div>
       </div>
     </div>

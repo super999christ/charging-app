@@ -1,20 +1,29 @@
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { validateSignInForm, validateToken } from "../../../validations";
-import { getAuthToken, getAuthTokenWithPIN } from "../../../helpers";
+import { getAuthTokenWithPIN } from "../../../helpers";
 import { ISignInFormValidation } from "../../../types/ValidationErrors.type";
 import { Link } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { AxiosError } from "axios";
+import useCachedForm from "@root/hooks/useCachedForm";
+import Button from "@root/components/Button";
 
 type ISignInErrors = ISignInFormValidation & { page: string };
 
 const SignInWithPin: FC = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [errors, setErrors] = useState<Partial<ISignInErrors>>({});
+  const [loading, setLoading] = useState(false);
   const [notificationId, setNotificationId] = useState(NaN);
   const [validationTriggered, setValidationTriggered] = useState(false);
   const [pinCode, setPinCode] = useState("");
+
+  const [{ phoneNumber }, handleChange, clearCachedForm] = useCachedForm(
+    "signinForm",
+    {
+      phoneNumber: "",
+    }
+  );
 
   const navigate = useNavigate();
 
@@ -37,7 +46,7 @@ const SignInWithPin: FC = () => {
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
 
-  const onSubmit = async (redirect: boolean) => {
+  const onSubmit = async () => {
     // validation
     setValidationTriggered(true);
     const validationResult = validateSignInForm(phoneNumber, "111111", pinCode);
@@ -48,24 +57,29 @@ const SignInWithPin: FC = () => {
 
     // token check
     try {
+      setLoading(true);
       await getAuthTokenWithPIN(phoneNumber, pinCode, notificationId);
-      navigate(redirect ? "/charging-login" : "/dashboard");
+      clearCachedForm();
+      navigate("/charging-login");
+      setLoading(false);
     } catch (err) {
       if (err instanceof AxiosError) setErrors({ page: err.response?.data });
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="w-[90%] md:max-w-[350px] mt-[15px] flex flex-col justify-center gap-[30px]">
         <div className="flex flex-col w-full gap-5 mb-5">
           <div className="flex flex-col">
             <InputMask
+              name="phoneNumber"
               mask="999-999-9999"
               className={inputStyle}
               placeholder="Enter Phone No."
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={handleChange}
             />
             {errors.phoneNumber && (
               <label className="text-nxu-charging-red text-[12px]">
@@ -94,20 +108,17 @@ const SignInWithPin: FC = () => {
           )}
         </div>
       </div>
-      <button
-        className="w-[90%] md:max-w-[350px] mt-[10px] mb-[5px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha disabled:bg-nxu-charging-disabled"
-        onClick={() => onSubmit(true)}
-      >
-        <span>Sign In Update</span>
-      </button>
-      <div className="flex gap-4 flex-col">
-        <Link to="/forgot-password">
-          <p className="text-nxu-charging-white">Forgot Password</p>
+
+      <Button loading={loading} onClick={onSubmit}>
+        {loading ? "Signing in..." : "Sign in"}
+      </Button>
+
+      <div className="flex flex-col gap-4 items-center mt-5">
+        <Link to="/forgot-password" className="text-nxu-charging-white">
+          Forgot Password
         </Link>
-        <Link to="/auth-sign-up">
-          <p className="text-nxu-charging-white">
-            Don't have an account? Sign Up
-          </p>
+        <Link to="/auth-sign-up" className="text-nxu-charging-white">
+          Don't have an account? Sign Up
         </Link>
       </div>
     </div>

@@ -4,9 +4,7 @@ import { useNavigate } from "react-router";
 import {
   startCharge,
   findActiveSession,
-  getUserProfile,
   getCreditCard,
-  CreditCard,
 } from "../../../helpers";
 import { validateToken } from "../../../validations";
 import {
@@ -15,18 +13,29 @@ import {
 } from "../../../types/ValidationErrors.type";
 import { AxiosError } from "axios";
 import { Link } from "react-router-dom";
+import useSWR from "swr";
+import useCachedForm from "@root/hooks/useCachedForm";
+import Button from "@root/components/Button";
 
 type IChargingLoginError = IAuthCodeValidation &
   IChargingLoginValidation & { page: string };
 
 const Login: FC = () => {
-  const [stationId, setStationId] = useState("");
-  const [activeSesion, setActiveSession] = useState(null);
+  const [{ stationId }, handleChange, clearCachedForm] = useCachedForm(
+    "stationForm",
+    { stationId: "001" }
+  );
   const [errors, setErrors] = useState<Partial<IChargingLoginError>>();
   const [sendCodeEnabled, setSendCodeEnabled] = useState(true);
-  const [alertMsg, setAlertMsg] = useState("");
-  const [userData, setUserData] = useState<any>(null);
-  const [creditCard, setCreditCard] = useState<CreditCard | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const { data: creditCard } = useSWR("creditCard", getCreditCard, {
+    suspense: true,
+  });
+
+  const { data: activeSession } = useSWR("activeSession", findActiveSession, {
+    suspense: true,
+  });
 
   const navigate = useNavigate();
 
@@ -35,57 +44,56 @@ const Login: FC = () => {
     if (!isTokenValid) navigate("/");
   }, [isTokenValid]);
 
-  useEffect(() => {
-    getCreditCard()
-      .then(setCreditCard)
-      .catch((_err) => {});
-  }, []);
-
-  useEffect(() => {
-    const syncSession = async () => {
-      try {
-        const { data: chargingEvent } = await findActiveSession();
-        setActiveSession(chargingEvent);
-      } catch (err) {
-        setActiveSession(null);
-      }
-    };
-    syncSession();
-  }, []);
-
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
 
   const onSubmit = async () => {
     // Validation
     try {
+      if (!stationId) {
+        setErrors({ stationId: "Please enter a Charger ID" });
+        return;
+      }
+
+      setLoading(true);
+
+      setSendCodeEnabled(false);
       const { data: chargingEvent } = await startCharge(stationId);
       setErrors({ page: "" });
       navigate(
         `/charging-status?phoneNumber=${chargingEvent.phoneNumber}&stationId=${stationId}&eventId=${chargingEvent.id}`
       );
+      setLoading(false);
     } catch (err) {
-      console.log((err as any).response?.data);
+      setSendCodeEnabled(true);
+      setLoading(false);
       if (err instanceof AxiosError)
         setErrors({ page: err.response?.data.message });
     }
   };
 
   const onChargingStatus = () => {
-    if (!activeSesion) return;
-    const chargingEvent = activeSesion as any;
+    if (!activeSession) return;
+    const chargingEvent = activeSession as any;
     navigate(
       `/charging-status?phoneNumber=${chargingEvent.phoneNumber}&stationId=${chargingEvent.stationId}&eventId=${chargingEvent.id}`
     );
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center justify-center">
-      <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
         <div className="flex flex-col w-full gap-5 mb-5">
-          <div className="text-nxu-charging-white text-[16px]">
-            You must plug charger connector into car before pressing start.
-          </div>
+          {!activeSession && creditCard && (
+            <div className="text-nxu-charging-white text-[16px]">
+              You must plug charger connector into car before pressing start.
+            </div>
+          )}
+          {activeSession && (
+            <div className="text-nxu-charging-white text-[16px]">
+              Active Charge Session in-progress, click above to view status
+            </div>
+          )}
           {!creditCard && (
             <div className="text-nxu-charging-white text-[14px]">
               Credit Card is required for charging. Please enter your credit
@@ -98,17 +106,23 @@ const Login: FC = () => {
               </Link>
             </div>
           )}
-          {creditCard && (
+
+          {!activeSession && creditCard && (
             <div className="flex flex-col">
+              <label className="text-white">Charger ID</label>
               <input
-                type="number"
+                name="stationId"
+                type="text"
+                inputMode="numeric"
                 className={inputStyle}
-                placeholder="Enter Charger ID"
+                placeholder="001"
                 value={stationId}
                 disabled={!creditCard}
+                maxLength={3}
                 onChange={(e) => {
                   setErrors(undefined);
-                  setStationId(e.target.value);
+                  e.target.value = e.target.value.replace(/\D/, "");
+                  handleChange(e);
                 }}
               />
               {errors?.stationId && (
@@ -119,32 +133,26 @@ const Login: FC = () => {
             </div>
           )}
           <div className="flex flex-col">
-            {sendCodeEnabled && !activeSesion && creditCard && (
+            {!activeSession && creditCard && (
               <div className="flex flex-row gap-[10px]">
-                <button
-                  className="text-white bg-nxu-charging-grey border border-white hover:bg-nxu-charging-darkwhite w-full max-w-[350px] py-[10px] rounded text-lg font-semibold mt-5 disabled:bg-nxu-charging-disabled"
+                <Button
                   onClick={onSubmit}
-                  disabled={!sendCodeEnabled || !!activeSesion || !creditCard}
+                  disabled={!sendCodeEnabled}
+                  loading={loading}
                 >
-                  Start Charge
-                </button>
+                  {loading ? "Starting Charge..." : "Start Charge"}
+                </Button>
               </div>
             )}
-            {activeSesion && (
+            {activeSession && (
               <div>
-                <button
-                  className="text-white bg-nxu-charging-grey border border-white hover:bg-nxu-charging-darkwhite w-full max-w-[350px] py-[10px] rounded text-lg font-semibold mt-5 disabled:bg-nxu-charging-disabled"
-                  onClick={onChargingStatus}
-                  disabled={!activeSesion}
-                >
-                  Charge Status
-                </button>
-                <label className="text-nxu-charging-white text-[14px]">
-                  Active Charge Session in-progress, click above to view status
-                </label>
+                <Button onClick={onChargingStatus} disabled={!activeSession}>
+                  Active Session
+                </Button>
               </div>
             )}
           </div>
+
           {errors?.page && (
             <label className="text-nxu-charging-red text-[12px]">
               {errors.page}

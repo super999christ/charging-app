@@ -17,7 +17,7 @@ const SignIn: FC = () => {
   const [authCode, setAuthCode] = useState("");
   const [errors, setErrors] = useState<Partial<ISignInErrors>>({});
   const [notificationId, setNotificationId] = useState(NaN);
-  const [alertMsg, setAlertMsg] = useState('');
+  const [alertMsg, setAlertMsg] = useState("");
   const [sendCodeEnabled, setSendCodeEnabled] = useState(true);
   const [validationTriggered, setValidationTriggered] = useState(false);
 
@@ -29,7 +29,7 @@ const SignIn: FC = () => {
   }, [isTokenValid]);
 
   useEffect(() => {
-    const validationResult = validateSignInForm(phoneNumber, '111111');
+    const validationResult = validateSignInForm(phoneNumber, "111111");
     if (validationResult.validationResult) {
       setErrors({});
       return;
@@ -56,8 +56,7 @@ const SignIn: FC = () => {
       await getAuthToken(phoneNumber, authCode, notificationId);
       navigate(redirect ? "/charging-login" : "/dashboard");
     } catch (err) {
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data });
+      if (err instanceof AxiosError) setErrors({ page: err.response?.data });
     }
   };
 
@@ -75,19 +74,20 @@ const SignIn: FC = () => {
       const response = await sendLoginAuthCode(phoneNumber);
       setTimeout(() => {
         setSendCodeEnabled(true);
-        setAlertMsg('');
+        setAlertMsg("");
       }, 120000);
-      setAlertMsg('SMS code requested, once received please enter the code in SMS code box and click SignIn. To re-request SMS code please wait 2mins.');
+      setAlertMsg(
+        "SMS code requested, once received please enter the code in SMS code box and click SignIn. To re-request SMS code please wait 2mins."
+      );
       setNotificationId(response.data.id);
     } catch (err) {
       setSendCodeEnabled(true);
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data });
+      if (err instanceof AxiosError) setErrors({ page: err.response?.data });
     }
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="w-[90%] md:max-w-[350px] mt-[15px] flex flex-col justify-center gap-[30px]">
         <div className="flex flex-col w-full gap-5 mb-5">
           <div className="flex flex-col">

@@ -10,6 +10,7 @@ import {
 import { IProfilePasswordValidation } from "../../../types/ValidationErrors.type";
 import { updateUserPassword } from "../../../helpers";
 import { AxiosError } from "axios";
+import Button from "@root/components/Button";
 
 type IUpdatePasswordErrors = IProfilePasswordValidation & { page: string };
 
@@ -56,7 +57,7 @@ const UpdatePassword: FC = () => {
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center md:justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
         <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl border-b border-b-nxu-charging-black">
           Update Password
@@ -97,19 +98,14 @@ const UpdatePassword: FC = () => {
           )}
         </div>
       </div>
-      <button
-        className="w-full md:max-w-[350px] md:mt-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={onSubmit}
-      >
-        <ConfirmIcon />
-        <span>Confirm</span>
-      </button>
-      <button
-        className="w-full md:max-w-[350px] md:mt-[10px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={() => navigate('/profile')}
-      >
-        <span>Cancel</span>
-      </button>
+
+      <div className="flex flex-col w-full items-center gap-4">
+        <Button onClick={onSubmit} iconLeft={<ConfirmIcon />}>
+          Confirm
+        </Button>
+
+        <Button onClick={() => navigate("/profile")}>Cancel</Button>
+      </div>
     </div>
   );
 };

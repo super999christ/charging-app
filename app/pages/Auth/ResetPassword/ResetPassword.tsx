@@ -10,6 +10,7 @@ import {
 } from "../../../helpers";
 import { IResetPasswordFormValidation } from "../../../types/ValidationErrors.type";
 import { useSearchParams } from "react-router-dom";
+import Button from "@root/components/Button";
 
 interface IPasswordResetInfo {
   email: string;
@@ -72,7 +73,7 @@ const ResetPassword: FC = () => {
   };
 
   return (
-    <div className="w-full h-[calc(100vh_-_75px)] flex flex-col items-center md:justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
         <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl border-b border-b-nxu-charging-black">
           Reset Password
@@ -113,13 +114,10 @@ const ResetPassword: FC = () => {
           )}
         </div>
       </div>
-      <div
-        className="w-full md:max-w-[350px] md:mt-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={onSubmit}
-      >
-        <ConfirmIcon />
-        <span>Reset</span>
-      </div>
+
+      <Button iconLeft={<ConfirmIcon />} onClick={onSubmit}>
+        Reset
+      </Button>
     </div>
   );
 };

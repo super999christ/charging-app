@@ -6,7 +6,7 @@ function SiteContainer({ children }: PropsWithChildren) {
   return (
     <>
       <SiteHeader />
-      <div className="min-h-[calc(100vh_-_75px)] bg-nxu-charging-grey">
+      <div className="portrait:h-[calc(100dvh_-_75px)] bg-nxu-charging-grey">
         {children}
       </div>
     </>

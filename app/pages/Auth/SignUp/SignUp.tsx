@@ -8,20 +8,28 @@ import InputMask from "react-input-mask";
 import { sendRegisterAuthCode } from "@root/helpers/Auth/sendAuthCode.helper";
 import TermsConditions from "../TermsConditions";
 import { setRequestHeader } from "@root/utils/setRequestHeader";
+import useCachedForm from "@root/hooks/useCachedForm";
 
 type ISignUpErrors = ISignUpFormValidation & { page: string };
 
 const SignUp: FC = () => {
+  const [
+    { email, firstName, lastName, phoneNumber, isTnCChecked, authCode },
+    handleChange,
+    clearCachedForm,
+  ] = useCachedForm("signupForm", {
+    email: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    isTnCChecked: "",
+    authCode: "",
+  });
+
   const [errors, setErrors] = useState<Partial<ISignUpErrors>>({});
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isTnCOpen, setTnCOpen] = useState(false);
-  const [isTnCChecked, setTnCChecked] = useState(false);
-  const [authCode, setAuthCode] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
   const [sendCodeEnabled, setSendCodeEnabled] = useState(true);
+  const [isTnCOpen, setTnCOpen] = useState(false);
   const [notificationId, setNotificationId] = useState(NaN);
   const [validationTriggered, setValidationTriggered] = useState(false);
 
@@ -49,7 +57,7 @@ const SignUp: FC = () => {
 
   const onConfirmTNC = () => {
     setTnCOpen(false);
-    setTnCChecked(true);
+    handleChange({ target: { name: "isTnCChecked", value: true } });
     if (errors.page?.includes("Terms")) {
       setErrors({});
     }
@@ -90,6 +98,7 @@ const SignUp: FC = () => {
       if (data.message === "User registration confirmed") {
         setRequestHeader(data.token);
         localStorage.setItem("appToken", data.token);
+        clearCachedForm();
         navigate("/charging-login?signup=success");
       }
     } catch (err) {
@@ -141,11 +150,12 @@ const SignUp: FC = () => {
             <div className="flex flex-col w-full gap-5 mb-5 mt-3">
               <div className="flex flex-col">
                 <input
+                  name="firstName"
                   type="text"
                   className={inputStyle}
                   placeholder="First Name"
                   value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={handleChange}
                 />
                 {errors.firstName && (
                   <label className="text-nxu-charging-red text-[12px]">
@@ -155,11 +165,12 @@ const SignUp: FC = () => {
               </div>
               <div className="flex flex-col">
                 <input
+                  name="lastName"
                   type="text"
                   className={inputStyle}
                   placeholder="Last Name"
                   value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={handleChange}
                 />
                 {errors.lastName && (
                   <label className="text-nxu-charging-red text-[12px]">
@@ -169,11 +180,12 @@ const SignUp: FC = () => {
               </div>
               <div className="flex flex-col">
                 <input
+                  name="email"
                   type="text"
                   className={inputStyle}
                   placeholder="Email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleChange}
                 />
                 {errors.email && (
                   <label className="text-nxu-charging-red text-[12px]">
@@ -206,11 +218,12 @@ const SignUp: FC = () => {
               )}
               <div className="flex flex-col">
                 <InputMask
+                  name="phoneNumber"
                   mask="999-999-9999"
                   className={inputStyle}
                   placeholder="Phone Number"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={handleChange}
                 />
                 {errors.phoneNumber && (
                   <label className="text-nxu-charging-red text-[12px]">
@@ -220,11 +233,12 @@ const SignUp: FC = () => {
               </div>
               <div className="flex flex-col">
                 <input
+                  name="authCode"
                   type="text"
                   className={inputStyle}
                   placeholder="SMS Code"
                   value={authCode}
-                  onChange={(e) => setAuthCode(e.target.value)}
+                  onChange={handleChange}
                 />
                 {errors.authCode && (
                   <label className="text-nxu-charging-red text-[12px]">

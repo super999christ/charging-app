@@ -1,5 +1,5 @@
 import Environment from "@root/configs/env";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export type CreditCard = {
   last4: string;
@@ -18,22 +18,24 @@ export const updateUserCreditCard = async (pmId: string) => {
   return data;
 };
 
-export const getCreditCard = async () => {
-  const { data } = await axios.get(
-    `${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`
-  );
-  return data;
+export const getCreditCard = async (): Promise<CreditCard> => {
+  return axios
+    .get(`${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`)
+    .then((res) => res.data)
+    .catch((err: AxiosError) => {
+      if (err.response?.status !== 200) return null;
+      throw err;
+    });
 };
 
-export const getCreditCardWithRetry = async () => {
+export const getCreditCardWithRetry = async (): Promise<CreditCard> => {
   const { data } = await axios.get(
     `${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`,
     {
       "axios-retry": {
         retries: 10,
-        retryDelay: (retryCount) => {
-          return retryCount * 2000;
-        },
+        retryCondition: (err) => err.response!.status !== 200,
+        retryDelay: (retryCount) => retryCount * 2000,
       },
     }
   );

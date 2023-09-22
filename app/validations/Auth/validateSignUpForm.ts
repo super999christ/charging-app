@@ -109,7 +109,7 @@ export const validateSignUpForm = (
         pinConfirmCode: VALIDATION_ERROR_MESSAGE.pinconfirmcode_invalid,
       };
     } else pinConfirmCodeOk = true;
-    if (pinCodeOk && pinConfirmCodeOk && pinCode !== pinConfirmCode) {
+    if (pinCode !== pinConfirmCode) {
       errors = {
         ...errors,
         validationResult: false,

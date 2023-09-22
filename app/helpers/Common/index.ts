@@ -1,2 +1,2 @@
-export * from "./getToken.helper";
+export * from "./refreshToken.helper";
 export * from "./getAuthToken.helper";

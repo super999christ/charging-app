@@ -1,5 +1,7 @@
 import jwt from "jwt-decode";
 
+const MS_PER_MINUTE = 60000;
+
 interface IJWT {
   appCode: string;
   appName: string;
@@ -8,13 +10,19 @@ interface IJWT {
   userId: string;
 }
 
+export function decodeToken(token: string) {
+  return jwt<IJWT>(token);
+}
+
 export const validateToken = () => {
   const appToken = localStorage.getItem("appToken");
   if (!appToken) return false;
-  const { exp } = jwt<IJWT>(appToken);
-  console.log(exp * 1000, Date.now());
-  if (exp * 1000 < Date.now()) {
-    return false;
-  }
-  return true;
+  const { exp } = decodeToken(appToken);
+
+  return !isExpired(exp);
 };
+
+const isExpired = (exp: number) => exp * 1000 < Date.now();
+
+export const isExpiringIn5Minutes = (exp: number) =>
+  exp * 1000 < new Date(Date.now() + MS_PER_MINUTE * 5).getTime();

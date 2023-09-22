@@ -1,5 +1,4 @@
 import Environment from "@root/configs/env";
-import { setRequestHeader } from "../../utils";
 import axios from "axios";
 
 export const checkSMSAuth = async (
@@ -19,10 +18,7 @@ export const checkSMSAuth = async (
       chargingEventId,
     };
 
-    const { data } = await axios.post(url, body);
-    const { token } = data;
-    localStorage.setItem("appToken", token);
-    setRequestHeader(token);
+    await axios.post(url, body);
     return true;
   } catch (err) {
     throw err;

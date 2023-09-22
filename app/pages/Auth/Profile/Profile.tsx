@@ -4,6 +4,7 @@ import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
 import { getUserProfile } from "../../../helpers";
 import { IProfileFormValidation } from "../../../types/ValidationErrors.type";
 import { validateToken } from "../../../validations";
+import Button from "@root/components/Button";
 
 interface IProfileData {
   email: string;
@@ -59,7 +60,7 @@ const Profile: FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center md:justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center pb-7">
       <div className="max-w-[350px]  w-full flex flex-col justify-center gap-[30px]">
         <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl border-b border-b-nxu-charging-black">
           Profile
@@ -103,32 +104,26 @@ const Profile: FC = () => {
           </div>
 
           <div className="flex flex-row gap-5">
-            <button
-              className="bg-none border border-white hover:bg-nxu-charging-darkwhite w-[calc(50%_-_10px)] px-[23px] text-white font-semibold text-[16px]"
-              onClick={() => {
-                navigate(`/profile-password?userId=${userId}`);
-              }}
+            <Button
+              className="w-[calc(50%_-_10px)] px-[23px]"
+              onClick={() => navigate(`/profile-password?userId=${userId}`)}
             >
               Password
-            </button>
-            <button
-              className="bg-none border border-white hover:bg-nxu-charging-darkwhite w-[calc(50%_-_10px)] px-[23px] text-white font-semibold text-[16px]"
-              onClick={() => {
-                navigate(`/profile-creditcard?userId=${userId}`);
-              }}
+            </Button>
+
+            <Button
+              className="w-[calc(50%_-_10px)] px-[23px]"
+              onClick={() => navigate("/profile-creditcard")}
             >
               Credit Card
-            </button>
+            </Button>
           </div>
         </div>
       </div>
-      <div
-        className="w-full md:max-w-[350px] md:mt-[40px] md:mb-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={onSubmit}
-      >
-        <ConfirmIcon />
-        <span>Done</span>
-      </div>
+
+      <Button onClick={onSubmit} iconLeft={<ConfirmIcon />}>
+        Done
+      </Button>
     </div>
   );
 };

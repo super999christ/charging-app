@@ -3,6 +3,7 @@ import { validateToken } from "../../../validations";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ReactComponent as BackIcon } from "../../../assets/backOutline.svg";
+import Button from "@root/components/Button";
 
 interface IHistory {
   id: string;
@@ -102,13 +103,10 @@ const AuthDashboard: FC = () => {
             ))}
         </div>
       </div>
-      <div
-        className="w-full md:max-w-[350px] md:mt-[60px]  mt-auto bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-        onClick={() => navigate(-1)}
-      >
-        <BackIcon />
-        <span>Back</span>{" "}
-      </div>
+
+      <Button onClick={() => navigate(-1)} iconLeft={<BackIcon />}>
+        Back
+      </Button>
     </div>
   );
 };

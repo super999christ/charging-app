@@ -1,11 +1,11 @@
 import Environment from "@root/configs/env";
-import { setRequestHeader } from "@root/utils/setRequestHeader";
 import axios from "axios";
 
 export const checkChargingStatus = async (
   eventId: number,
   phoneNumber: string,
-  stationId: number
+  stationId: number,
+  iotException: boolean,
 ) => {
   const url = `${
     Environment.VITE_SERVICE_CHARGING_EVENT_URL
@@ -14,14 +14,10 @@ export const checkChargingStatus = async (
     eventId,
     phoneNumber,
     stationId,
+    iotException,
   };
 
   const { data } = await axios.post(url, body);
-  const token = data.token;
-  if (token) {
-    localStorage.setItem("appToken", token);
-    setRequestHeader(token);
-  }
   return data;
 };
 

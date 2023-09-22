@@ -7,20 +7,30 @@ import InputMask from "react-input-mask";
 import TermsConditions from "../TermsConditions";
 import { setRequestHeader } from "@root/utils/setRequestHeader";
 import useToast from "@root/hooks/useToast";
+import useCachedForm from "@root/hooks/useCachedForm";
+import Button from "@root/components/Button";
 
 type ISignUpErrors = ISignUpFormValidation & { page: string };
 
 const SignUpWithPin: FC = () => {
+  const [
+    { email, firstName, lastName, phoneNumber, isTnCChecked },
+    handleChange,
+    clearCachedForm,
+  ] = useCachedForm("signupForm", {
+    email: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    isTnCChecked: false,
+  });
+
   const [errors, setErrors] = useState<Partial<ISignUpErrors>>({});
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [isTnCOpen, setTnCOpen] = useState(false);
-  const [isTnCChecked, setTnCChecked] = useState(false);
+  const [validationTriggered, setValidationTriggered] = useState(false);
   const [pinCode, setPinCode] = useState("");
   const [pinConfirmCode, setPinConfirmCode] = useState("");
-  const [validationTriggered, setValidationTriggered] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -49,7 +59,7 @@ const SignUpWithPin: FC = () => {
 
   const onConfirmTNC = () => {
     setTnCOpen(false);
-    setTnCChecked(true);
+    handleChange({ target: { name: "isTnCChecked", value: true } });
     if (errors.page?.includes("Terms")) {
       setErrors({});
     }
@@ -78,142 +88,142 @@ const SignUpWithPin: FC = () => {
       return;
     }
 
+    setLoading(true);
     registerUserWithPIN(email, firstName, lastName, phoneNumber, pinCode)
       .then((res) => {
         setRequestHeader(res.data.token);
         localStorage.setItem("appToken", res.data.token);
-        navigate("/profile-creditcard");
+        clearCachedForm();
+        navigate("/profile-creditcard?signup=success");
+        setLoading(false);
       })
-      .then(() => toast("Successfully signed up", "success"))
-      .catch((err) => toast("Failed to sign up"));
+      .then(() => toast("Successfully signed up!", "success"))
+      .catch((err) => {
+        setErrors({ page: err.response?.data });
+        setLoading(false);
+      });
   };
 
-  return (
-    <>
-      {isTnCOpen && <TermsConditions onConfirm={onConfirmTNC} />}
-      {!isTnCOpen && (
-        <div className="w-full flex flex-col items-center md:justify-center overflow-y-auto">
-          <div className="w-[90%] md:max-w-[350px] flex flex-col justify-center gap-[30px]">
-            <div className="flex flex-col w-full gap-5 mb-5 mt-3">
-              <div className="flex flex-col">
-                <input
-                  type="text"
-                  className={inputStyle}
-                  placeholder="First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                {errors.firstName && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.firstName}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <input
-                  type="text"
-                  className={inputStyle}
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-                {errors.lastName && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.lastName}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <input
-                  type="text"
-                  className={inputStyle}
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                {errors.email && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.email}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <InputMask
-                  mask="999-999-9999"
-                  className={inputStyle}
-                  placeholder="Phone Number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-                {errors.phoneNumber && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.phoneNumber}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <input
-                  type="password"
-                  className={inputStyle}
-                  placeholder="Password"
-                  value={pinCode}
-                  onChange={(e) => setPinCode(e.target.value)}
-                />
-                {errors.pinCode && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.pinCode}
-                  </label>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <input
-                  type="password"
-                  className={inputStyle}
-                  placeholder="Confirm Password"
-                  value={pinConfirmCode}
-                  onChange={(e) => setPinConfirmCode(e.target.value)}
-                />
-                {errors.pinConfirmCode && (
-                  <label className="text-nxu-charging-red text-[12px]">
-                    {errors.pinConfirmCode}
-                  </label>
-                )}
-              </div>
-
-              <div className="flex items-center gap-[5px]">
-                <input
-                  id="tnc-checkbox"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  checked={isTnCChecked}
-                  onChange={() => setTnCOpen(true)}
-                />
-                <div
-                  onClick={() => setTnCOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <p className="text-nxu-charging-white">
-                    Terms and Conditions
-                  </p>
-                </div>
-              </div>
-              {errors.page && (
+  if (isTnCOpen) return <TermsConditions onConfirm={onConfirmTNC} />;
+  else
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center pb-10">
+        <div className="w-[90%] md:max-w-[350px] flex flex-col justify-center gap-[30px]">
+          <div className="flex flex-col w-full gap-5 mb-5 mt-3">
+            <div className="flex flex-col">
+              <input
+                name="firstName"
+                type="text"
+                className={inputStyle}
+                placeholder="First Name"
+                value={firstName}
+                onChange={handleChange}
+              />
+              {errors.firstName && (
                 <label className="text-nxu-charging-red text-[12px]">
-                  {errors.page}
+                  {errors.firstName}
                 </label>
               )}
             </div>
+            <div className="flex flex-col">
+              <input
+                name="lastName"
+                type="text"
+                className={inputStyle}
+                placeholder="Last Name"
+                value={lastName}
+                onChange={handleChange}
+              />
+              {errors.lastName && (
+                <label className="text-nxu-charging-red text-[12px]">
+                  {errors.lastName}
+                </label>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <input
+                name="email"
+                type="text"
+                className={inputStyle}
+                placeholder="Email"
+                value={email}
+                onChange={handleChange}
+              />
+              {errors.email && (
+                <label className="text-nxu-charging-red text-[12px]">
+                  {errors.email}
+                </label>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <InputMask
+                name="phoneNumber"
+                mask="999-999-9999"
+                className={inputStyle}
+                placeholder="Phone Number"
+                value={phoneNumber}
+                onChange={handleChange}
+              />
+              {errors.phoneNumber && (
+                <label className="text-nxu-charging-red text-[12px]">
+                  {errors.phoneNumber}
+                </label>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <input
+                type="password"
+                className={inputStyle}
+                placeholder="Password"
+                value={pinCode}
+                onChange={(e) => setPinCode(e.target.value)}
+              />
+              {errors.pinCode && (
+                <label className="text-nxu-charging-red text-[12px]">
+                  {errors.pinCode}
+                </label>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <input
+                type="password"
+                className={inputStyle}
+                placeholder="Confirm Password"
+                value={pinConfirmCode}
+                onChange={(e) => setPinConfirmCode(e.target.value)}
+              />
+              {errors.pinConfirmCode && (
+                <label className="text-nxu-charging-red text-[12px]">
+                  {errors.pinConfirmCode}
+                </label>
+              )}
+            </div>
+
+            <div className="flex items-center gap-[5px]">
+              <input
+                id="tnc-checkbox"
+                type="checkbox"
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                checked={isTnCChecked}
+                onChange={() => setTnCOpen(true)}
+              />
+              <div onClick={() => setTnCOpen(true)} className="cursor-pointer">
+                <p className="text-nxu-charging-white">Terms and Conditions</p>
+              </div>
+            </div>
+            {errors.page && (
+              <label className="text-nxu-charging-red text-[12px]">
+                {errors.page}
+              </label>
+            )}
           </div>
-          <button
-            className="w-[90%] md:max-w-[350px] mt-[5px] mb-[10px] bg-black text-white uppercase font-semibold flex flex-col md:flex-row gap-4 py-5 justify-center items-center hover:bg-nxu-charging-blackalpha"
-            onClick={onSubmit}
-          >
-            <span>Sign Up</span>
-          </button>
+
+          <Button onClick={onSubmit} loading={loading}>
+            {loading ? "Signing up..." : "Sign up"}
+          </Button>
         </div>
-      )}
-    </>
-  );
+      </div>
+    );
 };
 
 export default SignUpWithPin;
