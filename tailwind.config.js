@@ -14,6 +14,7 @@ module.exports = {
           red: "#FF6060",
           gold: "#9B7221",
           green: "#22AA44",
+          disabled: "#222"
         },
       },
     },
