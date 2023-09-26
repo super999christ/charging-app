@@ -1,13 +1,134 @@
 version: "3.9"
 
 services:
-  service_frontend:
-    image: 101265448075.dkr.ecr.us-west-2.amazonaws.com/charging/charging-ui:latest
-    build: .
+  charging-ui:
+    container_name: charging-ui
+    image: charging/charging-ui:latest
+    build: ../Charging-App/.
     ports:
-      - 8081:80
-    env_file:
-      - ./app/.env
+      - 8080:8080
+    environment:
+      VITE_SERVICE_API_AUTH_URL: http://api-auth:3000
+      VITE_SERVICE_NOTIFICATION_URL: http://notifications:3000
+      VITE_SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
+      VITE_SERVICE_CHARGING_EVENT_URL: http://charging-events:3000
+      VITE_SERVICE_PAYMENT_URL: http://payments:3000
+      VITE_STRIPE_PUBLISHABLE_KEY: pk_test_O0m1oJ7KTyf9zVpiIyl5EyCa0066nNTQhZ
+      VITE_CHARGE_STATUS_INTERVAL: 3000
+
+  user-management:
+    container_name: user-management
+    image: charging/user-management:latest
+    build: ../Charging-Microservices/user-management
+    environment:
+      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SERVICE_NOTIFICATION_URL: http://nofitications:3000
+      SERVICE_PAYMENT_URL: http://payments:3000
+      HASH_SALT: 10
+
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nxuenergy
+    ports:
+      - 3003:3000
+    depends_on:
+      - postgres
+
+  charging-events:
+    container_name: charging-events
+    image: charging/charging-events:latest
+    build: ../Charging-Microservices/charging-event
+    environment:
+      SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
+      SERVICE_NOTIFICATION_URL: http://notifications:3000
+      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SERVICE_PAYMENT_URL: http://payments:3000
+      SERVICE_CHARGING_IOT_URL: http://iot:80
+      SERVICE_CHARGING_IOT_CHECK_CON_URL: http://iot:80
+      SERVICE_CHARGING_IOT_MANAGE_CHG_URL: http://iot:80
+      SERVICE_CHARGING_IOT_COMPLETE_CHG_URL: http://iot:80
+      PROMO1_FROM_DATE: 09/28/2023
+      PROMO1_TO_DATE: 10/01/2023
+
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nxuenergy
+    ports:
+      - 3004:3000
+    depends_on:
+      - postgres
+
+  notifications:
+    container_name: notifications
+    image: charging/notifications:latest
+    build: ../Cloud-Microservices/notification
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nxuenergy
+
+      TWILIO_ACCOUNT_SID: AC71c4af10c04b40c3a9443781ecf19a13
+      TWILIO_AUTH_TOKEN: e5da14523c1de6ee0cfba33e71ab23ab
+      TWILIO_PHONE_NUMBER: +12136992567
+      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SMTP_HOST: smtp.office365.com
+      SMTP_PORT: 587
+      SMTP_USERNAME: charging@nxuenergy.com
+      SMTP_PASSWORD: insertpasswordhere
+      FRONTEND_URL: http://charging-ui:8080
+    ports:
+      - 3002:3000
+
+  api-auth:
+    container_name: api-auth
+    image: charging/api-auth:latest
+    build: ../Cloud-Microservices/api-auth
+    environment:
+      TOKEN_SECRET_KEY: alskdjfalksdjf08230948234jlksdjflksjfd02938409324klsjdfsfd
+    ports:
+      - 3001:3000
+
+  payments:
+    container_name: payments
+    image: charging/payments:latest
+    build: ../Cloud-Microservices/payment
+    environment:
+      SERVICE_API_AUTH_URL: http://api-auth:3000
+      STRIPE_API_KEY: sk_test_51Fy1H0EVZXsfFbdHeToIQSPZYtHAkfAliETUjm1TZwQjstMRLj78LCjX4z0KBIA97vLzbQST4HXgZc41cbWDlULI00q8oDg3pB
+      SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
+    ports:
+      - 3005:3000
+
+  iot:
+    container_name: iot
+    image: clue/json-server
+    ports:
+      - 8083:80
     volumes:
-      - .:/apps/frontend
-    command: sh -c "npm rebuild esbuild && npm run start"
+      - ./iot-db.json:/data/db.json
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nxuenergy
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - 8082:80
