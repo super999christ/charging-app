@@ -75,7 +75,7 @@ const Status: FC = () => {
 
   const isTokenValid = validateToken();
   useEffect(() => {
-    if (!isTokenValid) navigate("/");
+  if (!isTokenValid) navigate("/");
   }, [isTokenValid]);
 
   useEffect(() => {
@@ -95,6 +95,12 @@ const Status: FC = () => {
       }
       if (iotExceptionCount.current >= 4)
         setTimerRunning(false);
+      else {
+        if (isChargeStatusRunning.current)
+          return
+      }
+        
+
       isChargeStatusRunning.current = true;
       const data: IChargeStatus = await checkChargingStatus(
         Number(eventId),
@@ -103,6 +109,7 @@ const Status: FC = () => {
         iotExceptionCount.current >= 4
       );
       isChargeStatusRunning.current = false;
+      
       setInitialized(true);
       setStatus(data);
       if (alertType === 'error') {
@@ -158,6 +165,8 @@ const Status: FC = () => {
           setTimerRunning(false);
         } else if (data.sessionStatus === "payment_error") {
           setAlertMsg("Error in payments. We will be processing later.");
+          setAlertType('error');
+          setTimerRunning(false);
         }
       }
       if (data.status == 0 || data.error) {
@@ -175,7 +184,7 @@ const Status: FC = () => {
       if (err instanceof AxiosError) {
         const errorMsg = err.response?.data.message;
         if (errorMsg === 'ChargingIoT exception occurred') {
-          setAlertMsg('Connecting to IOT API stay tuned...');
+          // setAlertMsg('Connecting to IOT API stay tuned...');
           setAlertType('info');
         } else {
           setAlertMsg(errorMsg);
@@ -276,10 +285,13 @@ const Status: FC = () => {
           )}
           {isIntialized && (
             <>
+              <div className="mb-10" />
+
               <div className="max-w-[350px] w-full flex flex-col justify-center divide-y-2 divide-black">
                 <Row
                   left={<p className="font-extrabold text-2xl">Station</p>}
                   right={<p className="font-extrabold text-2xl">{stationId}</p>}
+                  className="min-h-min"
                 />
 
                 <Row
@@ -352,19 +364,19 @@ const Status: FC = () => {
                 )}
               </div>
 
-              <div className="mb-[20px]"></div>
+              <div className="mb-3" />
 
-              {!["completed", "stopped", "idle", "offline", "iot_error"].includes(status?.sessionStatus as string) && (
+              {!["completed", "stopped", "idle", "offline", "iot_error", "payment_error"].includes(status?.sessionStatus as string) && 
+              iotExceptionCount.current === 0 && (
                 <Button
                   onClick={stopCharging}
                   loading={isChargingStatusChanging}
                   className="mb-10"
-                  disabled={iotExceptionCount.current > 0}
                 >
                   {isChargingStatusChanging ? "Stopping Charge..." : "Stop Charge"}
                 </Button>
               )}
-              {["completed", "stopped", "idle", "offline", "iot_error"].includes(status?.sessionStatus as string) && (
+              {["completed", "stopped", "idle", "offline", "iot_error", "payment_error"].includes(status?.sessionStatus as string) && (
                 <Button
                   onClick={startNewCharging}
                   className="mb-10"
@@ -386,11 +398,12 @@ type RowProps = {
   icon?: React.ReactNode;
   left: React.ReactNode;
   right?: React.ReactNode;
+  className?: string; 
 };
 
-function Row({ icon, left, right }: RowProps) {
+function Row({ icon, left, right, className }: RowProps) {
   return (
-    <div className="w-full h-full min-h-[120px] px-5 flex flex-row items-center justify-between text-white">
+    <div className={`w-full h-full min-h-[120px] px-5 flex flex-row items-center justify-between text-white ${className}`}>
       <div className="flex gap-2 justify-center items-center w-fit">
         <div className="w-10 h-10">{icon}</div>
 

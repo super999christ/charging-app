@@ -91,7 +91,7 @@ const Login: FC = () => {
           )}
           {activeSession && (
             <div className="text-nxu-charging-white text-[16px]">
-              Active Charge Session in-progress, click above to view status
+              Active Charge Session in-progress, click below to view status
             </div>
           )}
           {!creditCard && (
