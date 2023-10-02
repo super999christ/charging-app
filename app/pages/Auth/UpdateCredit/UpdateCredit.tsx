@@ -14,6 +14,7 @@ import {
 } from "@stripe/react-stripe-js";
 import Environment from "@root/configs/env";
 import {
+  createStripeCustomer,
   getCreditCard,
   getCreditCardWithRetry,
   updateUserCreditCard,
@@ -62,14 +63,23 @@ function Page() {
   const navigate = useNavigate();
   const [editCard, setEditCard] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [createCustomerLock, setCreateCustomerLock] = useState(false);
   const [displayAddCardMsg, setDisplayAddCardMsg] = useState(!creditCard);
 
   useEffect(() => {
     setDisplayAddCardMsg(!creditCard);
   }, [creditCard]);
 
+  useEffect(() => {
+    if (createCustomerLock) return;
+    setCreateCustomerLock(true);
+    createStripeCustomer()
+      .catch((err) => {})
+      .finally(() => setCreateCustomerLock(false));
+  }, []);
+
   function buttonMessage() {
-    if (loading) return creditCard ? "Updating Card..." : "Adding Card...";
+    if (loading) return "Credit Card setup in-progress. Please wait...";
     else return creditCard ? "Update Card" : "Add Card";
   }
 
@@ -85,9 +95,11 @@ function Page() {
       .then((res) => {
         updateUserCreditCard(res.paymentMethod!.id).then(() => {
           getCreditCardWithRetry().then(() => {
-            toast("Successfully updated credit card", "success");
-            if (!creditCard) navigate("/charging-login");
-            else navigate("/profile");
+            toast(
+              "Credit Card setup successful. Re-directing to Charge page.",
+              "success"
+            );
+            navigate("/charging-login");
             setLoading(false);
           });
         });

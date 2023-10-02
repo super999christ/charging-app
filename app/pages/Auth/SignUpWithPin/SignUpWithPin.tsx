@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { validateSignUpForm } from "../../../validations";
-import { registerUserWithPIN } from "../../../helpers";
+import { createStripeCustomer, registerUserWithPIN } from "../../../helpers";
 import { ISignUpFormValidation } from "../../../types/ValidationErrors.type";
 import InputMask from "react-input-mask";
 import TermsConditions from "../TermsConditions";
@@ -208,7 +208,9 @@ const SignUpWithPin: FC = () => {
                 onChange={() => setTnCOpen(true)}
               />
               <div onClick={() => setTnCOpen(true)} className="cursor-pointer">
-                <p className="text-nxu-charging-white">Terms and Conditions</p>
+                <p className="text-nxu-charging-white">
+                  I have read and agree to the Terms and Conditions
+                </p>
               </div>
             </div>
             {errors.page && (

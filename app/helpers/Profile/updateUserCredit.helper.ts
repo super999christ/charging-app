@@ -13,6 +13,13 @@ export const updateUserCreditCard = async (pmId: string) => {
     `${Environment.VITE_SERVICE_PAYMENT_URL}/update-cc`,
     {
       pmId,
+    },
+    {
+      "axios-retry": {
+        retries: 10,
+        retryCondition: (err) => err.response!.status !== 204,
+        retryDelay: (retryCount) => retryCount * 2000,
+      },
     }
   );
   return data;
@@ -40,4 +47,18 @@ export const getCreditCardWithRetry = async (): Promise<CreditCard> => {
     }
   );
   return data;
+};
+
+export const createStripeCustomer = async (): Promise<void> => {
+  return axios.post(
+    `${Environment.VITE_SERVICE_PAYMENT_URL}/customer`,
+    {},
+    {
+      "axios-retry": {
+        retries: 10,
+        retryCondition: (err) => err.response!.status !== 204,
+        retryDelay: (retryCount) => retryCount * 2000,
+      },
+    }
+  );
 };

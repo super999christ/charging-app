@@ -72,6 +72,7 @@ const Status: FC = () => {
   const [alertType, setAlertType] = useState<AlertType>("error");
   const [isChargingStatusChanging, setChargingStatusChanging] = useState(false);
   const [isTimerRunning, setTimerRunning] = useState(true);
+  const [isPromoted, setPromoted] = useState(false);
 
   const isTokenValid = validateToken();
   useEffect(() => {
@@ -108,6 +109,9 @@ const Status: FC = () => {
         Number(stationId),
         iotExceptionCount.current >= 4
       );
+      if (data.promoted) {
+        setPromoted(true);
+      }
       isChargeStatusRunning.current = false;
       
       setInitialized(true);
@@ -164,8 +168,6 @@ const Status: FC = () => {
           setAlertType("success");
           setTimerRunning(false);
         } else if (data.sessionStatus === "payment_error") {
-          setAlertMsg("Error in payments. We will be processing later.");
-          setAlertType('error');
           setTimerRunning(false);
         }
       }
@@ -203,6 +205,9 @@ const Status: FC = () => {
     try {
       transactionLock.current = true;
       const { data } = await manageCharge(Number(eventId), "stop");
+      if (data.promoted) {
+        setPromoted(true);
+      }
       checkStatus(true);
       setChargingStatusChanging(false);
       if (data.status == 1) {
@@ -325,7 +330,7 @@ const Status: FC = () => {
                     </div>
                   }
                   right={
-                    <p className={boldText}>{status?.chargeSpeedKwh || "0.00"}kW</p>
+                    <p className={boldText}>{(["completed", "stopped", "idle"].includes(status?.sessionStatus as string) ? "0.00" : status?.chargeSpeedKwh) || "0.00"}kW</p>
                   }
                 />
 
@@ -357,7 +362,7 @@ const Status: FC = () => {
               </div>
 
               <div className="max-w-[350px] w-full flex flex-col justify-center">
-                {status.promoted && (
+                {isPromoted && (
                   <label className="text-[14px] text-nxu-charging-green">
                     Product Launch promotion: $1 per charging session. Only $1 will be charged to your credit card.
                   </label>
