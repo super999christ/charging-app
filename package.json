@@ -35,7 +35,7 @@
   "scripts": {
     "start": "vite --force",
     "build": "vite build --emptyOutDir",
-    "serve": "node server.js"
+    "serve": "npx import-meta-env -x .env.example && node server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +56,8 @@
     ]
   },
   "devDependencies": {
+    "@import-meta-env/cli": "^0.6.5",
+    "@import-meta-env/unplugin": "^0.4.9",
     "@types/express": "^4.17.17",
     "@types/react-input-mask": "^3.0.2",
     "@types/react-router": "^5.1.20",
