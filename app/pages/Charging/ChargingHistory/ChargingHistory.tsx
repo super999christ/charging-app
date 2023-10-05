@@ -12,6 +12,7 @@ interface IHistory {
   amount: number;
   cost: number;
   createdDate: Date;
+  chargeDeliveredKwh: number;
 }
 
 const AuthDashboard: FC = () => {
@@ -84,20 +85,24 @@ const AuthDashboard: FC = () => {
                 key={index}
               >
                 <div className="flex flex-row w-full">
-                  <div className="w-[40%]">Event: </div>
-                  <div>{historyData.id}</div>
-                </div>
-                <div className="flex flex-row w-full">
-                  <div className="w-[40%]">Station Id: </div>
-                  <div>{historyData.stationId}</div>
-                </div>
-                <div className="flex flex-row w-full">
                   <div className="w-[40%]">Date: </div>
                   <div>{historyData.date}</div>
                 </div>
                 <div className="flex flex-row w-full">
                   <div className="w-[40%]">Cost: </div>
                   <div>{`$${historyData.cost}`}</div>
+                </div>
+                <div className="flex flex-row w-full">
+                  <div className="w-[40%]">KWH Delivered: </div>
+                  <div>{historyData.chargeDeliveredKwh}</div>
+                </div>
+                <div className="flex flex-row w-full">
+                  <div className="w-[40%]">Station Id: </div>
+                  <div>{historyData.stationId}</div>
+                </div>
+                <div className="flex flex-row w-full">
+                  <div className="w-[40%]">Event: </div>
+                  <div>{historyData.id}</div>
                 </div>
               </div>
             ))}
