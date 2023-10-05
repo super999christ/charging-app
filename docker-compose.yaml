@@ -8,7 +8,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      VITE_SERVICE_API_AUTH_URL: http://api-auth:3000
+      VITE_SERVICE_API_AUTH_URL: http://user-management:3000
       VITE_SERVICE_NOTIFICATION_URL: http://notifications:3000
       VITE_SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
       VITE_SERVICE_CHARGING_EVENT_URL: http://charging-events:3000
@@ -21,15 +21,17 @@ services:
     image: charging/user-management:latest
     build: ../Charging-Microservices/user-management
     environment:
-      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SERVICE_API_AUTH_URL: http://user-management:3000
       SERVICE_NOTIFICATION_URL: http://nofitications:3000
       SERVICE_PAYMENT_URL: http://payments:3000
       HASH_SALT: 10
+      TOKEN_SECRET_KEY: alskdjfalksdjf08230948234jlksdjflksjfd02938409324klsjdfsfd
+      TRIAL_SUBSCRIPTION_CUSTOMERS: "480 417 9675,480 747 9384"
 
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: stage-db-psql-charging-1.cizjbxfi5ccd.us-west-2.rds.amazonaws.com
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: MD2P!JcBlktnGz!P]y5LG?r}o5k[
       POSTGRES_DB: nxuenergy
     ports:
       - 3003:3000
@@ -43,7 +45,7 @@ services:
     environment:
       SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
       SERVICE_NOTIFICATION_URL: http://notifications:3000
-      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SERVICE_API_AUTH_URL: http://user-management:3000
       SERVICE_PAYMENT_URL: http://payments:3000
       SERVICE_CHARGING_IOT_URL: http://iot:80
       SERVICE_CHARGING_IOT_CHECK_CON_URL: http://iot:80
@@ -52,10 +54,10 @@ services:
       PROMO1_FROM_DATE: 09/28/2023
       PROMO1_TO_DATE: 10/01/2023
 
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: stage-db-psql-charging-1.cizjbxfi5ccd.us-west-2.rds.amazonaws.com
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: MD2P!JcBlktnGz!P]y5LG?r}o5k[
       POSTGRES_DB: nxuenergy
     ports:
       - 3004:3000
@@ -76,7 +78,7 @@ services:
       TWILIO_ACCOUNT_SID: AC71c4af10c04b40c3a9443781ecf19a13
       TWILIO_AUTH_TOKEN: e5da14523c1de6ee0cfba33e71ab23ab
       TWILIO_PHONE_NUMBER: +12136992567
-      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SERVICE_API_AUTH_URL: http://user-management:3000
       SMTP_HOST: smtp.office365.com
       SMTP_PORT: 587
       SMTP_USERNAME: charging@nxuenergy.com
@@ -85,21 +87,12 @@ services:
     ports:
       - 3002:3000
 
-  api-auth:
-    container_name: api-auth
-    image: charging/api-auth:latest
-    build: ../Cloud-Microservices/api-auth
-    environment:
-      TOKEN_SECRET_KEY: alskdjfalksdjf08230948234jlksdjflksjfd02938409324klsjdfsfd
-    ports:
-      - 3001:3000
-
   payments:
     container_name: payments
     image: charging/payments:latest
     build: ../Cloud-Microservices/payment
     environment:
-      SERVICE_API_AUTH_URL: http://api-auth:3000
+      SERVICE_API_AUTH_URL: http://user-management:3000
       STRIPE_API_KEY: sk_test_51Fy1H0EVZXsfFbdHeToIQSPZYtHAkfAliETUjm1TZwQjstMRLj78LCjX4z0KBIA97vLzbQST4HXgZc41cbWDlULI00q8oDg3pB
       SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
     ports:

@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { validateSignUpForm } from "../../../validations";
-import { createStripeCustomer, registerUserWithPIN } from "../../../helpers";
+import { registerUserWithPIN } from "../../../helpers";
 import { ISignUpFormValidation } from "../../../types/ValidationErrors.type";
 import InputMask from "react-input-mask";
 import TermsConditions from "../TermsConditions";

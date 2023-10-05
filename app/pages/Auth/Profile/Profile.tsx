@@ -5,26 +5,13 @@ import { getUserProfile } from "../../../helpers";
 import { IProfileFormValidation } from "../../../types/ValidationErrors.type";
 import { validateToken } from "../../../validations";
 import Button from "@root/components/Button";
+import useSWR from "swr";
 
-interface IProfileData {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  last4: string;
-  expYear: number;
-  expMonth: number;
-  id: string;
-}
 type IProfileError = IProfileFormValidation & { page: string };
 
 const Profile: FC = () => {
   const [errors, setErrors] = useState<Partial<IProfileError>>({});
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [userId, setUserId] = useState("");
+  const { data: user } = useSWR("user", getUserProfile, { suspense: true });
 
   const navigate = useNavigate();
 
@@ -35,25 +22,6 @@ const Profile: FC = () => {
   useEffect(() => {
     if (!isTokenValid) navigate("/");
   }, [isTokenValid]);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const userData = await getUserProfile();
-        const { email, firstName, lastName, phoneNumber, id } =
-          userData as IProfileData;
-        setEmail(email);
-        setFirstName(firstName);
-        setLastName(lastName);
-        setPhoneNumber(phoneNumber);
-        setUserId(id);
-      } catch (err) {
-        setErrors({ page: "Error while fetch the user data" });
-      }
-    };
-
-    getData();
-  }, []);
 
   const onSubmit = () => {
     navigate("/dashboard");
@@ -71,7 +39,7 @@ const Profile: FC = () => {
               type="text"
               className={inputStyle}
               placeholder="First Name"
-              value={firstName}
+              value={user.firstName}
               readOnly={true}
             />
           </div>
@@ -80,7 +48,7 @@ const Profile: FC = () => {
               type="text"
               className={inputStyle}
               placeholder="Last Name"
-              value={lastName}
+              value={user.lastName}
               readOnly={true}
             />
           </div>
@@ -89,7 +57,7 @@ const Profile: FC = () => {
               type="text"
               className={inputStyle}
               placeholder="Email"
-              value={email}
+              value={user.email}
               readOnly={true}
             />
           </div>
@@ -98,7 +66,7 @@ const Profile: FC = () => {
               type="text"
               className={inputStyle}
               placeholder="Phone Number"
-              value={phoneNumber}
+              value={user.phoneNumber}
               readOnly={true}
             />
           </div>
@@ -106,7 +74,7 @@ const Profile: FC = () => {
           <div className="flex flex-row gap-5">
             <Button
               className="w-[calc(50%_-_10px)] px-[23px]"
-              onClick={() => navigate(`/profile-password?userId=${userId}`)}
+              onClick={() => navigate(`/profile-password?userId=${user.id}`)}
             >
               Password
             </Button>

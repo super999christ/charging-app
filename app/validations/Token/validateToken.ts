@@ -3,8 +3,7 @@ import jwt from "jwt-decode";
 const MS_PER_MINUTE = 60000;
 
 interface IJWT {
-  appCode: string;
-  appName: string;
+  subscription_customer: boolean;
   exp: number;
   iat: number;
   userId: string;
