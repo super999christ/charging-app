@@ -1,5 +1,4 @@
 import BillingPlans from "@root/pages/Auth/BillingPlans/BillingPlans";
-import SubscriptionPlan from "@root/pages/Auth/SubscriptionPlan/SubscriptionPlan";
 import React from "react";
 
 const ProfilePage = React.lazy(() => import("../pages/Auth/Profile"));
@@ -55,9 +54,5 @@ export const privateRoutes = [
   {
     path: "/billing-plans",
     component: BillingPlans,
-  },
-  {
-    path: "/subscription-plans",
-    component: SubscriptionPlan,
-  },
+  }
 ];
