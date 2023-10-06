@@ -28,7 +28,7 @@ export default function SubscriptionPlan() {
   const [isTnCOpen, setIsTnCOpen] = useState(false);
   const formik = useFormik({
     initialValues: {
-      vehicleCount: 0,
+      vehicleCount: 1,
       isTnCChecked: false,
     },
     onSubmit: (values) => {
