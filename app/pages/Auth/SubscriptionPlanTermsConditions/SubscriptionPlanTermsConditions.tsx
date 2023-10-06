@@ -30,13 +30,12 @@ export default function SubscriptionPlanTermsConditions({
           <p className="mb-5">
             By selecting “Confirm” below to sign up for this Nxu Subscription,
             you agree that Nxu, Inc may charge the monthly fee monthly fee of
-            “$______” to the credit card on file in your user profile. Your
-            first month will be prorated, after which you will be charged the
-            full subscription fee on the first day of each subsequent month.
-            While subscribed, you will receive discounted pricing at Nxu’s
-            network of electric vehicle charging stations, in the amounts
-            determined by Nxu in each region. Discounts may vary depending on
-            the region.{" "}
+            “$70” to the credit card on file in your user profile. Your first
+            month will be prorated, after which you will be charged the full
+            subscription fee on the first day of each subsequent month. While
+            subscribed, you will receive discounted pricing at Nxu’s network of
+            electric vehicle charging stations, in the amounts determined by Nxu
+            in each region. Discounts may vary depending on the region.{" "}
           </p>
 
           <p className="mb-5">
