@@ -57,7 +57,6 @@ export default function SubscriptionPlan() {
       <SubscriptionPlanTermsConditions
         onConfirm={() => {
           formik.setFieldValue("isTnCChecked", true);
-          formik.setTouched({ isTnCChecked: true }, true);
           setIsTnCOpen(false);
         }}
       />
