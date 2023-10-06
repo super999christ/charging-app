@@ -168,6 +168,8 @@ const Status: FC = () => {
           setAlertType("success");
           setTimerRunning(false);
         } else if (data.sessionStatus === "payment_error") {
+          setAlertMsg("Successfully completed charging. Transaction will be charged to the credit card on file. Please remove the charge handle from the vehicle.")
+          setAlertType("success");
           setTimerRunning(false);
         }
       }
