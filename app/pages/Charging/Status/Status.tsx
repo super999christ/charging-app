@@ -13,12 +13,14 @@ import Chart from "./Chart";
 type SessionStatus =
   | "available"
   | "stopped"
+  | "stopped_sub"
   | "trickle"
   | "charging"
   | "idle"
   | "beginning"
   | "offline"
   | "completed"
+  | "completed_sub"
   | "iot_error"
   | "in_progress"
   | "payment_error";
@@ -76,7 +78,7 @@ const Status: FC = () => {
 
   const isTokenValid = validateToken();
   useEffect(() => {
-  if (!isTokenValid) navigate("/");
+    if (!isTokenValid) navigate("/");
   }, [isTokenValid]);
 
   useEffect(() => {
@@ -91,16 +93,17 @@ const Status: FC = () => {
   const checkStatus = async (forced: boolean = false) => {
     try {
       if (!forced) {
-        if (!isTimerRunning || isChargeStatusRunning.current || transactionLock.current)
+        if (
+          !isTimerRunning ||
+          isChargeStatusRunning.current ||
+          transactionLock.current
+        )
           return;
       }
-      if (iotExceptionCount.current >= 4)
-        setTimerRunning(false);
+      if (iotExceptionCount.current >= 4) setTimerRunning(false);
       else {
-        if (isChargeStatusRunning.current)
-          return
+        if (isChargeStatusRunning.current) return;
       }
-        
 
       isChargeStatusRunning.current = true;
       const data: IChargeStatus = await checkChargingStatus(
@@ -113,13 +116,16 @@ const Status: FC = () => {
         setPromoted(true);
       }
       isChargeStatusRunning.current = false;
-      
+
       setInitialized(true);
       setStatus(data);
-      if (alertType === 'error') {
-        setAlertMsg('');
+      if (alertType === "error") {
+        setAlertMsg("");
       }
-      if (data.sessionStatus === "completed") {
+      if (
+        data.sessionStatus === "completed" ||
+        data.sessionStatus === "completed_sub"
+      ) {
         setTimerRunning(false);
         if (data.sessionTotalCost)
           setAlertMsg(
@@ -156,7 +162,10 @@ const Status: FC = () => {
             );
           setAlertType("error");
           setTimerRunning(false);
-        } else if (data.sessionStatus === "stopped") {
+        } else if (
+          data.sessionStatus === "stopped" ||
+          data.sessionStatus === "stopped_sub"
+        ) {
           if (data.sessionTotalCost)
             setAlertMsg(
               "Successfully stopped charging. Transaction will be charged to the credit card on file. Please remove charge handle from the vehicle and retry charging later."
@@ -185,9 +194,9 @@ const Status: FC = () => {
       setInitialized(true);
       if (err instanceof AxiosError) {
         const errorMsg = err.response?.data.message;
-        if (errorMsg === 'ChargingIoT exception occurred') {
+        if (errorMsg === "ChargingIoT exception occurred") {
           // setAlertMsg('Connecting to IOT API stay tuned...');
-          setAlertType('info');
+          setAlertType("info");
         } else {
           setAlertMsg(errorMsg);
           setAlertType("error");
@@ -197,7 +206,7 @@ const Status: FC = () => {
   };
 
   const startNewCharging = async () => {
-    navigate('/charging-login');
+    navigate("/charging-login");
   };
 
   const stopCharging = async () => {
@@ -259,7 +268,7 @@ const Status: FC = () => {
   const getStatus = () => {
     const s: string = status.sessionStatus || "";
     if (s === "charging") return "running";
-    if (s === "completed") return "completed";
+    if (s === "completed" || s === "completed_sub") return "completed";
     return "stopped";
   };
 
@@ -330,7 +339,18 @@ const Status: FC = () => {
                     </div>
                   }
                   right={
-                    <p className={boldText}>{(["completed", "stopped", "idle"].includes(status?.sessionStatus as string) ? "0.00" : status?.chargeSpeedKwh) || "0.00"}kW</p>
+                    <p className={boldText}>
+                      {([
+                        "completed",
+                        "completed_sub",
+                        "stopped",
+                        "stopped_sub",
+                        "idle",
+                      ].includes(status?.sessionStatus as string)
+                        ? "0.00"
+                        : status?.chargeSpeedKwh) || "0.00"}
+                      kW
+                    </p>
                   }
                 />
 
@@ -348,7 +368,8 @@ const Status: FC = () => {
                         {USDollar.format(Number(status?.sessionTotalCost) || 0)}
                       </p>
                       <p className={lightText}>
-                        {USDollar.format(Number(status?.rateActivekWh) || 0)} / kWh
+                        {USDollar.format(Number(status?.rateActivekWh) || 0)} /
+                        kWh
                       </p>
                     </>
                   }
@@ -364,28 +385,46 @@ const Status: FC = () => {
               <div className="max-w-[350px] w-full flex flex-col justify-center">
                 {isPromoted && (
                   <label className="text-[14px] text-nxu-charging-green">
-                    Product Launch promotion: $1 per charging session. Only $1 will be charged to your credit card.
+                    Product Launch promotion: $1 per charging session. Only $1
+                    will be charged to your credit card.
                   </label>
                 )}
               </div>
 
               <div className="mb-3" />
 
-              {!["completed", "stopped", "idle", "offline", "iot_error", "payment_error"].includes(status?.sessionStatus as string) && 
-              iotExceptionCount.current === 0 && (
-                <Button
-                  onClick={stopCharging}
-                  loading={isChargingStatusChanging}
-                  className="mb-10"
-                >
-                  {isChargingStatusChanging ? "Stopping Charge..." : "Stop Charge"}
-                </Button>
-              )}
-              {["completed", "stopped", "idle", "offline", "iot_error", "payment_error"].includes(status?.sessionStatus as string) && (
-                <Button
-                  onClick={startNewCharging}
-                  className="mb-10"
-                >
+              {![
+                "completed",
+                "completed_sub",
+                "stopped",
+                "stopped_sub",
+                "idle",
+                "offline",
+                "iot_error",
+                "payment_error",
+              ].includes(status?.sessionStatus as string) &&
+                iotExceptionCount.current === 0 && (
+                  <Button
+                    onClick={stopCharging}
+                    loading={isChargingStatusChanging}
+                    className="mb-10"
+                  >
+                    {isChargingStatusChanging
+                      ? "Stopping Charge..."
+                      : "Stop Charge"}
+                  </Button>
+                )}
+              {[
+                "completed",
+                "completed_sub",
+                "stopped",
+                "stopped_sub",
+                "idle",
+                "offline",
+                "iot_error",
+                "payment_error",
+              ].includes(status?.sessionStatus as string) && (
+                <Button onClick={startNewCharging} className="mb-10">
                   Start New Charge
                 </Button>
               )}
@@ -403,12 +442,14 @@ type RowProps = {
   icon?: React.ReactNode;
   left: React.ReactNode;
   right?: React.ReactNode;
-  className?: string; 
+  className?: string;
 };
 
 function Row({ icon, left, right, className }: RowProps) {
   return (
-    <div className={`w-full h-full min-h-[120px] px-5 flex flex-row items-center justify-between text-white ${className}`}>
+    <div
+      className={`w-full h-full min-h-[120px] px-5 flex flex-row items-center justify-between text-white ${className}`}
+    >
       <div className="flex gap-2 justify-center items-center w-fit">
         <div className="w-10 h-10">{icon}</div>
 
