@@ -37,8 +37,13 @@ export async function updateUserProfile(user: Profile): Promise<void> {
   );
 }
 
-export async function setupSubscriptionPlan(): Promise<void> {
+export async function setupSubscriptionPlan({
+  vehicleCount,
+}: {
+  vehicleCount: number;
+}): Promise<void> {
   return axios.post(
-    `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/subscriptions`
+    `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/subscriptions`,
+    { vehicleCount }
   );
 }

@@ -13,6 +13,11 @@ import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { useFormik } from "formik";
 
+interface Values {
+  vehicleCount: number;
+  isTnCChecked: boolean;
+}
+
 export default function SubscriptionPlan() {
   const toast = useToast();
   const navigate = useNavigate();
@@ -32,15 +37,12 @@ export default function SubscriptionPlan() {
       vehicleCount: 1,
       isTnCChecked: false,
     },
-    onSubmit: (values: any) => {
+    onSubmit: (values: Values) => {
       const { vehicleCount } = values;
       setLoading(true);
-      updateUserProfile({ ...user, vehicleCount, billingPlanId })
-        .then(() => {
-          setupSubscriptionPlan().then(() =>
-            toast("Successfully setup subscription plan.", "success")
-          );
-        })
+
+      setupSubscriptionPlan({ vehicleCount })
+        .then(() => toast("Successfully setup subscription plan.", "success"))
         .catch((_err) => toast("Failed to setup subscription plan."))
         .finally(() => setLoading(false));
     },
