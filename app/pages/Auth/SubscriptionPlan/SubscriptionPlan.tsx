@@ -4,6 +4,7 @@ import {
   BillingPlan,
   getBillingPlans,
   getUserProfile,
+  setupSubscriptionPlan,
   updateUserProfile,
 } from "@root/helpers";
 import useSWR from "swr";
@@ -31,15 +32,19 @@ export default function SubscriptionPlan() {
       vehicleCount: 1,
       isTnCChecked: false,
     },
-    onSubmit: (values) => {
+    onSubmit: (values: any) => {
       const { vehicleCount } = values;
       setLoading(true);
       updateUserProfile({ ...user, vehicleCount, billingPlanId })
-        .then(() => toast("Successfully setup subscription plan.", "success"))
+        .then(() => {
+          setupSubscriptionPlan().then(() =>
+            toast("Successfully setup subscription plan.", "success")
+          );
+        })
         .catch((_err) => toast("Failed to setup subscription plan."))
         .finally(() => setLoading(false));
     },
-    validate: (values) => {
+    validate: (values: any) => {
       const errors: any = {};
 
       if (values.vehicleCount <= 0)

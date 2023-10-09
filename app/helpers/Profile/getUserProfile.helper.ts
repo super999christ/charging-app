@@ -36,3 +36,9 @@ export async function updateUserProfile(user: Profile): Promise<void> {
     user
   );
 }
+
+export async function setupSubscriptionPlan(): Promise<void> {
+  return axios.post(
+    `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/subscriptions`
+  );
+}
