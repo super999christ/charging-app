@@ -212,7 +212,7 @@ function TermsAndConditionsText() {
           payment methods indicated. Company and/or the applicable third-party
           payment processor shall charge and You shall be responsible for
           payment of all taxes, tariffs, levies, or duties applicable to Your
-          payment. All amounts loaded to Your account will be denominated in the
+          payment. All payments through Your account will be denominated in the
           currency of the United States, and all transactions listed through the
           Solution are denominated in U.S. dollars. You are responsible for: (a)
           the accuracy of all credit and debit card information that You provide
@@ -249,20 +249,14 @@ function TermsAndConditionsText() {
             for use through the Solution.
           </li>
           <li>
-            Reloading of Funds. To use the Solution to make payments, You may be
-            required to agree to the Solution’s automatic reload feature. The
-            Solution will reload Your account by automatically charging the
-            credit or debit card credentials that You have stored through the
-            Solution whenever Your account balance falls below a certain,
-            defined amount indicated at sign up. The Company will send You an
-            email confirming the details of the automatic reload terms after You
-            sign up. When the funds in Your account fall below the defined
-            threshold the Company will automatically charge Your credit or debit
-            card the reload amount You have selected. Company will send You a
-            confirmation email after each reload purchase. You can change Your
-            reload preferences at any time through the Solution, but changes may
-            take up to twenty-four (24) hours to go into effect. Once Your
-            payment method is charged, the transaction cannot be reversed.
+            Payments. You may be required to agree to the Solution’s automatic
+            payment feature. The Solution will charge You by automatically
+            charging the credit or debit card credentials that You have stored
+            through the Solution whenever charge with the Solution or your
+            monthly subscription is paid. You can change Your payment
+            preferences at any time through the Solution, but changes may take
+            up to twenty-four (24) hours to go into effect. Once Your payment
+            method is charged, the transaction cannot be reversed.
           </li>
           <li>
             Fees. Except as provided in this Agreement or by the Company in
@@ -301,19 +295,17 @@ function TermsAndConditionsText() {
           Subscription Plans. The Solution may provide You the option to sign up
           for a monthly subscription plan that provides discounted pricing at
           Company’s network of electric vehicle charging stations for a monthly
-          fee. Discounts may vary depending on the region, so please check the
-          Plan Details for more information regarding the discounts offered for
-          charging stations located in your region. There is no minimum purchase
-          obligation for this subscription, so the specified discounts will
-          remain in effect regardless of how many charging sessions you purchase
-          during the subscription term. In order to begin Your subscription
-          plan, Company may require You to provide an acceptable means of
-          payment, such as a valid credit or debit card. Some subscription plans
-          may have differing conditions and limitations, which will be disclosed
-          at Your sign-up or in other communications made available to You. You
-          can find specific details regarding Your subscription through the
-          Solution by accessing the “Plan details” menu item under the Profile
-          menu in the Solution.
+          fee. Discounts may vary depending on the region. There is no minimum
+          purchase obligation for this subscription, so the specified discounts
+          will remain in effect regardless of how many charging sessions you
+          purchase during the subscription term. In order to begin Your
+          subscription plan, Company may require You to provide an acceptable
+          means of payment, such as a valid credit or debit card. Some
+          subscription plans may have differing conditions and limitations,
+          which will be disclosed at Your sign-up or in other communications
+          made available to You. You can find specific details regarding Your
+          subscription through the Solution by accessing the “Plan details” menu
+          item under the Profile menu in the Solution.
         </li>
         <ol className="list-[upper-roman] ml-5 space-y-5" type="A">
           <li>
@@ -325,27 +317,20 @@ function TermsAndConditionsText() {
           </li>
           <li>
             Payment. You will need to provide Company with authorization to
-            charge Your credit or debit card on a recurring basis. The fee for
-            the subscription plan will be charged to Your payment method on file
-            at the time of enrollment and then each month thereafter until Your
-            Account is funded following Your first use of the Solution at one of
-            Company’s electric vehicle charging stations. Once Your Account is
-            funded, the monthly subscription fee will be deducted from Your
-            Account balance each month on the calendar day corresponding to the
-            commencement of the paying portion of Your subscription until Your
-            membership is cancelled. Subscription fees are fully earned upon
-            payment. In some cases Your payment date may change, for example if
-            Your payment method has not successfully settled or if Your paid
-            membership began on a day not contained in a given month. You can
-            find specific details on Your next payment date through the Solution
-            by viewing your Billing Details. You authorize Company to charge any
-            payment method associated to Your account in case Your primary
-            payment method is declined or no longer available to Company for
-            payment of Your subscription fee. You remain responsible for any
-            uncollected amounts. If a payment is not successfully settled, due
-            to expiration, insufficient funds, or otherwise, and You do not
-            cancel Your account, Company may suspend Your access to the service
-            until Company has successfully charged a valid payment method.
+            charge Your credit or debit card on a recurring basis. A pro-rated
+            monthly fee for the subscription plan will be charged to Your
+            payment method on file at the time of enrollment. After the first
+            month, the monthly subscription fee will be charged to your card on
+            file on the first day of each month until Your membership is
+            cancelled. Subscription fees are fully earned upon payment. You
+            authorize Company to charge any payment method associated to Your
+            account in case Your primary payment method is declined or no longer
+            available to Company for payment of Your subscription fee. You
+            remain responsible for any uncollected amounts. If a payment is not
+            successfully settled, due to expiration, insufficient funds, or
+            otherwise, and You do not cancel Your account, Company may suspend
+            Your access to the service until Company has successfully charged a
+            valid payment method.
           </li>
           <li>
             Changes to Terms. Company may change the terms of the subscription
@@ -355,8 +340,7 @@ function TermsAndConditionsText() {
             implementing any price changes or changes to Your subscription plan.
           </li>
           <li>
-            Limitations. Use of the subscription plan is non-transferable. The
-            sale, barter, transfer or assignment of any subscription plan
+            The sale, barter, transfer or assignment of any subscription plan
             benefits is strictly prohibited. Without limiting any other
             remedies, Company may suspend or terminate any subscription plan if
             it suspects, in its sole discretion, that any member or other person
