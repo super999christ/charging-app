@@ -1,13 +1,6 @@
 import { useState } from "react";
 import Button from "@root/components/Button";
-import {
-  BillingPlan,
-  getBillingPlans,
-  getUserProfile,
-  setupSubscriptionPlan,
-  updateUserProfile,
-} from "@root/helpers";
-import useSWR from "swr";
+import { setupSubscriptionPlan } from "@root/helpers";
 import useToast from "@root/hooks/useToast";
 import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
@@ -21,14 +14,6 @@ interface Values {
 export default function SubscriptionPlan() {
   const toast = useToast();
   const navigate = useNavigate();
-  const { data: user } = useSWR("user", getUserProfile, { suspense: true });
-  const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
-    suspense: true,
-  });
-
-  const billingPlanId = (
-    billingPlans.find((p) => p.billingPlan === "subscription") as BillingPlan
-  ).id;
 
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
