@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Button from "@root/components/Button";
 import { setupSubscriptionPlan } from "@root/helpers";
-import useToast from "@root/hooks/useToast";
 import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { useFormik } from "formik";
+import ResultMessage, { AlertType } from "@root/components/ResultMessage";
 
 interface Values {
   vehicleCount: number;
@@ -12,11 +12,11 @@ interface Values {
 }
 
 export default function SubscriptionPlan() {
-  const toast = useToast();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
+  const [alert, setAlert] = useState({ message: "", alertType: "" });
   const formik = useFormik({
     initialValues: {
       vehicleCount: 1,
@@ -27,8 +27,18 @@ export default function SubscriptionPlan() {
       setLoading(true);
 
       setupSubscriptionPlan({ vehicleCount })
-        .then(() => toast("Successfully setup subscription plan.", "success"))
-        .catch((_err) => toast("Failed to setup subscription plan."))
+        .then(() =>
+          setAlert({
+            message: "Successfully setup subscription plan.",
+            alertType: "success",
+          })
+        )
+        .catch((_err) =>
+          setAlert({
+            message: "Failed to setup subscription plan.",
+            alertType: "error",
+          })
+        )
         .finally(() => setLoading(false));
     },
     validate: (values: any) => {
@@ -57,8 +67,8 @@ export default function SubscriptionPlan() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-7">
       <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl">
-          Welcome to NXU Subscription Plan
+        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl">
+          NXU Subscription Plan
         </div>
 
         <p className="text-white text-center">
@@ -70,11 +80,14 @@ export default function SubscriptionPlan() {
           className="flex flex-col gap-[30px]"
         >
           <div className="flex flex-col">
-            <label className="text-white">Vehicle Count</label>
+            <label className="block mb-2 text-sm font-medium text-white">
+              Vehicle Count
+            </label>
             <input
               id="vehicleCount"
               name="vehicleCount"
-              type="number"
+              type="text"
+              inputMode="numeric"
               className="h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none"
               placeholder="1"
               value={formik.values.vehicleCount}
@@ -95,6 +108,7 @@ export default function SubscriptionPlan() {
                 type="checkbox"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 checked={formik.values.isTnCChecked}
+                onClick={() => setIsTnCOpen(true)}
               />
               <div
                 onClick={() => setIsTnCOpen(true)}
@@ -114,6 +128,11 @@ export default function SubscriptionPlan() {
               </p>
             )}
           </div>
+
+          <ResultMessage
+            message={alert.message}
+            alertType={alert.alertType as AlertType}
+          />
 
           <Button type="submit" loading={loading}>
             Confirm
