@@ -31,6 +31,8 @@ const SignUpWithPin: FC = () => {
   const [pinCode, setPinCode] = useState("");
   const [pinConfirmCode, setPinConfirmCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPasswordFocus, setPasswordFocus] = useState(false);
+  const [isConfirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -177,7 +179,14 @@ const SignUpWithPin: FC = () => {
                 placeholder="Password"
                 value={pinCode}
                 onChange={(e) => setPinCode(e.target.value)}
+                onFocus={() => setPasswordFocus(true)}
+                onBlur={() => setPasswordFocus(false)}
               />
+              {isPasswordFocus && !errors.pinCode && (
+                <label className="text-nxu-charging-white text-[12px]">
+                  Password must be at least 7 characters with alphabets and numbers.
+                </label>
+              )}
               {errors.pinCode && (
                 <label className="text-nxu-charging-red text-[12px]">
                   {errors.pinCode}
@@ -191,7 +200,14 @@ const SignUpWithPin: FC = () => {
                 placeholder="Confirm Password"
                 value={pinConfirmCode}
                 onChange={(e) => setPinConfirmCode(e.target.value)}
+                onFocus={() => setConfirmPasswordFocus(true)}
+                onBlur={() => setConfirmPasswordFocus(false)}
               />
+              {isConfirmPasswordFocus && !errors.pinConfirmCode && (
+                <label className="text-nxu-charging-white text-[12px]">
+                  Confirm Password must be at least 7 characters with alphabets and numbers.
+                </label>
+              )}
               {errors.pinConfirmCode && (
                 <label className="text-nxu-charging-red text-[12px]">
                   {errors.pinConfirmCode}
