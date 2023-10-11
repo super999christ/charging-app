@@ -19,6 +19,12 @@ export const validateSignUpForm = (
       validationResult: false,
       email: VALIDATION_ERROR_MESSAGE.email_required,
     };
+  } else if (email.includes(" ")) {
+    errors = {
+      ...errors,
+      validationResult: false,
+      email: VALIDATION_ERROR_MESSAGE.clear_whitespace
+    }
   } else if (!emailRegExp.test(email)) {
     errors = {
       ...errors,
