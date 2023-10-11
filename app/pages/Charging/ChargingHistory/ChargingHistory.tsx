@@ -94,7 +94,7 @@ const AuthDashboard: FC = () => {
                 </div>
                 <div className="flex flex-row w-full">
                   <div className="w-[40%]">KWH Delivered: </div>
-                  <div>{historyData.chargeDeliveredKwh}</div>
+                  <div>{historyData.amount}</div>
                 </div>
                 <div className="flex flex-row w-full">
                   <div className="w-[40%]">Station Id: </div>
