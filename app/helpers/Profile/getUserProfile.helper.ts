@@ -42,7 +42,7 @@ export async function setupSubscriptionPlan({
 }: {
   vehicleCount: number;
 }): Promise<void> {
-  return axios.post(
+  return axios.put(
     `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/subscriptions`,
     { vehicleCount }
   );

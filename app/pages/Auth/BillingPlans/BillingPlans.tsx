@@ -24,15 +24,15 @@ export default function BillingPlans() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-7">
       <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl">
-          Welcome to NXU Charging Billing Plans
+        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl">
+          NXU Billing Plans
         </div>
 
-        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label className="block mb-2 text-sm font-medium text-white">
           Billing Plans
           <select
             id="billingPlans"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             onChange={(e) =>
               setBillingPlan(
                 billingPlans.find(
@@ -66,17 +66,19 @@ export default function BillingPlans() {
                 .finally(() => setLoading(false));
             }
 
-            if (billingPlan.billingPlan === "subscription") {
+            if (billingPlan.billingPlan === "subscription")
               navigate("/subscription-plans");
-            }
           }}
         >
           Confirm
         </Button>
-        <Button onClick={() => navigate("/subscription-plans")}>
-          Update Subscription
-        </Button>
-        <Button onClick={() => navigate("/profile")}>Cancel</Button>
+
+        {user.billingPlan.billingPlan === "subscription" && (
+          <Button onClick={() => navigate("/subscription-plans")}>
+            Update Subscription
+          </Button>
+        )}
+        <Button onClick={() => navigate("/dashboard")}>Cancel</Button>
       </div>
     </div>
   );
