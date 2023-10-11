@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Button from "@root/components/Button";
 import { setupSubscriptionPlan } from "@root/helpers";
-import useToast from "@root/hooks/useToast";
 import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { useFormik } from "formik";
+import ResultMessage, { AlertType } from "@root/components/ResultMessage";
 
 interface Values {
   vehicleCount: number;
@@ -12,11 +12,11 @@ interface Values {
 }
 
 export default function SubscriptionPlan() {
-  const toast = useToast();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
+  const [alert, setAlert] = useState({ message: "", alertType: "" });
   const formik = useFormik({
     initialValues: {
       vehicleCount: 1,
@@ -27,8 +27,18 @@ export default function SubscriptionPlan() {
       setLoading(true);
 
       setupSubscriptionPlan({ vehicleCount })
-        .then(() => toast("Successfully setup subscription plan.", "success"))
-        .catch((_err) => toast("Failed to setup subscription plan."))
+        .then(() =>
+          setAlert({
+            message: "Successfully setup subscription plan.",
+            alertType: "success",
+          })
+        )
+        .catch((_err) =>
+          setAlert({
+            message: "Failed to setup subscription plan.",
+            alertType: "error",
+          })
+        )
         .finally(() => setLoading(false));
     },
     validate: (values: any) => {
@@ -118,6 +128,11 @@ export default function SubscriptionPlan() {
               </p>
             )}
           </div>
+
+          <ResultMessage
+            message={alert.message}
+            alertType={alert.alertType as AlertType}
+          />
 
           <Button type="submit" loading={loading}>
             Confirm

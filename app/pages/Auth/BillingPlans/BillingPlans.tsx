@@ -8,11 +8,10 @@ import {
 } from "@root/helpers";
 import { useNavigate } from "react-router";
 import useSWR from "swr";
-import useToast from "@root/hooks/useToast";
+import ResultMessage, { AlertType } from "@root/components/ResultMessage";
 
 export default function BillingPlans() {
   const navigate = useNavigate();
-  const toast = useToast();
   const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
     suspense: true,
   });
@@ -20,6 +19,7 @@ export default function BillingPlans() {
 
   const [billingPlan, setBillingPlan] = useState(user.billingPlan);
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ message: "", alertType: "" });
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-7">
@@ -53,6 +53,11 @@ export default function BillingPlans() {
           </select>
         </label>
 
+        <ResultMessage
+          message={alert.message}
+          alertType={alert.alertType as AlertType}
+        />
+
         <Button
           loading={loading}
           onClick={() => {
@@ -60,9 +65,17 @@ export default function BillingPlans() {
               setLoading(true);
               updateUserProfile({ ...user, billingPlanId: billingPlan.id })
                 .then(() =>
-                  toast("Successfully updated billing plan.", "success")
+                  setAlert({
+                    message: "Successfully updated billing plan.",
+                    alertType: "success",
+                  })
                 )
-                .catch((_err) => toast("Failed to update billing plan."))
+                .catch((_err) =>
+                  setAlert({
+                    message: "Failed to update billing plan.",
+                    alertType: "error",
+                  })
+                )
                 .finally(() => setLoading(false));
             }
 
