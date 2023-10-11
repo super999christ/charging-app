@@ -1,6 +1,7 @@
 export const VALIDATION_ERROR_MESSAGE = {
   email_required: "Email is required.",
   email_invalid: "Email format is name@example.com.",
+  clear_whitespace: "Clear whitespace and/or special characters.",
   password_required: "Password is required.",
   password_length: "Password length should be between 6 and 20.",
   password_notmatch: "Password does not match.",
