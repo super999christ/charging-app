@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "@root/components/Button";
 import {
-  BillingPlan,
   getBillingPlans,
   getUserProfile,
   updateUserProfile,
@@ -9,8 +8,10 @@ import {
 import { useNavigate } from "react-router";
 import useSWR from "swr";
 import ResultMessage, { AlertType } from "@root/components/ResultMessage";
+import useAuth from "@root/hooks/useAuth";
 
 export default function BillingPlans() {
+  useAuth();
   const navigate = useNavigate();
   const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
     suspense: true,
@@ -24,9 +25,13 @@ export default function BillingPlans() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-7">
       <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl">
+        <div className="py-[35px] w-full text-center text-white font-extrabold text-4xl">
           NXU Billing Plans
         </div>
+
+        <p className="text-white text-center">
+          Current Plan: {user.billingPlan.billingPlan}
+        </p>
 
         <div className="flex items-center mb-4">
           <input
@@ -43,7 +48,7 @@ export default function BillingPlans() {
           />
           <label
             htmlFor="default-radio-1"
-            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            className="ml-2 text-sm font-medium text-white"
           >
             Transactional Plan: pay per charging session/transaction billed to
             the credit card on file after a charge is complete
@@ -64,7 +69,7 @@ export default function BillingPlans() {
           />
           <label
             htmlFor="default-radio-2"
-            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            className="ml-2 text-sm font-medium text-white"
           >
             Subscription Plan: monthly fee of $70, for multiple charging
             sessions billed to the credit card on file. First month is prorated
@@ -84,12 +89,13 @@ export default function BillingPlans() {
             if (billingPlan.billingPlan === "transaction") {
               setLoading(true);
               updateUserProfile({ ...user, billingPlanId: billingPlan.id })
-                .then(() =>
+                .then(() => {
                   setAlert({
-                    message: "Successfully updated billing plan.",
+                    message: "Successfully updated plan.",
                     alertType: "success",
-                  })
-                )
+                  });
+                  navigate(0);
+                })
                 .catch((_err) =>
                   setAlert({
                     message: "Failed to update billing plan.",
@@ -103,15 +109,10 @@ export default function BillingPlans() {
               navigate("/subscription-plans");
           }}
         >
-          Confirm
+          Update Subscription
         </Button>
 
-        {user.billingPlan.billingPlan === "subscription" && (
-          <Button onClick={() => navigate("/subscription-plans")}>
-            Update Subscription
-          </Button>
-        )}
-        <Button onClick={() => navigate("/dashboard")}>Cancel</Button>
+        <Button onClick={() => navigate("/dashboard")}>Back to Account</Button>
       </div>
     </div>
   );

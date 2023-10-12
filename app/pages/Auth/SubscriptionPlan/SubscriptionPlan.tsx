@@ -1,10 +1,13 @@
 import { useState } from "react";
 import Button from "@root/components/Button";
-import { setupSubscriptionPlan } from "@root/helpers";
+import { getUserProfile, setupSubscriptionPlan } from "@root/helpers";
 import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { useFormik } from "formik";
 import ResultMessage, { AlertType } from "@root/components/ResultMessage";
+import useSWR from "swr";
+import useToast from "@root/hooks/useToast";
+import useAuth from "@root/hooks/useAuth";
 
 interface Values {
   vehicleCount: number;
@@ -12,14 +15,18 @@ interface Values {
 }
 
 export default function SubscriptionPlan() {
+  useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
+  const { data: user } = useSWR("user", getUserProfile, { suspense: true });
 
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
   const [alert, setAlert] = useState({ message: "", alertType: "" });
+
   const formik = useFormik({
     initialValues: {
-      vehicleCount: 1,
+      vehicleCount: user.vehicleCount,
       isTnCChecked: false,
     },
     onSubmit: (values: Values) => {
@@ -27,12 +34,16 @@ export default function SubscriptionPlan() {
       setLoading(true);
 
       setupSubscriptionPlan({ vehicleCount })
-        .then(() =>
+        .then(() => {
           setAlert({
             message: "Successfully setup subscription plan.",
             alertType: "success",
-          })
-        )
+          });
+
+          toast("Successfully setup subscription plan.", "success");
+          navigate("/billing-plans");
+          navigate(0);
+        })
         .catch((_err) =>
           setAlert({
             message: "Failed to setup subscription plan.",
