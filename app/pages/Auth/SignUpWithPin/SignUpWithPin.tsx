@@ -180,7 +180,6 @@ const SignUpWithPin: FC = () => {
                 value={pinCode}
                 onChange={(e) => setPinCode(e.target.value)}
                 onFocus={() => setPasswordFocus(true)}
-                onBlur={() => setPasswordFocus(false)}
               />
               {isPasswordFocus && !errors.pinCode && (
                 <label className="text-nxu-charging-white text-[12px]">
@@ -201,7 +200,6 @@ const SignUpWithPin: FC = () => {
                 value={pinConfirmCode}
                 onChange={(e) => setPinConfirmCode(e.target.value)}
                 onFocus={() => setConfirmPasswordFocus(true)}
-                onBlur={() => setConfirmPasswordFocus(false)}
               />
               {isConfirmPasswordFocus && !errors.pinConfirmCode && (
                 <label className="text-nxu-charging-white text-[12px]">
