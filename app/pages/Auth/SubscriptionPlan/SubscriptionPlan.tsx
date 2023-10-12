@@ -71,10 +71,6 @@ export default function SubscriptionPlan() {
           NXU Subscription Plan
         </div>
 
-        <p className="text-white text-center">
-          Please click on T&Cs for plan details.
-        </p>
-
         <form
           onSubmit={formik.handleSubmit}
           className="flex flex-col gap-[30px]"

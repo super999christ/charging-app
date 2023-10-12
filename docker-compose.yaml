@@ -27,6 +27,7 @@ services:
       HASH_SALT: 10
       TOKEN_SECRET_KEY: alskdjfalksdjf08230948234jlksdjflksjfd02938409324klsjdfsfd
       TRIAL_SUBSCRIPTION_CUSTOMERS: "480 417 9675,480 747 9384"
+      SUBSCRIPTION_MONTHLY_FEE: 70
 
       POSTGRES_HOST: stage-db-psql-charging-1.cizjbxfi5ccd.us-west-2.rds.amazonaws.com
       POSTGRES_PORT: 5432
