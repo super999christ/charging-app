@@ -9,7 +9,7 @@ export default function SubscriptionPlanTermsConditions({
   return (
     <div className="w-full max-h-full flex justify-center overflow-y-auto">
       <div className="w-3/4">
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-2xl md:text-4xl">
+        <div className="py-[35px] w-full text-center text-white font-extrabold text-4xl">
           NXU Subscription Agreement
         </div>
 
