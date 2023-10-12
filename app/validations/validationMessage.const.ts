@@ -16,11 +16,11 @@ export const VALIDATION_ERROR_MESSAGE = {
   pincode_required: "Password is required.",
   pincode_length: "Password length must be at least 7 characters that include both numeric and alphabetic characters.",
   pincode_invalid:
-    "Password length must be at least 7 characters that include both numeric and alphabetic characters.",
+    "Password length must include both numeric and alphabetic characters.",
   pinconfirmcode_required: "Confirm Password is required.",
   pinconfirmcode_length: "Confirm Password length must be at least 7 characters that include both numeric and alphabetic characters.",
   pinconfirmcode_invalid:
-    "Confirm Password length must be at least 7 characters that include both numeric and alphabetic characters.",
+    "Confirm Password length must include both numeric and alphabetic characters.",
   pincode_notmatch: "Passwords do not match.",
   stationid_required: "ChargerID is required.",
   stationid_invalid: "Charger ID is invalid. Please confirm ID number on charger.",
