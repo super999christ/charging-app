@@ -1,6 +1,10 @@
 import { useState } from "react";
 import Button from "@root/components/Button";
-import { getUserProfile, setupSubscriptionPlan } from "@root/helpers";
+import {
+  getBillingPlans,
+  getUserProfile,
+  setupSubscriptionPlan,
+} from "@root/helpers";
 import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { useFormik } from "formik";
@@ -18,7 +22,12 @@ export default function SubscriptionPlan() {
   useAuth();
   const navigate = useNavigate();
   const toast = useToast();
-  const { data: user } = useSWR("user", getUserProfile, { suspense: true });
+  const { data: user, mutate } = useSWR("user", getUserProfile, {
+    suspense: true,
+  });
+  const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
+    suspense: true,
+  });
 
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
@@ -40,9 +49,13 @@ export default function SubscriptionPlan() {
             alertType: "success",
           });
 
-          toast("Successfully setup subscription plan.", "success");
           navigate("/billing-plans");
-          navigate(0);
+          mutate({
+            billingPlan: billingPlans.find(
+              (p) => p.billingPlan.toLowerCase() === "subscription"
+            ),
+          });
+          toast("Successfully setup subscription plan.", "success");
         })
         .catch((_err) =>
           setAlert({

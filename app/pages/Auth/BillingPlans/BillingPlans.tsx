@@ -16,7 +16,9 @@ export default function BillingPlans() {
   const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
     suspense: true,
   });
-  const { data: user } = useSWR("user", getUserProfile, { suspense: true });
+  const { data: user, mutate } = useSWR("user", getUserProfile, {
+    suspense: true,
+  });
 
   const [billingPlan, setBillingPlan] = useState(user.billingPlan);
   const [loading, setLoading] = useState(false);
@@ -35,12 +37,14 @@ export default function BillingPlans() {
 
         <div className="flex items-center mb-4">
           <input
-            checked={billingPlan.billingPlan === "transaction"}
+            checked={billingPlan.billingPlan.toLowerCase() === "transaction"}
             id="default-radio-1"
             type="radio"
             onChange={(e) =>
               setBillingPlan(
-                billingPlans.find((p) => p.billingPlan === "transaction")!
+                billingPlans.find(
+                  (p) => p.billingPlan.toLowerCase() === "transaction"
+                )!
               )
             }
             name="default-radio"
@@ -56,11 +60,13 @@ export default function BillingPlans() {
         </div>
         <div className="flex items-center">
           <input
-            checked={billingPlan.billingPlan === "subscription"}
+            checked={billingPlan.billingPlan.toLowerCase() === "subscription"}
             id="default-radio-2"
             onChange={(e) =>
               setBillingPlan(
-                billingPlans.find((p) => p.billingPlan === "subscription")!
+                billingPlans.find(
+                  (p) => p.billingPlan.toLowerCase() === "subscription"
+                )!
               )
             }
             type="radio"
@@ -86,7 +92,7 @@ export default function BillingPlans() {
         <Button
           loading={loading}
           onClick={() => {
-            if (billingPlan.billingPlan === "transaction") {
+            if (billingPlan.billingPlan.toLowerCase() === "transaction") {
               setLoading(true);
               updateUserProfile({ ...user, billingPlanId: billingPlan.id })
                 .then(() => {
@@ -94,7 +100,7 @@ export default function BillingPlans() {
                     message: "Successfully updated plan.",
                     alertType: "success",
                   });
-                  navigate(0);
+                  mutate({ billingPlan });
                 })
                 .catch((_err) =>
                   setAlert({
@@ -105,11 +111,11 @@ export default function BillingPlans() {
                 .finally(() => setLoading(false));
             }
 
-            if (billingPlan.billingPlan === "subscription")
+            if (billingPlan.billingPlan.toLowerCase() === "subscription")
               navigate("/subscription-plans");
           }}
         >
-          Update Subscription
+          Update Plan
         </Button>
 
         <Button onClick={() => navigate("/dashboard")}>Back to Account</Button>
