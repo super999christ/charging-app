@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import useCachedForm from "@root/hooks/useCachedForm";
 import Button from "@root/components/Button";
+import useAuth from "@root/hooks/useAuth";
 
 type IChargingLoginError = IAuthCodeValidation &
   IChargingLoginValidation & { page: string };
@@ -39,10 +40,7 @@ const Login: FC = () => {
 
   const navigate = useNavigate();
 
-  const isTokenValid = validateToken();
-  useEffect(() => {
-    if (!isTokenValid) navigate("/");
-  }, [isTokenValid]);
+  useAuth();
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";

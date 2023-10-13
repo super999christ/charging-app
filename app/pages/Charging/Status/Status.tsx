@@ -9,6 +9,7 @@ import { ReactComponent as BatteryIcon } from "../../../assets/battery.svg";
 import { ReactComponent as MomentizationIcon } from "../../../assets/momentization.svg";
 import { ReactComponent as BoltIcon } from "../../../assets/bolt.svg";
 import Chart from "./Chart";
+import useAuth from "@root/hooks/useAuth";
 
 type SessionStatus =
   | "available"
@@ -76,10 +77,7 @@ const Status: FC = () => {
   const [isTimerRunning, setTimerRunning] = useState(true);
   const [isPromoted, setPromoted] = useState(false);
 
-  const isTokenValid = validateToken();
-  useEffect(() => {
-    if (!isTokenValid) navigate("/");
-  }, [isTokenValid]);
+  useAuth();
 
   useEffect(() => {
     const timer = setInterval(

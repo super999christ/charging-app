@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ReactComponent as BackIcon } from "../../../assets/backOutline.svg";
 import Button from "@root/components/Button";
+import useAuth from "@root/hooks/useAuth";
 
 interface IHistory {
   id: string;
@@ -17,10 +18,11 @@ interface IHistory {
 
 const AuthDashboard: FC = () => {
   const navigate = useNavigate();
-  const isTokenValid = validateToken();
 
   const [history, setHistory] = useState<IHistory[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
+
+  useAuth();
 
   useEffect(() => {
     const getChargingHistory = async () => {
@@ -59,9 +61,8 @@ const AuthDashboard: FC = () => {
       } catch (err) {}
     };
 
-    if (!isTokenValid) navigate("/");
     getChargingHistory();
-  }, [isTokenValid]);
+  }, []);
 
   return (
     <div className="w-full flex flex-col items-center">

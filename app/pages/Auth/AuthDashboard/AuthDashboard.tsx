@@ -2,13 +2,11 @@ import Button from "@root/components/Button";
 import { decodeToken, validateToken } from "../../../validations";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router";
+import useAuth from "@root/hooks/useAuth";
 
 const AuthDashboard: FC = () => {
   const navigate = useNavigate();
-  const isTokenValid = validateToken();
-  useEffect(() => {
-    if (!isTokenValid) navigate("/");
-  }, [isTokenValid]);
+  useAuth();
 
   const { subscription_customer } = decodeToken(
     localStorage.getItem("appToken") || ""
