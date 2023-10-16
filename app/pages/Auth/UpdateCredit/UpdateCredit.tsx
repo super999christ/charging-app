@@ -22,14 +22,11 @@ import {
 import useToast from "@root/hooks/useToast";
 import Button from "@root/components/Button";
 import useSWR from "swr";
+import useAuth from "@root/hooks/useAuth";
 
 const UpdateCredit: FC = () => {
   const navigate = useNavigate();
-  const isTokenValid = validateToken();
-
-  useEffect(() => {
-    if (!isTokenValid) navigate("/");
-  }, [isTokenValid]);
+  useAuth();
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">

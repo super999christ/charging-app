@@ -11,6 +11,7 @@ import { IProfilePasswordValidation } from "../../../types/ValidationErrors.type
 import { updateUserPassword } from "../../../helpers";
 import { AxiosError } from "axios";
 import Button from "@root/components/Button";
+import useAuth from "@root/hooks/useAuth";
 
 type IUpdatePasswordErrors = IProfilePasswordValidation & { page: string };
 
@@ -23,10 +24,7 @@ const UpdatePassword: FC = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId") || "";
 
-  const isTokenValid = validateToken();
-  useEffect(() => {
-    if (!isTokenValid) navigate("/");
-  }, [isTokenValid]);
+  useAuth();
 
   useEffect(() => {
     if (!userId) navigate("/profile");

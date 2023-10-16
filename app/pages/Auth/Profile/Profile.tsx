@@ -6,6 +6,7 @@ import { IProfileFormValidation } from "../../../types/ValidationErrors.type";
 import { validateToken } from "../../../validations";
 import Button from "@root/components/Button";
 import useSWR from "swr";
+import useAuth from "@root/hooks/useAuth";
 
 type IProfileError = IProfileFormValidation & { page: string };
 
@@ -18,10 +19,7 @@ const Profile: FC = () => {
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
 
-  const isTokenValid = validateToken();
-  useEffect(() => {
-    if (!isTokenValid) navigate("/");
-  }, [isTokenValid]);
+  useAuth();
 
   const onSubmit = () => {
     navigate("/dashboard");
