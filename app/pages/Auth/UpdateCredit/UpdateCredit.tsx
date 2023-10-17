@@ -4,7 +4,6 @@ import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
 import { ReactComponent as PencilIcon } from "../../../assets/pencilIcon.svg";
 import { ReactComponent as CardIcon } from "../../../assets/cardIcon.svg";
 
-import { validateToken } from "../../../validations";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   PaymentElement,
@@ -25,7 +24,6 @@ import useSWR from "swr";
 import useAuth from "@root/hooks/useAuth";
 
 const UpdateCredit: FC = () => {
-  const navigate = useNavigate();
   useAuth();
 
   return (
