@@ -15,7 +15,6 @@ import Environment from "@root/configs/env";
 import {
   createStripeCustomer,
   getCreditCard,
-  getCreditCardWithRetry,
   updateUserCreditCard,
 } from "@root/helpers";
 import useToast from "@root/hooks/useToast";
@@ -48,7 +47,7 @@ const UpdateCredit: FC = () => {
 const stripePromise = loadStripe(Environment.VITE_STRIPE_PUBLISHABLE_KEY);
 
 function Page() {
-  const { data: creditCard } = useSWR("creditCard", getCreditCard, {
+  const { data: creditCard, mutate } = useSWR("creditCard", getCreditCard, {
     suspense: true,
   });
 
@@ -89,13 +88,14 @@ function Page() {
       ?.createPaymentMethod({ elements })
       .then((res) => {
         updateUserCreditCard(res.paymentMethod!.id).then(() => {
-          getCreditCardWithRetry().then(() => {
+          getCreditCard().then((cc) => {
+            setLoading(false);
             toast(
               "Credit Card setup successful. Re-directing to Charge page.",
               "success"
             );
+            mutate({ ...cc });
             navigate("/charging-login");
-            setLoading(false);
           });
         });
       })
@@ -121,6 +121,10 @@ function Page() {
           options={{
             terms: {
               card: "never",
+            },
+            wallets: {
+              applePay: "never",
+              googlePay: "never",
             },
           }}
         />

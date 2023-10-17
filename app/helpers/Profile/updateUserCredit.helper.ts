@@ -35,20 +35,6 @@ export const getCreditCard = async (): Promise<CreditCard> => {
     });
 };
 
-export const getCreditCardWithRetry = async (): Promise<CreditCard> => {
-  const { data } = await axios.get(
-    `${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`,
-    {
-      "axios-retry": {
-        retries: 10,
-        retryCondition: (err) => err.response!.status !== 200,
-        retryDelay: (retryCount) => retryCount * 2000,
-      },
-    }
-  );
-  return data;
-};
-
 export const createStripeCustomer = async (): Promise<void> => {
   return axios.post(
     `${Environment.VITE_SERVICE_PAYMENT_URL}/customer`,
