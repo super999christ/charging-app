@@ -13,7 +13,7 @@ services:
       VITE_SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
       VITE_SERVICE_CHARGING_EVENT_URL: http://charging-events:3000
       VITE_SERVICE_PAYMENT_URL: http://payments:3000
-      VITE_STRIPE_PUBLISHABLE_KEY: pk_test_O0m1oJ7KTyf9zVpiIyl5EyCa0066nNTQhZ
+      VITE_STRIPE_PUBLISHABLE_KEY: pk_test_51O20pPGVeGfd6ixFmGvd6kyeVCSJFBO4d23pxSxPW14Gb50ItqtyhWS19uxYRJQTi3Ldwb5qzH4McVpiNEvp0c9W00vge9fr1M
       VITE_CHARGE_STATUS_INTERVAL: 3000
 
   user-management:
@@ -95,7 +95,7 @@ services:
     build: ../Cloud-Microservices/payment
     environment:
       SERVICE_API_AUTH_URL: http://user-management:3000
-      STRIPE_API_KEY: sk_test_51Fy1H0EVZXsfFbdHeToIQSPZYtHAkfAliETUjm1TZwQjstMRLj78LCjX4z0KBIA97vLzbQST4HXgZc41cbWDlULI00q8oDg3pB
+      STRIPE_API_KEY: sk_test_51O20pPGVeGfd6ixFMw9YktZTn57dtx8YqM1aJAzyD5LoNPbz6FNWyp2OkW4sVmCSkttXYEYv7QpeH34a6qepejz100DAWjZwaq
       SERVICE_USER_MANAGEMENT_URL: http://user-management:3000
     ports:
       - 3005:3000

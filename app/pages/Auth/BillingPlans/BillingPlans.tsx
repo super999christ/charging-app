@@ -94,7 +94,11 @@ export default function BillingPlans() {
           onClick={() => {
             if (billingPlan.billingPlan.toLowerCase() === "transaction") {
               setLoading(true);
-              updateUserProfile({ ...user, billingPlanId: billingPlan.id })
+              updateUserProfile({
+                ...user,
+                billingPlanId: billingPlan.id,
+                billingPlan,
+              })
                 .then(() => {
                   setAlert({
                     message: "Successfully updated plan.",
