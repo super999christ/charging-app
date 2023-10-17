@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router";
 
 import {
@@ -6,7 +6,6 @@ import {
   findActiveSession,
   getCreditCard,
 } from "../../../helpers";
-import { validateToken } from "../../../validations";
 import {
   IChargingLoginValidation,
   IAuthCodeValidation,
@@ -22,16 +21,16 @@ type IChargingLoginError = IAuthCodeValidation &
   IChargingLoginValidation & { page: string };
 
 const Login: FC = () => {
-  const [{ stationId }, handleChange, clearCachedForm] = useCachedForm(
-    "stationForm",
-    { stationId: "001" }
-  );
+  const [{ stationId }, handleChange] = useCachedForm("stationForm", {
+    stationId: "001",
+  });
   const [errors, setErrors] = useState<Partial<IChargingLoginError>>();
-  const [sendCodeEnabled, setSendCodeEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const { data: creditCard } = useSWR("creditCard", getCreditCard, {
     suspense: true,
+    errorRetryCount: 5,
+    errorRetryInterval: 2000,
   });
 
   const { data: activeSession } = useSWR("activeSession", findActiveSession, {
@@ -55,7 +54,6 @@ const Login: FC = () => {
 
       setLoading(true);
 
-      setSendCodeEnabled(false);
       const { data: chargingEvent } = await startCharge(stationId);
       setErrors({ page: "" });
       navigate(
@@ -63,7 +61,6 @@ const Login: FC = () => {
       );
       setLoading(false);
     } catch (err) {
-      setSendCodeEnabled(true);
       setLoading(false);
       if (err instanceof AxiosError)
         setErrors({ page: err.response?.data.message });
@@ -133,11 +130,7 @@ const Login: FC = () => {
           <div className="flex flex-col">
             {!activeSession && creditCard && (
               <div className="flex flex-row gap-[10px]">
-                <Button
-                  onClick={onSubmit}
-                  disabled={!sendCodeEnabled}
-                  loading={loading}
-                >
+                <Button onClick={onSubmit} loading={loading}>
                   {loading ? "Starting Charge..." : "Start Charge"}
                 </Button>
               </div>
