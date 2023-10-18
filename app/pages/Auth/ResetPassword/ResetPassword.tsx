@@ -65,7 +65,8 @@ const ResetPassword: FC = () => {
 
       if (data === "success") {
         await deleteResetPasswordInfo(passwordResetId);
-        navigate("/auth-sign-in");
+        localStorage.removeItem("appToken");
+        navigate("/auth-sign-in?reset_pwd=1");
       }
     } catch (err) {
       setErrors({ page: "Error while resetting password" });

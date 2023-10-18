@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { validateSignInForm, validateToken } from "../../../validations";
 import { getAuthTokenWithPIN } from "../../../helpers";
 import { ISignInFormValidation } from "../../../types/ValidationErrors.type";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { AxiosError } from "axios";
 import useCachedForm from "@root/hooks/useCachedForm";
@@ -17,6 +17,9 @@ const SignInWithPin: FC = () => {
   const [notificationId, setNotificationId] = useState(NaN);
   const [validationTriggered, setValidationTriggered] = useState(false);
   const [pinCode, setPinCode] = useState("");
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
+  const [searchParams] = useSearchParams();
+  const reset_pwd = searchParams.get("reset_pwd");
 
   const [{ phoneNumber }, handleChange, clearCachedForm] = useCachedForm(
     "signinForm",
@@ -31,6 +34,13 @@ const SignInWithPin: FC = () => {
   useEffect(() => {
     if (isTokenValid) navigate("/dashboard");
   }, [isTokenValid]);
+
+  useEffect(() => {
+    if (reset_pwd) {
+      setResetPasswordSuccess(true);
+      navigate("/auth-sign-in");
+    }
+  }, [reset_pwd]);
 
   useEffect(() => {
     const validationResult = validateSignInForm(phoneNumber, "111111", pinCode);
@@ -72,6 +82,11 @@ const SignInWithPin: FC = () => {
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="w-[90%] md:max-w-[350px] mt-[15px] flex flex-col justify-center gap-[30px]">
         <div className="flex flex-col w-full gap-5 mb-5">
+          {resetPasswordSuccess && (
+            <label className="text-nxu-charging-green text-[14px] text-center">
+              Successfully reset password
+            </label>
+          )}
           <div className="flex flex-col">
             <InputMask
               name="phoneNumber"
