@@ -8,7 +8,7 @@ const AuthDashboard: FC = () => {
   const navigate = useNavigate();
   useAuth();
 
-  const { subscription_customer } = decodeToken(
+  const { subscription_customer, payment_attached } = decodeToken(
     localStorage.getItem("appToken") || ""
   );
 
@@ -18,7 +18,7 @@ const AuthDashboard: FC = () => {
 
       <Button onClick={() => navigate("/profile")}>Profile</Button>
 
-      {subscription_customer && (
+      {subscription_customer && payment_attached && (
         <Button onClick={() => navigate("/billing-plans")}>
           Billing Plans
         </Button>
