@@ -3,16 +3,24 @@ import Button from "@root/components/Button";
 import {
   getBillingPlans,
   getUserProfile,
+  setupSubscriptionPlan,
   updateUserProfile,
 } from "@root/helpers";
 import { useNavigate } from "react-router";
 import useSWR from "swr";
-import ResultMessage, { AlertType } from "@root/components/ResultMessage";
 import useAuth from "@root/hooks/useAuth";
+import useToast from "@root/hooks/useToast";
+import { useFormik } from "formik";
+import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
+
+interface Values {
+  isTnCChecked: boolean;
+}
 
 export default function BillingPlans() {
   useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
     suspense: true,
   });
@@ -22,11 +30,70 @@ export default function BillingPlans() {
 
   const [billingPlan, setBillingPlan] = useState(user.billingPlan);
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({ message: "", alertType: "" });
+  const [isTnCOpen, setIsTnCOpen] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      isTnCChecked: false,
+    },
+    validate: (values: any) => {
+      const errors: any = {};
+      if (!values.isTnCChecked)
+        errors.isTnCChecked = "You must agree to the terms and conditions.";
+
+      return errors;
+    },
+    onSubmit: (_values: Values) => {
+      if (billingPlan.billingPlan.toLowerCase() === "transaction") {
+        setLoading(true);
+        updateUserProfile({
+          ...user,
+          billingPlanId: billingPlan.id,
+          billingPlan,
+        })
+          .then(() => {
+            toast.success("Successfully updated plan.");
+            mutate({ billingPlan });
+          })
+          .catch((_err) => toast.error("Failed to update billing plan."))
+          .finally(() => setLoading(false));
+      }
+
+      if (billingPlan.billingPlan.toLowerCase() === "subscription") {
+        setLoading(true);
+        setupSubscriptionPlan({ vehicleCount: 1 })
+          .then(() => {
+            toast.success("Successfully setup subscription plan.");
+            mutate({
+              billingPlan: billingPlans.find(
+                (p) => p.billingPlan.toLowerCase() === "subscription"
+              ),
+            });
+          })
+          .catch((_err) => toast.error("Failed to setup subscription plan."))
+          .finally(() => setLoading(false));
+      }
+    },
+  });
+
+  const { errors, touched } = formik;
+
+  if (isTnCOpen)
+    return (
+      <SubscriptionPlanTermsConditions
+        onConfirm={() => {
+          formik.setFieldValue("isTnCChecked", true);
+          setIsTnCOpen(false);
+        }}
+      />
+    );
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-7">
-      <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
+      <form
+        onSubmit={formik.handleSubmit}
+        className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]"
+      >
         <div className="py-[35px] w-full text-center text-white font-extrabold text-4xl">
           NXU Billing Plans
         </div>
@@ -58,6 +125,7 @@ export default function BillingPlans() {
             the credit card on file after a charge is complete
           </label>
         </div>
+
         <div className="flex items-center">
           <input
             checked={billingPlan.billingPlan.toLowerCase() === "subscription"}
@@ -77,53 +145,40 @@ export default function BillingPlans() {
             htmlFor="default-radio-2"
             className="ml-2 text-sm font-medium text-white"
           >
-            Subscription Plan: monthly fee of $70, for multiple charging
+            Subscription Plan: monthly fee of $69.99, for multiple charging
             sessions billed to the credit card on file. First month is prorated
             amount, subsequent months is a full fee billed on the first day of
             month. Please see T&Cs for all details.
           </label>
         </div>
 
-        <ResultMessage
-          message={alert.message}
-          alertType={alert.alertType as AlertType}
-        />
+        <div>
+          <div className="flex items-center gap-[5px]">
+            <input
+              id="isTnCChecked"
+              type="checkbox"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              checked={formik.values.isTnCChecked}
+              onClick={() => setIsTnCOpen(true)}
+            />
+            <div onClick={() => setIsTnCOpen(true)} className="cursor-pointer">
+              <p className="text-nxu-charging-white">
+                I have read and agree to the Terms and Conditions
+              </p>
+            </div>
+          </div>
 
-        <Button
-          loading={loading}
-          onClick={() => {
-            if (billingPlan.billingPlan.toLowerCase() === "transaction") {
-              setLoading(true);
-              updateUserProfile({
-                ...user,
-                billingPlanId: billingPlan.id,
-                billingPlan,
-              })
-                .then(() => {
-                  setAlert({
-                    message: "Successfully updated plan.",
-                    alertType: "success",
-                  });
-                  mutate({ billingPlan });
-                })
-                .catch((_err) =>
-                  setAlert({
-                    message: "Failed to update billing plan.",
-                    alertType: "error",
-                  })
-                )
-                .finally(() => setLoading(false));
-            }
+          {errors.isTnCChecked && touched.isTnCChecked && (
+            <p className="text-red-500 text-xs italic">{errors.isTnCChecked}</p>
+          )}
+        </div>
 
-            if (billingPlan.billingPlan.toLowerCase() === "subscription")
-              navigate("/subscription-plans");
-          }}
-        >
+        <Button type="submit" loading={loading}>
           Update Plan
         </Button>
 
         <Button onClick={() => navigate("/dashboard")}>Back to Account</Button>
-      </div>
+      </form>
     </div>
   );
 }

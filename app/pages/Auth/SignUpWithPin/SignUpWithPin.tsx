@@ -96,10 +96,10 @@ const SignUpWithPin: FC = () => {
         setRequestHeader(res.data.token);
         localStorage.setItem("appToken", res.data.token);
         clearCachedForm();
-        navigate("/profile-creditcard?signup=success");
+        navigate("/profile-creditcard");
         setLoading(false);
       })
-      .then(() => toast("Successfully signed up!", "success"))
+      .then(() => toast.success("Successfully signed up!"))
       .catch((err) => {
         setErrors({ page: err.response?.data });
         setLoading(false);
@@ -183,7 +183,8 @@ const SignUpWithPin: FC = () => {
               />
               {isPasswordFocus && !errors.pinCode && (
                 <label className="text-nxu-charging-white text-[12px]">
-                  Password must be at least 7 characters with alphabets and numbers.
+                  Password must be at least 7 characters with alphabets and
+                  numbers.
                 </label>
               )}
               {errors.pinCode && (
@@ -203,7 +204,8 @@ const SignUpWithPin: FC = () => {
               />
               {isConfirmPasswordFocus && !errors.pinConfirmCode && (
                 <label className="text-nxu-charging-white text-[12px]">
-                  Confirm Password must be at least 7 characters with alphabets and numbers.
+                  Confirm Password must be at least 7 characters with alphabets
+                  and numbers.
                 </label>
               )}
               {errors.pinConfirmCode && (

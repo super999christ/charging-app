@@ -8,7 +8,6 @@ import {
 import { useNavigate } from "react-router";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { useFormik } from "formik";
-import ResultMessage, { AlertType } from "@root/components/ResultMessage";
 import useSWR from "swr";
 import useToast from "@root/hooks/useToast";
 import useAuth from "@root/hooks/useAuth";
@@ -31,7 +30,6 @@ export default function SubscriptionPlan() {
 
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
-  const [alert, setAlert] = useState({ message: "", alertType: "" });
 
   const formik = useFormik({
     initialValues: {
@@ -44,10 +42,7 @@ export default function SubscriptionPlan() {
 
       setupSubscriptionPlan({ vehicleCount })
         .then(() => {
-          setAlert({
-            message: "Successfully setup subscription plan.",
-            alertType: "success",
-          });
+          toast.success("Successfully setup subscription plan.");
 
           navigate("/billing-plans");
           mutate({
@@ -55,14 +50,9 @@ export default function SubscriptionPlan() {
               (p) => p.billingPlan.toLowerCase() === "subscription"
             ),
           });
-          toast("Successfully setup subscription plan.", "success");
+          toast.success("Successfully setup subscription plan.");
         })
-        .catch((_err) =>
-          setAlert({
-            message: "Failed to setup subscription plan.",
-            alertType: "error",
-          })
-        )
+        .catch((_err) => toast.error("Failed to setup subscription plan."))
         .finally(() => setLoading(false));
     },
     validate: (values: any) => {
@@ -134,11 +124,9 @@ export default function SubscriptionPlan() {
                 onClick={() => setIsTnCOpen(true)}
                 className="cursor-pointer"
               >
-                {
-                  <p className="text-nxu-charging-white">
-                    I have read and agree to the Terms and Conditions
-                  </p>
-                }
+                <p className="text-nxu-charging-white">
+                  I have read and agree to the Terms and Conditions
+                </p>
               </div>
             </div>
 
@@ -148,11 +136,6 @@ export default function SubscriptionPlan() {
               </p>
             )}
           </div>
-
-          <ResultMessage
-            message={alert.message}
-            alertType={alert.alertType as AlertType}
-          />
 
           <Button type="submit" loading={loading}>
             Confirm

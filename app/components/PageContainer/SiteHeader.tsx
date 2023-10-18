@@ -1,10 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { ReactComponent as LogoIcon } from "../../assets/newLogo.svg";
 import { ReactComponent as FlagIcon } from "../../assets/flag.svg";
 import { ReactComponent as ProfileIcon } from "../../assets/profile.svg";
-import { validateToken } from "@root/validations";
 
 const SiteHeader: FC = () => {
   const currentLocation = useLocation();
