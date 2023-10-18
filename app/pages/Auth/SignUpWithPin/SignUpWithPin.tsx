@@ -96,7 +96,7 @@ const SignUpWithPin: FC = () => {
         setRequestHeader(res.data.token);
         localStorage.setItem("appToken", res.data.token);
         clearCachedForm();
-        navigate("/profile-creditcard?signup=success");
+        navigate("/profile-creditcard");
         setLoading(false);
       })
       .then(() => toast.success("Successfully signed up!"))
