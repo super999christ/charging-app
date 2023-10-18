@@ -29,13 +29,14 @@ export default function SubscriptionPlanTermsConditions({
 
           <p className="mb-5">
             By selecting “Confirm” below to sign up for this Nxu Subscription,
-            you agree that Nxu, Inc may charge the monthly fee monthly fee of
-            “$70” to the credit card on file in your user profile. Your first
-            month will be prorated, after which you will be charged the full
-            subscription fee on the first day of each subsequent month. While
-            subscribed, you will receive discounted pricing at Nxu’s network of
-            electric vehicle charging stations, in the amounts determined by Nxu
-            in each region. Discounts may vary depending on the region.{" "}
+            you agree that Nxu, Inc may charge the monthly fee of “$69.99” to
+            the credit card on file in your user profile. Your first month will
+            be prorated, after which you will be charged the full subscription
+            fee on the first day of each subsequent month. While subscribed, you
+            will receive discounted pricing or unlimited free charging at Nxu’s
+            network of electric vehicle charging stations, in the amounts
+            determined by Nxu in each region. Discounts may vary depending on
+            the region. Discounts may vary depending on the region.
           </p>
 
           <p className="mb-5">
@@ -47,8 +48,9 @@ export default function SubscriptionPlanTermsConditions({
 
           <p className="mb-5">
             There is no minimum purchase obligation for this subscription, so
-            the specified discounts will remain in effect regardless of how many
-            charging sessions you purchase during the subscription term.
+            the specified discounts, or free charging will remain in effect
+            regardless of how many charging sessions you purchase during the
+            subscription term.
           </p>
 
           <p className="mb-5">
@@ -60,12 +62,22 @@ export default function SubscriptionPlanTermsConditions({
 
           <p className="mb-5">
             Once you cancel your Nxu Subscription plan, you will no longer
-            receive subscription discounts on Nxu Charging.
+            receive subscription discounts, or free charging on Nxu Charging
+            Solutions.
           </p>
 
           <p className="mb-5">
             Nxu Subscription fees already paid for the current month are
             non-refundable.
+          </p>
+
+          <p className="mb-5">
+            We reserve the right to change the monthly subscription fee at any
+            time. If we decide to change the monthly subscription fee, we will
+            notify you. The next time you log into your Nxu account, you will
+            have the opportunity to review the new terms and conditions and
+            monthly subscription fee. If you decide to cancel your subscription,
+            your account will automatically revert back to transaction charging.
           </p>
         </div>
 
