@@ -90,9 +90,8 @@ function Page() {
         updateUserCreditCard(res.paymentMethod!.id).then(() => {
           getCreditCard().then((cc) => {
             setLoading(false);
-            toast(
-              "Credit Card setup successful. Re-directing to Charge page.",
-              "success"
+            toast.success(
+              "Credit Card setup successful. Re-directing to Charge page."
             );
             mutate({ ...cc });
             navigate("/charging-login");
@@ -100,7 +99,7 @@ function Page() {
         });
       })
       .catch((_err) => {
-        toast("Failed to update credit card");
+        toast.error("Failed to update credit card");
         setLoading(false);
         setDisplayAddCardMsg(true);
       });

@@ -2,7 +2,6 @@ import { setRequestHeader } from "../../utils";
 import GlobalRouter from "../../routes/Router";
 import "./App.css";
 import { validateToken } from "../../validations";
-import ToastProvider from "@root/routes/ToastProvider";
 import SiteContainer from "../PageContainer/SiteContainer";
 
 function App() {
@@ -12,9 +11,7 @@ function App() {
 
   return (
     <SiteContainer>
-      <ToastProvider>
-        <GlobalRouter />
-      </ToastProvider>
+      <GlobalRouter />
     </SiteContainer>
   );
 }
