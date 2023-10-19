@@ -33,9 +33,10 @@ export default function BillingPlans() {
     suspense: true,
   });
 
-  const [billingPlan, setBillingPlan] = useState(user.billingPlan);
+  const [selectedPlan, setSelectedPlan] = useState(user.billingPlan);
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
+  const currentPlan = user.billingPlan;
 
   const formik = useFormik({
     initialValues: {
@@ -43,35 +44,38 @@ export default function BillingPlans() {
     },
     validate: (values: any) => {
       const errors: any = {};
+
+      if (currentPlan.billingPlan === "Subscription") return errors;
+
       if (!values.isTnCChecked)
         errors.isTnCChecked = "You must agree to the terms and conditions.";
 
       return errors;
     },
     onSubmit: (_values: Values) => {
-      if (billingPlan.billingPlan.toLowerCase() === "transaction") {
+      if (selectedPlan.billingPlan === "Transaction") {
         setLoading(true);
         updateUserProfile({
           ...user,
-          billingPlanId: billingPlan.id,
-          billingPlan,
+          billingPlanId: selectedPlan.id,
+          billingPlan: selectedPlan,
         })
           .then(() => {
             toast.success("Successfully updated plan.");
-            mutate({ billingPlan });
+            mutate({ billingPlan: selectedPlan });
           })
           .catch((_err) => toast.error("Failed to update billing plan."))
           .finally(() => setLoading(false));
       }
 
-      if (billingPlan.billingPlan.toLowerCase() === "subscription") {
+      if (selectedPlan.billingPlan === "Subscription") {
         setLoading(true);
         setupSubscriptionPlan({ vehicleCount: 1 })
           .then(() => {
             toast.success("Successfully setup subscription plan.");
             mutate({
               billingPlan: billingPlans.find(
-                (p) => p.billingPlan.toLowerCase() === "subscription"
+                (p) => p.billingPlan === "Subscription"
               ),
             });
           })
@@ -116,21 +120,17 @@ export default function BillingPlans() {
         {creditCard && (
           <>
             <p className="text-white text-center">
-              Current Plan: {user.billingPlan.billingPlan}
+              Current Plan: {currentPlan.billingPlan}
             </p>
 
             <div className="flex items-center mb-4">
               <input
-                checked={
-                  billingPlan.billingPlan.toLowerCase() === "transaction"
-                }
+                checked={selectedPlan.billingPlan === "Transaction"}
                 id="default-radio-1"
                 type="radio"
                 onChange={(e) =>
-                  setBillingPlan(
-                    billingPlans.find(
-                      (p) => p.billingPlan.toLowerCase() === "transaction"
-                    )!
+                  setSelectedPlan(
+                    billingPlans.find((p) => p.billingPlan === "Transaction")!
                   )
                 }
                 name="default-radio"
@@ -147,15 +147,11 @@ export default function BillingPlans() {
 
             <div className="flex items-center">
               <input
-                checked={
-                  billingPlan.billingPlan.toLowerCase() === "subscription"
-                }
+                checked={selectedPlan.billingPlan === "Subscription"}
                 id="default-radio-2"
                 onChange={(e) =>
-                  setBillingPlan(
-                    billingPlans.find(
-                      (p) => p.billingPlan.toLowerCase() === "subscription"
-                    )!
+                  setSelectedPlan(
+                    billingPlans.find((p) => p.billingPlan === "Subscription")!
                   )
                 }
                 type="radio"
@@ -173,31 +169,33 @@ export default function BillingPlans() {
               </label>
             </div>
 
-            <div className="ml-5">
-              <div className="flex items-center gap-[5px]">
-                <input
-                  id="isTnCChecked"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  checked={formik.values.isTnCChecked}
-                  onClick={() => setIsTnCOpen(true)}
-                />
-                <div
-                  onClick={() => setIsTnCOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <p className="text-nxu-charging-white">
-                    I have read and agree to the Terms and Conditions
-                  </p>
+            {currentPlan.billingPlan !== "Subscription" && (
+              <div className="ml-5">
+                <div className="flex items-center gap-[5px]">
+                  <input
+                    id="isTnCChecked"
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    checked={formik.values.isTnCChecked}
+                    onClick={() => setIsTnCOpen(true)}
+                  />
+                  <div
+                    onClick={() => setIsTnCOpen(true)}
+                    className="cursor-pointer"
+                  >
+                    <p className="text-nxu-charging-white">
+                      I have read and agree to the Terms and Conditions
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {errors.isTnCChecked && touched.isTnCChecked && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.isTnCChecked}
-                </p>
-              )}
-            </div>
+                {errors.isTnCChecked && touched.isTnCChecked && (
+                  <p className="text-red-500 text-xs italic">
+                    {errors.isTnCChecked}
+                  </p>
+                )}
+              </div>
+            )}
 
             <Button type="submit" loading={loading}>
               Update Plan

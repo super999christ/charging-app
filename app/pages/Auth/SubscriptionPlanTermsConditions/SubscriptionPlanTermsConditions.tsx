@@ -29,7 +29,7 @@ export default function SubscriptionPlanTermsConditions({
 
           <p className="mb-5">
             By selecting “Confirm” below to sign up for this Nxu Subscription,
-            you agree that Nxu, Inc may charge the monthly fee of “$69.99” to
+            you agree that Nxu, Inc may charge the monthly fee of “$69.00” to
             the credit card on file in your user profile. Your first month will
             be prorated, after which you will be charged the full subscription
             fee on the first day of each subsequent month. While subscribed, you
