@@ -14,6 +14,9 @@ services:
       VITE_SERVICE_CHARGING_EVENT_URL: http://charging-events:3000
       VITE_SERVICE_PAYMENT_URL: http://payments:3000
       VITE_STRIPE_PUBLISHABLE_KEY: pk_test_51O20pPGVeGfd6ixFmGvd6kyeVCSJFBO4d23pxSxPW14Gb50ItqtyhWS19uxYRJQTi3Ldwb5qzH4McVpiNEvp0c9W00vge9fr1M
+      VITE_AWS_RUM_GUEST_ROLE_ARN: "arn:aws:iam::101265448075:role/RUM-Monitor-us-west-2-101265448075-7086450273961-Unauth"
+      VITE_AWS_RUM_IDENTITY_POOL_ID: "us-west-2:1faab99b-11ab-4924-870b-a3a17dc0ccb3"
+      VITE_AWS_RUM_APPLICATION_ID: "9df9af97-ea9a-431d-9d9d-602956ee56dd"
       VITE_CHARGE_STATUS_INTERVAL: 3000
 
   user-management:
@@ -56,6 +59,7 @@ services:
       SERVICE_CHARGING_IOT_COMPLETE_CHG_URL: http://iot:80
       PROMO1_FROM_DATE: 09/28/2023
       PROMO1_TO_DATE: 10/01/2023
+      PAYMENTS_PROCESSING_CRON_SCHEDULE: "*/2 * * * *"
 
       POSTGRES_HOST: stage-db-psql-charging-1.cizjbxfi5ccd.us-west-2.rds.amazonaws.com
       POSTGRES_PORT: 5432
