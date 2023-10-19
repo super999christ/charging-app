@@ -17,6 +17,15 @@ const Environment = {
   VITE_STRIPE_PUBLISHABLE_KEY: String(
     import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   ),
+  VITE_AWS_RUM_GUEST_ROLE_ARN: String(
+    import.meta.env.VITE_AWS_RUM_GUEST_ROLE_ARN
+  ),
+  VITE_AWS_RUM_IDENTITY_POOL_ID: String(
+    import.meta.env.VITE_AWS_RUM_IDENTITY_POOL_ID
+  ),
+  VITE_AWS_RUM_APPLICATION_ID: String(
+    import.meta.env.VITE_AWS_RUM_APPLICATION_ID
+  ),
 };
 
 export default Environment;

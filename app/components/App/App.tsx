@@ -4,19 +4,20 @@ import "./App.css";
 import { validateToken } from "../../validations";
 import SiteContainer from "../PageContainer/SiteContainer";
 import { AwsRum, AwsRumConfig } from "aws-rum-web";
+import Environment from "@root/configs/env";
 
 try {
   const config: AwsRumConfig = {
     sessionSampleRate: 1,
-    guestRoleArn: import.meta.env.VITE_AWS_RUM_GUEST_ROLE_ARN,
-    identityPoolId: import.meta.env.VITE_AWS_RUM_IDENTITY_POOL_ID,
+    guestRoleArn: Environment.VITE_AWS_RUM_GUEST_ROLE_ARN,
+    identityPoolId: Environment.VITE_AWS_RUM_IDENTITY_POOL_ID,
     endpoint: "https://dataplane.rum.us-west-2.amazonaws.com",
     telemetries: ["performance", "errors", "http"],
     allowCookies: false,
     enableXRay: false,
   };
 
-  const APPLICATION_ID: string = import.meta.env.VITE_AWS_RUM_APPLICATION_ID;
+  const APPLICATION_ID: string = Environment.VITE_AWS_RUM_APPLICATION_ID;
   const APPLICATION_VERSION: string = "1.0.0";
   const APPLICATION_REGION: string = "us-west-2";
 
