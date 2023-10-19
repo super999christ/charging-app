@@ -35,10 +35,10 @@ services:
       CUSTOMER_PROCESSING_CRON_SCHEDULE: "*/10 * * * *"
 
       POSTGRES_HOST: stage-db-psql-charging-1.cizjbxfi5ccd.us-west-2.rds.amazonaws.com
-            POSTGRES_PORT: 5432
+      POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: MD2P!JcBlktnGz!P]y5LG?r}o5k[
-            POSTGRES_DB: nxuenergy
+      POSTGRES_DB: nxuenergy
     ports:
       - 3003:3000
     depends_on:
@@ -59,12 +59,13 @@ services:
       SERVICE_CHARGING_IOT_COMPLETE_CHG_URL: http://iot:80
       PROMO1_FROM_DATE: 09/28/2023
       PROMO1_TO_DATE: 10/01/2023
+      PAYMENTS_PROCESSING_CRON_SCHEDULE: "*/2 * * * *"
 
       POSTGRES_HOST: stage-db-psql-charging-1.cizjbxfi5ccd.us-west-2.rds.amazonaws.com
-            POSTGRES_PORT: 5432
+      POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: MD2P!JcBlktnGz!P]y5LG?r}o5k[
-            POSTGRES_DB: nxuenergy
+      POSTGRES_DB: nxuenergy
     ports:
       - 3004:3000
     depends_on:
