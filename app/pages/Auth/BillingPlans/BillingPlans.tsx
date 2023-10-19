@@ -14,7 +14,6 @@ import useToast from "@root/hooks/useToast";
 import { useFormik } from "formik";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
 import { Link } from "react-router-dom";
-import { decodeToken } from "@root/validations";
 
 interface Values {
   isTnCChecked: boolean;
@@ -106,8 +105,8 @@ export default function BillingPlans() {
 
         {!creditCard && (
           <div className="text-nxu-charging-white text-[14px]">
-            Credit Card is required for managing billing plans. Please
-            enter your credit card information in your{" "}
+            Credit Card is required for managing billing plans. Please enter
+            your credit card information in your{" "}
             <Link to={`/profile-creditcard`} className="text-nxu-charging-gold">
               account profile
             </Link>
@@ -122,7 +121,9 @@ export default function BillingPlans() {
 
             <div className="flex items-center mb-4">
               <input
-                checked={billingPlan.billingPlan.toLowerCase() === "transaction"}
+                checked={
+                  billingPlan.billingPlan.toLowerCase() === "transaction"
+                }
                 id="default-radio-1"
                 type="radio"
                 onChange={(e) =>
@@ -139,14 +140,16 @@ export default function BillingPlans() {
                 htmlFor="default-radio-1"
                 className="ml-2 text-sm font-medium text-white"
               >
-                Transactional Plan: pay per charging session/transaction billed to
-                the credit card on file after a charge is complete
+                Transactional Plan: pay per charging session/transaction billed
+                to the credit card on file after a charge is complete
               </label>
             </div>
 
             <div className="flex items-center">
               <input
-                checked={billingPlan.billingPlan.toLowerCase() === "subscription"}
+                checked={
+                  billingPlan.billingPlan.toLowerCase() === "subscription"
+                }
                 id="default-radio-2"
                 onChange={(e) =>
                   setBillingPlan(
@@ -164,9 +167,9 @@ export default function BillingPlans() {
                 className="ml-2 text-sm font-medium text-white"
               >
                 Subscription Plan: monthly fee of $69.99, for multiple charging
-                sessions billed to the credit card on file. First month is prorated
-                amount, subsequent months is a full fee billed on the first day of
-                month. Please see T&Cs for all details.
+                sessions billed to the credit card on file. First month is
+                prorated amount, subsequent months is a full fee billed on the
+                first day of month. Please see T&Cs for all details.
               </label>
             </div>
 
@@ -179,7 +182,10 @@ export default function BillingPlans() {
                   checked={formik.values.isTnCChecked}
                   onClick={() => setIsTnCOpen(true)}
                 />
-                <div onClick={() => setIsTnCOpen(true)} className="cursor-pointer">
+                <div
+                  onClick={() => setIsTnCOpen(true)}
+                  className="cursor-pointer"
+                >
                   <p className="text-nxu-charging-white">
                     I have read and agree to the Terms and Conditions
                   </p>
@@ -187,7 +193,9 @@ export default function BillingPlans() {
               </div>
 
               {errors.isTnCChecked && touched.isTnCChecked && (
-                <p className="text-red-500 text-xs italic">{errors.isTnCChecked}</p>
+                <p className="text-red-500 text-xs italic">
+                  {errors.isTnCChecked}
+                </p>
               )}
             </div>
 
