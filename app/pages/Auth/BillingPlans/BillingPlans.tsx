@@ -99,11 +99,8 @@ export default function BillingPlans() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-7">
-      <form
-        onSubmit={formik.handleSubmit}
-        className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]"
-      >
-        <div className="py-[35px] w-full text-center text-white font-extrabold text-4xl">
+      <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
+        <div className="py-4 w-full text-center text-white font-extrabold text-4xl">
           NXU Billing Plans
         </div>
 
@@ -118,12 +115,12 @@ export default function BillingPlans() {
         )}
 
         {creditCard && (
-          <>
+          <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
             <p className="text-white text-center">
               Current Plan: {currentPlan.billingPlan}
             </p>
 
-            <div className="flex items-center mb-4">
+            <div className="flex items-center">
               <input
                 checked={selectedPlan.billingPlan === "Transaction"}
                 id="default-radio-1"
@@ -200,11 +197,11 @@ export default function BillingPlans() {
             <Button type="submit" loading={loading}>
               Update Plan
             </Button>
-          </>
+          </form>
         )}
 
         <Button onClick={() => navigate("/dashboard")}>Back to Account</Button>
-      </form>
+      </div>
     </div>
   );
 }
