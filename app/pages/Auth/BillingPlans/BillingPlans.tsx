@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "@root/components/Button";
 import {
   getBillingPlans,
+  getCreditCard,
   getUserProfile,
   setupSubscriptionPlan,
   updateUserProfile,
@@ -12,6 +13,8 @@ import useAuth from "@root/hooks/useAuth";
 import useToast from "@root/hooks/useToast";
 import { useFormik } from "formik";
 import SubscriptionPlanTermsConditions from "../SubscriptionPlanTermsConditions/SubscriptionPlanTermsConditions";
+import { Link } from "react-router-dom";
+import { decodeToken } from "@root/validations";
 
 interface Values {
   isTnCChecked: boolean;
@@ -25,6 +28,9 @@ export default function BillingPlans() {
     suspense: true,
   });
   const { data: user, mutate } = useSWR("user", getUserProfile, {
+    suspense: true,
+  });
+  const { data: creditCard } = useSWR("creditCard", getCreditCard, {
     suspense: true,
   });
 
@@ -98,84 +104,98 @@ export default function BillingPlans() {
           NXU Billing Plans
         </div>
 
-        <p className="text-white text-center">
-          Current Plan: {user.billingPlan.billingPlan}
-        </p>
-
-        <div className="flex items-center mb-4">
-          <input
-            checked={billingPlan.billingPlan.toLowerCase() === "transaction"}
-            id="default-radio-1"
-            type="radio"
-            onChange={(e) =>
-              setBillingPlan(
-                billingPlans.find(
-                  (p) => p.billingPlan.toLowerCase() === "transaction"
-                )!
-              )
-            }
-            name="default-radio"
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label
-            htmlFor="default-radio-1"
-            className="ml-2 text-sm font-medium text-white"
-          >
-            Transactional Plan: pay per charging session/transaction billed to
-            the credit card on file after a charge is complete
-          </label>
-        </div>
-
-        <div className="flex items-center">
-          <input
-            checked={billingPlan.billingPlan.toLowerCase() === "subscription"}
-            id="default-radio-2"
-            onChange={(e) =>
-              setBillingPlan(
-                billingPlans.find(
-                  (p) => p.billingPlan.toLowerCase() === "subscription"
-                )!
-              )
-            }
-            type="radio"
-            name="default-radio"
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label
-            htmlFor="default-radio-2"
-            className="ml-2 text-sm font-medium text-white"
-          >
-            Subscription Plan: monthly fee of $69.99, for multiple charging
-            sessions billed to the credit card on file. First month is prorated
-            amount, subsequent months is a full fee billed on the first day of
-            month. Please see T&Cs for all details.
-          </label>
-        </div>
-
-        <div>
-          <div className="flex items-center gap-[5px]">
-            <input
-              id="isTnCChecked"
-              type="checkbox"
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              checked={formik.values.isTnCChecked}
-              onClick={() => setIsTnCOpen(true)}
-            />
-            <div onClick={() => setIsTnCOpen(true)} className="cursor-pointer">
-              <p className="text-nxu-charging-white">
-                I have read and agree to the Terms and Conditions
-              </p>
-            </div>
+        {!creditCard && (
+          <div className="text-nxu-charging-white text-[14px]">
+            Credit Card is required for managing billing plans. Please
+            enter your credit card information in your{" "}
+            <Link to={`/profile-creditcard`} className="text-nxu-charging-gold">
+              account profile
+            </Link>
           </div>
+        )}
 
-          {errors.isTnCChecked && touched.isTnCChecked && (
-            <p className="text-red-500 text-xs italic">{errors.isTnCChecked}</p>
-          )}
-        </div>
+        {creditCard && (
+          <>
+            <p className="text-white text-center">
+              Current Plan: {user.billingPlan.billingPlan}
+            </p>
 
-        <Button type="submit" loading={loading}>
-          Update Plan
-        </Button>
+            <div className="flex items-center mb-4">
+              <input
+                checked={billingPlan.billingPlan.toLowerCase() === "transaction"}
+                id="default-radio-1"
+                type="radio"
+                onChange={(e) =>
+                  setBillingPlan(
+                    billingPlans.find(
+                      (p) => p.billingPlan.toLowerCase() === "transaction"
+                    )!
+                  )
+                }
+                name="default-radio"
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label
+                htmlFor="default-radio-1"
+                className="ml-2 text-sm font-medium text-white"
+              >
+                Transactional Plan: pay per charging session/transaction billed to
+                the credit card on file after a charge is complete
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                checked={billingPlan.billingPlan.toLowerCase() === "subscription"}
+                id="default-radio-2"
+                onChange={(e) =>
+                  setBillingPlan(
+                    billingPlans.find(
+                      (p) => p.billingPlan.toLowerCase() === "subscription"
+                    )!
+                  )
+                }
+                type="radio"
+                name="default-radio"
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label
+                htmlFor="default-radio-2"
+                className="ml-2 text-sm font-medium text-white"
+              >
+                Subscription Plan: monthly fee of $69.99, for multiple charging
+                sessions billed to the credit card on file. First month is prorated
+                amount, subsequent months is a full fee billed on the first day of
+                month. Please see T&Cs for all details.
+              </label>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-[5px]">
+                <input
+                  id="isTnCChecked"
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  checked={formik.values.isTnCChecked}
+                  onClick={() => setIsTnCOpen(true)}
+                />
+                <div onClick={() => setIsTnCOpen(true)} className="cursor-pointer">
+                  <p className="text-nxu-charging-white">
+                    I have read and agree to the Terms and Conditions
+                  </p>
+                </div>
+              </div>
+
+              {errors.isTnCChecked && touched.isTnCChecked && (
+                <p className="text-red-500 text-xs italic">{errors.isTnCChecked}</p>
+              )}
+            </div>
+
+            <Button type="submit" loading={loading}>
+              Update Plan
+            </Button>
+          </>
+        )}
 
         <Button onClick={() => navigate("/dashboard")}>Back to Account</Button>
       </form>
