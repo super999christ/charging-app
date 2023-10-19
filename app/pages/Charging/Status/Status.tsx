@@ -40,6 +40,7 @@ interface IChargeStatus {
   sessionTotalDuration: number;
   sessionTotalCost: string;
   promoted?: boolean;
+  billingPlanId?: number;
 }
 
 type AlertType = "success" | "info" | "error";
@@ -88,6 +89,23 @@ const Status: FC = () => {
     return () => clearInterval(timer);
   }, [isTimerRunning]);
 
+  const getSuccessCompleteMessage = (data: IChargeStatus) => {
+    if (data.billingPlanId === 2) { // subscription plan
+      return "Successfully completed charging. You are on the Subscription billing plan, transaction will not be charged to the credit card on file.";
+    }
+    return "Successfully completed charging. Transaction will be charged to the credit card on file. Please remove the charge handle from the vehicle.";
+  }
+
+  const getSuccessStopMessage = (data: IChargeStatus) => {
+    if (data.billingPlanId === 2) { // subscription plan
+      return "Successfully stopped charging. You are on the Subscription billing plan, transaction will not be charged to the credit card on file.";
+    }
+    if (data.sessionTotalCost) {
+      return "Successfully stopped charging. Transaction will be charged to the credit card on file. Please remove charge handle from the vehicle and retry charging later.";
+    }
+    return "Successfully stopped charging. No payment was made to the credit card. Please remove charge handle from the vehicle and retry charging later.";
+  }
+
   const checkStatus = async (forced: boolean = false) => {
     try {
       if (!forced) {
@@ -126,9 +144,7 @@ const Status: FC = () => {
       ) {
         setTimerRunning(false);
         if (data.sessionTotalCost)
-          setAlertMsg(
-            "Successfully completed charging. Transaction will be charged to the credit card on file. Please remove the charge handle from the vehicle."
-          );
+          setAlertMsg(getSuccessCompleteMessage(data));
         else
           setAlertMsg(
             "Vehicle not requesting any power, and no payment charged."
@@ -137,9 +153,7 @@ const Status: FC = () => {
       } else {
         if (data.sessionStatus === "idle") {
           if (data.sessionTotalCost)
-            setAlertMsg(
-              "Successfully completed charging. Transaction will be charged to the credit card on file. Please remove the charge handle from the vehicle."
-            );
+            setAlertMsg(getSuccessCompleteMessage(data));
           else
             setAlertMsg(
               "Vehicle not requesting any power, and no payment charged."
@@ -164,18 +178,11 @@ const Status: FC = () => {
           data.sessionStatus === "stopped" ||
           data.sessionStatus === "stopped_sub"
         ) {
-          if (data.sessionTotalCost)
-            setAlertMsg(
-              "Successfully stopped charging. Transaction will be charged to the credit card on file. Please remove charge handle from the vehicle and retry charging later."
-            );
-          else
-            setAlertMsg(
-              "Successfully stopped charging. No payment was made to the credit card. Please remove charge handle from the vehicle and retry charging later."
-            );
+          setAlertMsg(getSuccessStopMessage(data));
           setAlertType("success");
           setTimerRunning(false);
         } else if (data.sessionStatus === "payment_error") {
-          setAlertMsg("Successfully completed charging. Transaction will be charged to the credit card on file. Please remove the charge handle from the vehicle.")
+          setAlertMsg(getSuccessCompleteMessage(data));
           setAlertType("success");
           setTimerRunning(false);
         }
