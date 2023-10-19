@@ -3,14 +3,20 @@ import { decodeToken, validateToken } from "../../../validations";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router";
 import useAuth from "@root/hooks/useAuth";
+import useSWR from "swr";
+import { getCreditCard } from "@root/helpers";
 
 const AuthDashboard: FC = () => {
   const navigate = useNavigate();
   useAuth();
 
-  const { subscription_customer, payment_attached } = decodeToken(
+  const { subscription_customer } = decodeToken(
     localStorage.getItem("appToken") || ""
   );
+
+  const { data: creditCard } = useSWR("creditCard", getCreditCard, {
+    suspense: true,
+  });
 
   return (
     <div className="flex flex-col h-full justify-center items-center gap-4 pt-5">
@@ -18,7 +24,7 @@ const AuthDashboard: FC = () => {
 
       <Button onClick={() => navigate("/profile")}>Profile</Button>
 
-      {subscription_customer && payment_attached && (
+      {subscription_customer && creditCard && (
         <Button onClick={() => navigate("/billing-plans")}>
           Billing Plans
         </Button>

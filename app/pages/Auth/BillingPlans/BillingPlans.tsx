@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "@root/components/Button";
 import {
   getBillingPlans,
+  getCreditCard,
   getUserProfile,
   setupSubscriptionPlan,
   updateUserProfile,
@@ -29,14 +30,13 @@ export default function BillingPlans() {
   const { data: user, mutate } = useSWR("user", getUserProfile, {
     suspense: true,
   });
+  const { data: creditCard } = useSWR("creditCard", getCreditCard, {
+    suspense: true,
+  });
 
   const [billingPlan, setBillingPlan] = useState(user.billingPlan);
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
-
-  const { payment_attached } = decodeToken(
-    localStorage.getItem("appToken") || ""
-  );
 
   const formik = useFormik({
     initialValues: {
@@ -104,7 +104,7 @@ export default function BillingPlans() {
           NXU Billing Plans
         </div>
 
-        {!payment_attached && (
+        {!creditCard && (
           <div className="text-nxu-charging-white text-[14px]">
             Credit Card is required for managing billing plans. Please
             enter your credit card information in your{" "}
@@ -114,7 +114,7 @@ export default function BillingPlans() {
           </div>
         )}
 
-        {payment_attached && (
+        {creditCard && (
           <>
             <p className="text-white text-center">
               Current Plan: {user.billingPlan.billingPlan}
