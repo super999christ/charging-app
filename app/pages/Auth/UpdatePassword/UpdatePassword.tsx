@@ -21,14 +21,7 @@ const UpdatePassword: FC = () => {
   const [errors, setErrors] = useState<Partial<IUpdatePasswordErrors>>({});
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get("userId") || "";
-
   useAuth();
-
-  useEffect(() => {
-    if (!userId) navigate("/profile");
-  }, [userId]);
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";
@@ -46,7 +39,7 @@ const UpdatePassword: FC = () => {
 
     // token check
     try {
-      await updateUserPassword(userId, password);
+      await updateUserPassword(password);
       navigate("/profile");
     } catch (err) {
       if (err instanceof AxiosError) setErrors({ page: err.response?.data });
