@@ -97,9 +97,9 @@ const SignUpWithPin: FC = () => {
         localStorage.setItem("appToken", res.data.token);
         clearCachedForm();
         navigate("/profile-creditcard");
+        toast.success("Successfully signed up!");
         setLoading(false);
       })
-      .then(() => toast.success("Successfully signed up!"))
       .catch((err) => {
         setErrors({ page: err.response?.data });
         setLoading(false);

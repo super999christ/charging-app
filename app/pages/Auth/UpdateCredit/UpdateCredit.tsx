@@ -90,9 +90,9 @@ function Page() {
         updateUserCreditCard(res.paymentMethod!.id).then(() => {
           getCreditCard().then((cc) => {
             setLoading(false);
-            toast.success("Successfully updated Credit Card.");
             mutate({ ...cc });
             navigate("/charging-login");
+            toast.success("Successfully updated Credit Card.");
           });
         });
       })
