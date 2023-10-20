@@ -137,8 +137,8 @@ export default function BillingPlans() {
                 htmlFor="default-radio-1"
                 className="ml-2 text-sm font-medium text-white"
               >
-                Transactional Plan: pay per charging session/transaction billed
-                to the credit card on file after a charge is complete
+                Transaction Plan: pay per charging session/transaction billed to
+                the credit card on file after a charge is complete
               </label>
             </div>
 
@@ -166,33 +166,34 @@ export default function BillingPlans() {
               </label>
             </div>
 
-            {currentPlan.billingPlan !== "Subscription" && (
-              <div className="ml-5">
-                <div className="flex items-center gap-[5px]">
-                  <input
-                    id="isTnCChecked"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    checked={formik.values.isTnCChecked}
-                    onClick={() => setIsTnCOpen(true)}
-                  />
-                  <div
-                    onClick={() => setIsTnCOpen(true)}
-                    className="cursor-pointer"
-                  >
-                    <p className="text-nxu-charging-white">
-                      I have read and agree to the Terms and Conditions
-                    </p>
+            {currentPlan.billingPlan === "Transaction" &&
+              selectedPlan.billingPlan === "Subscription" && (
+                <div className="ml-5">
+                  <div className="flex items-center gap-[5px]">
+                    <input
+                      id="isTnCChecked"
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      checked={formik.values.isTnCChecked}
+                      onClick={() => setIsTnCOpen(true)}
+                    />
+                    <div
+                      onClick={() => setIsTnCOpen(true)}
+                      className="cursor-pointer"
+                    >
+                      <p className="text-nxu-charging-white">
+                        I have read and agree to the Terms and Conditions
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                {errors.isTnCChecked && touched.isTnCChecked && (
-                  <p className="text-red-500 text-xs italic">
-                    {errors.isTnCChecked}
-                  </p>
-                )}
-              </div>
-            )}
+                  {errors.isTnCChecked && touched.isTnCChecked && (
+                    <p className="text-red-500 text-xs italic">
+                      {errors.isTnCChecked}
+                    </p>
+                  )}
+                </div>
+              )}
 
             <Button type="submit" loading={loading}>
               Update Plan

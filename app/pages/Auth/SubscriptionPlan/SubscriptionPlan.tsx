@@ -42,8 +42,6 @@ export default function SubscriptionPlan() {
 
       setupSubscriptionPlan({ vehicleCount })
         .then(() => {
-          toast.success("Successfully setup subscription plan.");
-
           navigate("/billing-plans");
           mutate({
             billingPlan: billingPlans.find(
