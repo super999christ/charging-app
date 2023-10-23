@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
-import { useSearchParams } from "react-router-dom";
 
 import {
   validateProfilePasswordForm,
