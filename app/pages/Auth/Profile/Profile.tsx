@@ -72,7 +72,7 @@ const Profile: FC = () => {
           <div className="flex flex-row gap-5">
             <Button
               className="w-[calc(50%_-_10px)] px-[23px]"
-              onClick={() => navigate(`/profile-password?userId=${user.id}`)}
+              onClick={() => navigate(`/profile-password`)}
             >
               Password
             </Button>
