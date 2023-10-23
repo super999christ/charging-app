@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@root/components/Button";
 import {
   getBillingPlans,
@@ -20,7 +20,7 @@ interface Values {
 }
 
 export default function BillingPlans() {
-  useAuth();
+  const token = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
   const { data: billingPlans } = useSWR("billingPlans", getBillingPlans, {
@@ -37,6 +37,11 @@ export default function BillingPlans() {
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
   const currentPlan = user.billingPlan;
+
+  useEffect(() => {
+    if (token?.subscription_customer) return;
+    navigate("/dashboard");
+  }, [token]);
 
   const formik = useFormik({
     initialValues: {
