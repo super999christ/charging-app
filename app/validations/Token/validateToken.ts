@@ -21,6 +21,13 @@ export const validateToken = () => {
   return !isExpired(exp);
 };
 
+export const isTokenExpired = () => {
+  const appToken = localStorage.getItem("appToken");
+  if (!appToken) return false;
+  const { exp } = decodeToken(appToken);
+  return isExpired(exp);
+};
+
 const isExpired = (exp: number) => exp * 1000 < Date.now();
 
 export const isExpiringIn5Minutes = (exp: number) =>
