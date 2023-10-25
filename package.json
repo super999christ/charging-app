@@ -36,6 +36,7 @@
   },
   "scripts": {
     "start": "vite --force",
+    "dev": "SET PORT=3000&vite --force",
     "build": "vite build --emptyOutDir",
     "serve": "npx import-meta-env -x .env.example && node server.js"
   },

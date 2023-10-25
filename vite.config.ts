@@ -23,8 +23,7 @@ export default defineConfig(() => {
       }),
       ImportMetaEnvPlugin.vite({
         example: ".env.example",
-        env: ".env",
-        transformMode: "runtime",
+        env: ".env"
       }),
     ],
     build: {
