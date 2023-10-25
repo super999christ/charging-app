@@ -18,8 +18,10 @@ const SignInWithPin: FC = () => {
   const [validationTriggered, setValidationTriggered] = useState(false);
   const [pinCode, setPinCode] = useState("");
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
+  const [tokenExpired, setTokenExpired] = useState(false);
   const [searchParams] = useSearchParams();
   const reset_pwd = searchParams.get("reset_pwd");
+  const token_expired = searchParams.get("token_expired");
 
   const [{ phoneNumber }, handleChange, clearCachedForm] = useCachedForm(
     "signinForm",
@@ -40,7 +42,11 @@ const SignInWithPin: FC = () => {
       setResetPasswordSuccess(true);
       navigate("/auth-sign-in");
     }
-  }, [reset_pwd]);
+    if (token_expired) {
+      setTokenExpired(true);
+      navigate("/auth-sign-in");
+    }
+  }, [reset_pwd, token_expired]);
 
   useEffect(() => {
     const validationResult = validateSignInForm(phoneNumber, "111111", pinCode);
@@ -85,6 +91,11 @@ const SignInWithPin: FC = () => {
           {resetPasswordSuccess && (
             <label className="text-nxu-charging-green text-[14px] text-center">
               Successfully reset password
+            </label>
+          )}
+          {tokenExpired && (
+            <label className="text-nxu-charging-white text-[14px] text-center">
+              Session Expired please login again.
             </label>
           )}
           <div className="flex flex-col">
