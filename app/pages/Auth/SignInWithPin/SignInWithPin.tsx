@@ -74,9 +74,13 @@ const SignInWithPin: FC = () => {
     // token check
     try {
       setLoading(true);
-      await getAuthTokenWithPIN(phoneNumber, pinCode, notificationId);
+      const { shouldRedirectToBillingPlan } = await getAuthTokenWithPIN(phoneNumber, pinCode, notificationId);
       clearCachedForm();
-      navigate("/charging-login");
+      if (shouldRedirectToBillingPlan) {
+        navigate("/billing-plans");
+      } else {
+        navigate("/charging-login");
+      }
       setLoading(false);
     } catch (err) {
       if (err instanceof AxiosError) setErrors({ page: err.response?.data });

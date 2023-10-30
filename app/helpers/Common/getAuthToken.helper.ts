@@ -28,5 +28,5 @@ export const getAuthTokenWithPIN = async (phoneNumber: string, pinCode: string, 
   const { token } = data;
   setRequestHeader(token);
   localStorage.setItem("appToken", token);
-  return true;
+  return data;
 };

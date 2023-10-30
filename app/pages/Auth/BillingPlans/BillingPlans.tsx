@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "@root/components/Button";
 import {
+  getActiveSubscriptionPricing,
   getBillingPlans,
   getCreditCard,
   getUserProfile,
@@ -31,6 +32,9 @@ export default function BillingPlans() {
   });
   const { data: creditCard } = useSWR("creditCard", getCreditCard, {
     suspense: true,
+  });
+  const { data: subscriptionPricing } = useSWR("activeSubscriptionPricing", getActiveSubscriptionPricing, {
+    suspense: true
   });
 
   const [selectedPlan, setSelectedPlan] = useState(user.billingPlan);
@@ -116,6 +120,13 @@ export default function BillingPlans() {
             <Link to={`/profile-creditcard`} className="text-nxu-charging-gold">
               account profile
             </Link>
+          </div>
+        )}
+
+        {!subscriptionPricing.newSubscriptionCustomer && subscriptionPricing.needsPricingUpdate && (
+          <div className="text-nxu-charging-white text-[14px]">
+            Changes to subscription plan - new subscription fee ${subscriptionPricing.subscriptionFee.toFixed(2)}{" "}
+            please review T&Cs and click on Update Plan
           </div>
         )}
 
