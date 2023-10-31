@@ -4,6 +4,7 @@ import {
   getActiveSubscriptionPricing,
   getBillingPlans,
   getCreditCard,
+  getSubscriptionUpdates,
   getUserProfile,
   setupSubscriptionPlan,
   updateUserProfile,
@@ -36,16 +37,18 @@ export default function BillingPlans() {
   const { data: subscriptionPricing } = useSWR("activeSubscriptionPricing", getActiveSubscriptionPricing, {
     suspense: true
   });
+  const { data: subscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
+    suspense: true
+  });
 
   const [selectedPlan, setSelectedPlan] = useState(user.billingPlan);
   const [loading, setLoading] = useState(false);
   const [isTnCOpen, setIsTnCOpen] = useState(false);
   const currentPlan = user.billingPlan;
 
-  useEffect(() => {
-    if (token?.subscription_customer) return;
-    navigate("/dashboard");
-  }, [token]);
+  const hasNonAcceptedSubscriptionUpdate = () => {
+    return subscriptionUpdates.filter(su => !su.accepted).length > 0;
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -54,7 +57,7 @@ export default function BillingPlans() {
     validate: (values: any) => {
       const errors: any = {};
 
-      if (currentPlan.billingPlan === "Subscription") return errors;
+      if (!isTnCShowing()) return errors;
 
       if (!values.isTnCChecked)
         errors.isTnCChecked = "You must agree to the terms and conditions.";
@@ -93,6 +96,11 @@ export default function BillingPlans() {
       }
     },
   });
+
+  const isTnCShowing = () => {
+    return (currentPlan.billingPlan === "Transaction" || hasNonAcceptedSubscriptionUpdate()) &&
+              selectedPlan.billingPlan === "Subscription";
+  };
 
   const { errors, touched } = formik;
 
@@ -182,8 +190,7 @@ export default function BillingPlans() {
               </label>
             </div>
 
-            {currentPlan.billingPlan === "Transaction" &&
-              selectedPlan.billingPlan === "Subscription" && (
+            {isTnCShowing() && (
                 <div className="ml-5">
                   <div className="flex items-center gap-[5px]">
                     <input

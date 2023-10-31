@@ -1,10 +1,11 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import {
   startCharge,
   findActiveSession,
   getCreditCard,
+  getSubscriptionUpdates,
 } from "../../../helpers";
 import {
   IChargingLoginValidation,
@@ -37,9 +38,19 @@ const Login: FC = () => {
     suspense: true,
   });
 
+  const { data: subscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
+    suspense: true
+  });
+
   const navigate = useNavigate();
 
   useAuth();
+
+  useEffect(() => {
+    if (subscriptionUpdates.filter(su => !su.accepted).length > 0) {
+      navigate("/billing-plans");
+    }
+  }, []);
 
   const inputStyle =
     "h-[50px] px-5 bg-white rounded-[5px] placeholder-nxu-charging-placeholder placeholder:italic focus-visible:outline-none";

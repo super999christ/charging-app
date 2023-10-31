@@ -11,6 +11,14 @@ export type SubscriptionPricing = {
   needsPricingUpdate: boolean;
 };
 
+export type SubscriptionUpdate = {
+  userId: string;
+  pricingId: string;
+  accepted?: boolean;
+  createdDate?: Date;
+  updatedDate?: Date;
+};
+
 export const getActiveSubscriptionPricing = (): Promise<SubscriptionPricing> => {
   const url = `${
     Environment.VITE_SERVICE_USER_MANAGEMENT_URL
@@ -21,3 +29,14 @@ export const getActiveSubscriptionPricing = (): Promise<SubscriptionPricing> => 
       return { subscriptionFee: 0 };
     });
 }
+
+export const getSubscriptionUpdates = (): Promise<SubscriptionUpdate[]> => {
+  const url = `${
+    Environment.VITE_SERVICE_USER_MANAGEMENT_URL
+  }/subscription-updates`;
+  return axios.get(url)
+    .then(res => res.data)
+    .catch((err: AxiosError) => {
+      return [];
+    });
+};
