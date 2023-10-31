@@ -1,11 +1,17 @@
 import Button from "@root/components/Button";
+import { getActiveSubscriptionPricing } from "@root/helpers";
 import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
+import useSWR from "swr";
 
 export default function SubscriptionPlanTermsConditions({
   onConfirm,
 }: {
   onConfirm: () => void;
 }) {
+  const { data: subscriptionPricing } = useSWR("activeSubscriptionPricing", getActiveSubscriptionPricing, {
+    suspense: true
+  });
+
   return (
     <div className="w-full max-h-full flex justify-center overflow-y-auto">
       <div className="w-3/4">
@@ -29,7 +35,7 @@ export default function SubscriptionPlanTermsConditions({
 
           <p className="mb-5">
             By selecting “Confirm” below to sign up for this Nxu Subscription,
-            you agree that Nxu, Inc may charge the monthly fee of “$69.00” to
+            you agree that Nxu, Inc may charge the monthly fee of “${subscriptionPricing.subscriptionFee.toFixed(2)}” to
             the credit card on file in your user profile. Your first month will
             be prorated, after which you will be charged the full subscription
             fee on the first day of each subsequent month. While subscribed, you
