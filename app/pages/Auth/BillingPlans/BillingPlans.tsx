@@ -46,6 +46,11 @@ export default function BillingPlans() {
   const [isTnCOpen, setIsTnCOpen] = useState(false);
   const currentPlan = user.billingPlan;
 
+  useEffect(() => {
+    if (token?.subscription_customer) return;
+    navigate("/dashboard");
+  }, [token]);
+
   const hasNonAcceptedSubscriptionUpdate = () => {
     return subscriptionUpdates.filter(su => !su.accepted).length > 0;
   };
