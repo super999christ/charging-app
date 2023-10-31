@@ -175,7 +175,7 @@ export default function BillingPlans() {
                 htmlFor="default-radio-2"
                 className="ml-2 text-sm font-medium text-white flex-1"
               >
-                Subscription Plan: monthly fee of $69.00, for multiple charging
+                Subscription Plan: monthly fee of ${subscriptionPricing.subscriptionFee.toFixed(2)}, for multiple charging
                 sessions billed to the credit card on file. First month is
                 prorated amount, subsequent months is a full fee billed on the
                 first day of month. Please see T&Cs for all details.
