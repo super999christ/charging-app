@@ -44,10 +44,10 @@ const Login: FC = () => {
 
   const navigate = useNavigate();
 
-  useAuth();
+  const token = useAuth();
 
   useEffect(() => {
-    if (subscriptionUpdates.filter(su => !su.accepted).length > 0) {
+    if (token?.subscription_customer && subscriptionUpdates.filter(su => !su.accepted).length > 0) {
       navigate("/billing-plans");
     }
   }, []);
