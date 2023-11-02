@@ -37,7 +37,7 @@ export default function BillingPlans() {
   const { data: subscriptionPricing } = useSWR("activeSubscriptionPricing", getActiveSubscriptionPricing, {
     suspense: true
   });
-  const { data: subscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
+  const { data: subscriptionUpdates, mutate: mutateSubscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
     suspense: true
   });
 
@@ -80,6 +80,7 @@ export default function BillingPlans() {
           .then(() => {
             toast.success("Successfully updated plan.");
             mutate({ billingPlan: selectedPlan });
+            mutateSubscriptionUpdates();
           })
           .catch((_err) => toast.error("Failed to update billing plan."))
           .finally(() => setLoading(false));
@@ -95,6 +96,7 @@ export default function BillingPlans() {
                 (p) => p.billingPlan === "Subscription"
               ),
             });
+            mutateSubscriptionUpdates();
           })
           .catch((_err) => toast.error("Failed to setup subscription plan."))
           .finally(() => setLoading(false));
