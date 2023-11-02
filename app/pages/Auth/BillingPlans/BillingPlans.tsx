@@ -138,7 +138,7 @@ export default function BillingPlans() {
           </div>
         )}
 
-        {/*!subscriptionPricing.newSubscriptionCustomer && subscriptionPricing.needsPricingUpdate &&*/ (
+        {!subscriptionPricing.newSubscriptionCustomer && subscriptionPricing.needsPricingUpdate && (
           <div className="text-nxu-charging-white text-[14px]">
             Changes to subscription plan - new subscription fee ${subscriptionPricing.subscriptionFee.toFixed(2)}{" "}
             please review T&Cs and click on Update Plan
