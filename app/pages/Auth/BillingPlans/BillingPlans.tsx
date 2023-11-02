@@ -37,7 +37,7 @@ export default function BillingPlans() {
   const { data: subscriptionPricing } = useSWR("activeSubscriptionPricing", getActiveSubscriptionPricing, {
     suspense: true
   });
-  const { data: subscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
+  const { data: subscriptionUpdates, mutate: mutateSubscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
     suspense: true
   });
 
@@ -80,6 +80,7 @@ export default function BillingPlans() {
           .then(() => {
             toast.success("Successfully updated plan.");
             mutate({ billingPlan: selectedPlan });
+            mutateSubscriptionUpdates();
           })
           .catch((_err) => toast.error("Failed to update billing plan."))
           .finally(() => setLoading(false));
@@ -95,6 +96,7 @@ export default function BillingPlans() {
                 (p) => p.billingPlan === "Subscription"
               ),
             });
+            mutateSubscriptionUpdates();
           })
           .catch((_err) => toast.error("Failed to setup subscription plan."))
           .finally(() => setLoading(false));
@@ -120,8 +122,8 @@ export default function BillingPlans() {
     );
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center pb-7">
-      <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
+    <div className="w-full h-full grid flex-col items-center justify-center pb-7">
+      <div className="relative max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
         <div className="py-4 w-full text-center text-white font-extrabold text-4xl">
           NXU Billing Plans
         </div>
