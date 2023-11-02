@@ -122,8 +122,8 @@ export default function BillingPlans() {
     );
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center pb-7">
-      <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
+    <div className="w-full h-full grid flex-col items-center justify-center pb-7">
+      <div className="relative max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
         <div className="py-4 w-full text-center text-white font-extrabold text-4xl">
           NXU Billing Plans
         </div>
@@ -138,7 +138,7 @@ export default function BillingPlans() {
           </div>
         )}
 
-        {!subscriptionPricing.newSubscriptionCustomer && subscriptionPricing.needsPricingUpdate && (
+        {/*!subscriptionPricing.newSubscriptionCustomer && subscriptionPricing.needsPricingUpdate &&*/ (
           <div className="text-nxu-charging-white text-[14px]">
             Changes to subscription plan - new subscription fee ${subscriptionPricing.subscriptionFee.toFixed(2)}{" "}
             please review T&Cs and click on Update Plan
