@@ -44,7 +44,7 @@ const Login: FC = () => {
 
   const navigate = useNavigate();
 
-  useAuth();
+  const token = useAuth();
 
   useEffect(() => {
     if (isSubscriptionBillingPlanUser) {
