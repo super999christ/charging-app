@@ -5,7 +5,7 @@ import {
   startCharge,
   findActiveSession,
   getCreditCard,
-  getSubscriptionUpdates,
+  getSubscriptionBillingPlanUser,
 } from "../../../helpers";
 import {
   IChargingLoginValidation,
@@ -38,7 +38,7 @@ const Login: FC = () => {
     suspense: true,
   });
 
-  const { data: subscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
+  const { data: isSubscriptionBillingPlanUser } = useSWR("isSubscriptionBillingPlanUser", getSubscriptionBillingPlanUser, {
     suspense: true
   });
 
@@ -47,7 +47,7 @@ const Login: FC = () => {
   useAuth();
 
   useEffect(() => {
-    if (subscriptionUpdates.filter(su => !su.accepted).length > 0) {
+    if (isSubscriptionBillingPlanUser) {
       navigate("/billing-plans");
     }
   }, []);

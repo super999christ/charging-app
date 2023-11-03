@@ -30,13 +30,13 @@ export const getActiveSubscriptionPricing = (): Promise<SubscriptionPricing> => 
     });
 }
 
-export const getSubscriptionUpdates = (): Promise<SubscriptionUpdate[]> => {
+export const getSubscriptionBillingPlanUser = (): Promise<boolean> => {
   const url = `${
     Environment.VITE_SERVICE_USER_MANAGEMENT_URL
-  }/subscription-updates`;
+  }/is-subscription-billing-plan-user`;
   return axios.get(url)
     .then(res => res.data)
     .catch((err: AxiosError) => {
-      return [];
+      return false;
     });
 };

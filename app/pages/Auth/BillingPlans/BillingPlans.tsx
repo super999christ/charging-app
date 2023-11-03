@@ -4,10 +4,10 @@ import {
   getActiveSubscriptionPricing,
   getBillingPlans,
   getCreditCard,
-  getSubscriptionUpdates,
   getUserProfile,
   setupSubscriptionPlan,
   updateUserProfile,
+  getSubscriptionBillingPlanUser,
 } from "@root/helpers";
 import { useNavigate } from "react-router";
 import useSWR from "swr";
@@ -37,7 +37,7 @@ export default function BillingPlans() {
   const { data: subscriptionPricing } = useSWR("activeSubscriptionPricing", getActiveSubscriptionPricing, {
     suspense: true
   });
-  const { data: subscriptionUpdates, mutate: mutateSubscriptionUpdates } = useSWR("subscriptionUpdates", getSubscriptionUpdates, {
+  const { data: isSubscriptionBillingPlanUser, mutate: mutateSubscriptionBillingPlanUser } = useSWR("isSubscriptionBillingPlanUser", getSubscriptionBillingPlanUser, {
     suspense: true
   });
 
@@ -50,10 +50,6 @@ export default function BillingPlans() {
     if (token?.subscription_customer) return;
     navigate("/dashboard");
   }, [token]);
-
-  const hasNonAcceptedSubscriptionUpdate = () => {
-    return subscriptionUpdates.filter(su => !su.accepted).length > 0;
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -77,10 +73,10 @@ export default function BillingPlans() {
           billingPlanId: selectedPlan.id,
           billingPlan: selectedPlan,
         })
-          .then(() => {
+          .then(async () => {
             toast.success("Successfully updated plan.");
-            mutate({ billingPlan: selectedPlan });
-            mutateSubscriptionUpdates();
+            await mutate({ billingPlan: selectedPlan });
+            await mutateSubscriptionBillingPlanUser();
           })
           .catch((_err) => toast.error("Failed to update billing plan."))
           .finally(() => setLoading(false));
@@ -89,14 +85,14 @@ export default function BillingPlans() {
       if (selectedPlan.billingPlan === "Subscription") {
         setLoading(true);
         setupSubscriptionPlan({ vehicleCount: 1 })
-          .then(() => {
+          .then(async () => {
             toast.success("Successfully setup subscription plan.");
-            mutate({
+            await mutate({
               billingPlan: billingPlans.find(
                 (p) => p.billingPlan === "Subscription"
               ),
             });
-            mutateSubscriptionUpdates();
+            await mutateSubscriptionBillingPlanUser();
           })
           .catch((_err) => toast.error("Failed to setup subscription plan."))
           .finally(() => setLoading(false));
@@ -105,7 +101,7 @@ export default function BillingPlans() {
   });
 
   const isTnCShowing = () => {
-    return (currentPlan.billingPlan === "Transaction" || hasNonAcceptedSubscriptionUpdate()) &&
+    return (currentPlan.billingPlan === "Transaction" || isSubscriptionBillingPlanUser) &&
               selectedPlan.billingPlan === "Subscription";
   };
 
