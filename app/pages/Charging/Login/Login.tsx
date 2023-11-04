@@ -68,7 +68,7 @@ const Login: FC = () => {
       const { data: chargingEvent } = await startCharge(stationId);
       setErrors({ page: "" });
       navigate(
-        `/charging-status?phoneNumber=${chargingEvent.phoneNumber}&stationId=${stationId}&eventId=${chargingEvent.id}`
+        `/charging-status?stationId=${stationId}&eventId=${chargingEvent.id}`
       );
       setLoading(false);
     } catch (err) {
@@ -82,7 +82,7 @@ const Login: FC = () => {
     if (!activeSession) return;
     const chargingEvent = activeSession as any;
     navigate(
-      `/charging-status?phoneNumber=${chargingEvent.phoneNumber}&stationId=${chargingEvent.stationId}&eventId=${chargingEvent.id}`
+      `/charging-status?stationId=${chargingEvent.stationId}&eventId=${chargingEvent.id}`
     );
   };
 

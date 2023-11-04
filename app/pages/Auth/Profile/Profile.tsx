@@ -1,12 +1,12 @@
-import { useState, useEffect, FC } from "react";
+import { useState, FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ConfirmIcon } from "../../../assets/tickOutline.svg";
 import { getUserProfile } from "../../../helpers";
 import { IProfileFormValidation } from "../../../types/ValidationErrors.type";
-import { validateToken } from "../../../validations";
 import Button from "@root/components/Button";
 import useSWR from "swr";
 import useAuth from "@root/hooks/useAuth";
+import { formatPhoneNumber } from "@root/utils";
 
 type IProfileError = IProfileFormValidation & { page: string };
 
@@ -64,7 +64,7 @@ const Profile: FC = () => {
               type="text"
               className={inputStyle}
               placeholder="Phone Number"
-              value={user.phoneNumber}
+              value={formatPhoneNumber(user.phoneNumber)}
               readOnly={true}
             />
           </div>

@@ -3,8 +3,6 @@ import axios from "axios";
 
 export const checkChargingStatus = async (
   eventId: number,
-  phoneNumber: string,
-  stationId: number,
   iotException: boolean,
 ) => {
   const url = `${
@@ -12,8 +10,6 @@ export const checkChargingStatus = async (
   }/charging-status`;
   const body = {
     eventId,
-    phoneNumber,
-    stationId,
     iotException,
   };
 

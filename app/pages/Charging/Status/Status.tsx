@@ -50,7 +50,6 @@ const boldText = "p-0 m-0 text-2xl font-extrabold";
 
 const Status: FC = () => {
   const [searchParams] = useSearchParams();
-  const phoneNumber = searchParams.get("phoneNumber") || "";
   const stationId = searchParams.get("stationId") || "";
   const eventId = searchParams.get("eventId") || "";
   const [isIntialized, setInitialized] = useState(false);
@@ -124,8 +123,6 @@ const Status: FC = () => {
       isChargeStatusRunning.current = true;
       const data: IChargeStatus = await checkChargingStatus(
         Number(eventId),
-        phoneNumber,
-        Number(stationId),
         iotExceptionCount.current >= 4
       );
       if (data.promoted) {
