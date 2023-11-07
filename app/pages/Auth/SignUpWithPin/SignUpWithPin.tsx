@@ -109,7 +109,7 @@ const SignUpWithPin: FC = () => {
   if (isTnCOpen) return <TermsConditions onConfirm={onConfirmTNC} />;
   else
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center pb-10">
+      <div className="w-full h-full grid justify-items-center flex-col items-center justify-center pb-10">
         <div className="w-[90%] md:max-w-[350px] flex flex-col justify-center gap-[30px]">
           <div className="flex flex-col w-full gap-5 mb-5 mt-3">
             <div className="flex flex-col">
@@ -236,7 +236,7 @@ const SignUpWithPin: FC = () => {
             )}
           </div>
 
-          <Button onClick={onSubmit} loading={loading}>
+          <Button onClick={onSubmit} loading={loading} className="mb-3">
             {loading ? "Signing up..." : "Sign up"}
           </Button>
         </div>

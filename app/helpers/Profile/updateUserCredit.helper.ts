@@ -1,4 +1,5 @@
 import Environment from "@root/configs/env";
+import { validateToken } from "@root/validations";
 import axios, { AxiosError } from "axios";
 
 export type CreditCard = {
@@ -26,6 +27,9 @@ export const updateUserCreditCard = async (pmId: string) => {
 };
 
 export const getCreditCard = async (): Promise<CreditCard> => {
+  if (!validateToken()) {
+    window.location.href = '/';
+  }
   return axios
     .get(`${Environment.VITE_SERVICE_PAYMENT_URL}/get-cc`)
     .then((res) => res.data)
