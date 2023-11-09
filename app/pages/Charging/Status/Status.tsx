@@ -106,6 +106,16 @@ const Status: FC = () => {
     return "Successfully stopped charging. No payment was made to the credit card. Please remove charge handle from the vehicle and retry charging later.";
   }
 
+  const getIOTErorMessage = (data: IChargeStatus) => { 
+    if (data.billingPlanId === 2) { // subscription plan 
+      return "An error occurred before completing charge. You are on the Subscription billing plan, transaction will not be charged to the credit card on file. Please remove charge handle from the vehicle and retry charging later.";
+    } 
+    if (data.sessionTotalCost) { 
+      return "An error occurred before completing charge. Partial charging transaction will be charged to credit card on file. Please remove charge handle from the vehicle and retry charging later.";
+    } 
+    return "An error occurred before completing charge. No payment was made to the credit card. Please remove charge handle from the vehicle and retry charging later.";
+  } 
+
   const checkStatus = async (forced: boolean = false) => {
     try {
       if (!forced) {
@@ -165,13 +175,9 @@ const Status: FC = () => {
           data.sessionStatus === "iot_error"
         ) {
           if (data.sessionTotalCost)
-            setAlertMsg(
-              "An error occurred before completing charge. Partial charging transaction will be charged to credit card on file. Please remove charge handle from the vehicle and retry charging later."
-            );
+            setAlertMsg(getIOTErorMessage(data));
           else
-            setAlertMsg(
-              "An error occurred before completing charge. Partial charging transaction will be charged to credit card on file. Please remove charge handle from the vehicle and retry charging later."
-            );
+            setAlertMsg("Vehicle not requesting any power, and no payment charged.");
           setAlertType("error");
           setTimerRunning(false);
         } else if (
