@@ -45,7 +45,6 @@ interface IChargeStatus {
   billingPlanId?: number;
   statusType: AlertType;
   statusMessage: string;
-  promotionMessage: string;
 }
 
 const lightText = "p-0 m-0 text-[10px] font-medium";
@@ -71,8 +70,7 @@ const Status: FC = () => {
     sessionTotalCost: "",
     sessionStatus: "beginning",
     statusType: 'info',
-    statusMessage: '',
-    promotionMessage: ''
+    statusMessage: ''
   });
   const iotExceptionCount = useRef(0);
   const isChargeStatusRunning = useRef(false);
@@ -95,7 +93,6 @@ const Status: FC = () => {
 
   const checkStatus = async (isStopped: boolean = false) => {
     try {
-      console.log({activeSession});
       if (!activeSession)
         return;
       if (!isStopped) {
@@ -289,14 +286,6 @@ const Status: FC = () => {
                   <label className={getAlertClass()}>
                     {alertMsg}
                     <span className="text-nxu-charging-green"></span>
-                  </label>
-                )}
-              </div>
-
-              <div className="max-w-[350px] w-full flex flex-col justify-center">
-                {status.promotionMessage && (
-                  <label className="text-[14px] text-nxu-charging-green">
-                    {status.promotionMessage}
                   </label>
                 )}
               </div>
