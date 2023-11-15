@@ -73,7 +73,7 @@ export const validateSignUpForm = (
       authCode: VALIDATION_ERROR_MESSAGE.authcode_invalid,
     };
 
-  const pinCodeRegExp = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+  const pinCodeRegExp = /^(?=.*[a-zA-Z])(?=.*\d).{7,}$/;
   if (pinCode !== undefined && pinConfirmCode !== undefined) {
     let pinCodeOk = false,
       pinConfirmCodeOk = false;
