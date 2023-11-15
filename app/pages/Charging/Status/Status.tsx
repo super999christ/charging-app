@@ -26,7 +26,7 @@ type SessionStatus =
   | "in_progress"
   | "payment_error";
 
-type AlertType = "success" | "info" | "error";
+type AlertType = "success" | "info" | "error" | "none";
 
 interface IChargeStatus {
   chargeComplete: number;
@@ -109,7 +109,7 @@ const Status: FC = () => {
         Number(activeSession.id),
         isStopped
       );
-      if (!alertMsg && data.statusMessage) {
+      if (data.statusMessage && data.statusType !== 'none') {
         setAlertMsg(data.statusMessage);
         setAlertType(data.statusType);
       }
@@ -168,6 +168,7 @@ const Status: FC = () => {
       error: "red",
       info: "white",
       success: "green",
+      none: "blue",
     };
     className += `text-nxu-charging-${colors[alertType]}`;
     return className;
