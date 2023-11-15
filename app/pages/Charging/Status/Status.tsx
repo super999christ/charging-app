@@ -1,7 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { validateToken } from "../../../validations";
-import { checkChargingStatus, manageCharge } from "../../../helpers";
+import { useNavigate } from "react-router-dom";
+import { checkChargingStatus, findActiveSession } from "../../../helpers";
 import { AxiosError } from "axios";
 import Environment from "@root/configs/env";
 import Button from "@root/components/Button";
@@ -10,6 +9,7 @@ import { ReactComponent as MomentizationIcon } from "../../../assets/momentizati
 import { ReactComponent as BoltIcon } from "../../../assets/bolt.svg";
 import Chart from "./Chart";
 import useAuth from "@root/hooks/useAuth";
+import useSWR from "swr";
 
 type SessionStatus =
   | "available"
@@ -26,6 +26,8 @@ type SessionStatus =
   | "in_progress"
   | "payment_error";
 
+type AlertType = "success" | "info" | "error" | "none";
+
 interface IChargeStatus {
   chargeComplete: number;
   chargeDeliveredKwh: number;
@@ -41,20 +43,19 @@ interface IChargeStatus {
   sessionTotalCost: string;
   promoted?: boolean;
   billingPlanId?: number;
+  statusType: AlertType;
+  statusMessage: string;
 }
-
-type AlertType = "success" | "info" | "error";
 
 const lightText = "p-0 m-0 text-[10px] font-medium";
 const boldText = "p-0 m-0 text-2xl font-extrabold";
 
 const Status: FC = () => {
-  const [searchParams] = useSearchParams();
-  const phoneNumber = searchParams.get("phoneNumber") || "";
-  const stationId = searchParams.get("stationId") || "";
-  const eventId = searchParams.get("eventId") || "";
-  const [isIntialized, setInitialized] = useState(false);
+  const [isInitialized, setInitialized] = useState(false);
   const navigate = useNavigate();
+  const { data: activeSession } = useSWR("activeSession", findActiveSession, {
+    suspense: true,
+  });
   const [status, setStatus] = useState<IChargeStatus>({
     chargeComplete: 0,
     chargeDeliveredKwh: 0,
@@ -68,15 +69,16 @@ const Status: FC = () => {
     sessionTotalDuration: 0,
     sessionTotalCost: "",
     sessionStatus: "beginning",
+    statusType: 'info',
+    statusMessage: ''
   });
   const iotExceptionCount = useRef(0);
   const isChargeStatusRunning = useRef(false);
-  const transactionLock = useRef(false);
+  const stopLock = useRef(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [alertType, setAlertType] = useState<AlertType>("error");
-  const [isChargingStatusChanging, setChargingStatusChanging] = useState(false);
+  const [isChargingStopping, setChargingStopping] = useState(false);
   const [isTimerRunning, setTimerRunning] = useState(true);
-  const [isPromoted, setPromoted] = useState(false);
 
   useAuth();
 
@@ -89,132 +91,44 @@ const Status: FC = () => {
     return () => clearInterval(timer);
   }, [isTimerRunning]);
 
-  const getSuccessCompleteMessage = (data: IChargeStatus) => {
-    if (data.billingPlanId === 2) { // subscription plan
-      return "Successfully completed charging. You are on the Subscription billing plan, transaction will not be charged to the credit card on file.";
-    }
-    return "Successfully completed charging. Transaction will be charged to the credit card on file. Please remove the charge handle from the vehicle.";
-  }
-
-  const getSuccessStopMessage = (data: IChargeStatus) => {
-    if (data.billingPlanId === 2) { // subscription plan
-      return "Successfully stopped charging. You are on the Subscription billing plan, transaction will not be charged to the credit card on file.";
-    }
-    if (data.sessionTotalCost) {
-      return "Successfully stopped charging. Transaction will be charged to the credit card on file. Please remove charge handle from the vehicle and retry charging later.";
-    }
-    return "Successfully stopped charging. No payment was made to the credit card. Please remove charge handle from the vehicle and retry charging later.";
-  }
-
-  const getIOTErrorMessage = (data: IChargeStatus) => { 
-    if (data.billingPlanId === 2) { // subscription plan 
-      return "An error occurred before completing charge. You are on the Subscription billing plan, transaction will not be charged to the credit card on file. Please remove charge handle from the vehicle and retry charging later.";
-    } 
-    if (data.sessionTotalCost) { 
-      return "An error occurred before completing charge. Partial charging transaction will be charged to credit card on file. Please remove charge handle from the vehicle and retry charging later.";
-    } 
-    return "An error occurred before completing charge. No payment was made to the credit card. Please remove charge handle from the vehicle and retry charging later.";
-  } 
-
-  const checkStatus = async (forced: boolean = false) => {
+  const checkStatus = async (isStopped: boolean = false) => {
     try {
-      if (!forced) {
+      if (!activeSession)
+        return;
+      if (!isStopped) {
         if (
           !isTimerRunning ||
           isChargeStatusRunning.current ||
-          transactionLock.current
+          stopLock.current
         )
           return;
-      }
-      if (iotExceptionCount.current >= 4) setTimerRunning(false);
-      else {
-        if (isChargeStatusRunning.current) return;
       }
 
       isChargeStatusRunning.current = true;
       const data: IChargeStatus = await checkChargingStatus(
-        Number(eventId),
-        phoneNumber,
-        Number(stationId),
-        iotExceptionCount.current >= 4
+        Number(activeSession.id),
+        isStopped
       );
-      if (data.promoted) {
-        setPromoted(true);
+      if (data.statusMessage && data.statusType !== 'none') {
+        setAlertMsg(data.statusMessage);
+        setAlertType(data.statusType);
       }
       isChargeStatusRunning.current = false;
-
-      setInitialized(true);
       setStatus(data);
-      if (alertType === "error") {
-        setAlertMsg("");
-      }
-      if (
-        data.sessionStatus === "completed" ||
-        data.sessionStatus === "completed_sub"
-      ) {
-        setTimerRunning(false);
-        if (data.sessionTotalCost)
-          setAlertMsg(getSuccessCompleteMessage(data));
-        else
-          setAlertMsg(
-            "Vehicle not requesting any power, and no payment charged."
-          );
-        setAlertType("success");
-      } else {
-        if (data.sessionStatus === "idle") {
-          if (data.sessionTotalCost)
-            setAlertMsg(getSuccessCompleteMessage(data));
-          else
-            setAlertMsg(
-              "Vehicle not requesting any power, and no payment charged."
-            );
-          setAlertType("success");
-          setTimerRunning(false);
-        } else if (
-          data.sessionStatus === "offline" ||
-          data.sessionStatus === "iot_error"
-        ) {
-          if (data.sessionTotalCost)
-            setAlertMsg(getIOTErrorMessage(data));
-          else
-            setAlertMsg("Vehicle not requesting any power, and no payment charged.");
-          setAlertType("error");
-          setTimerRunning(false);
-        } else if (
-          data.sessionStatus === "stopped" ||
-          data.sessionStatus === "stopped_sub"
-        ) {
-          setAlertMsg(getSuccessStopMessage(data));
-          setAlertType("success");
-          setTimerRunning(false);
-        } else if (data.sessionStatus === "payment_error") {
-          setAlertMsg(getSuccessCompleteMessage(data));
-          setAlertType("success");
-          setTimerRunning(false);
-        }
-      }
-      if (data.status == 0 || data.error) {
-        setAlertMsg(data.error);
-        setAlertType("error");
-        iotExceptionCount.current = iotExceptionCount.current + 1;
-      } else {
-        iotExceptionCount.current = 0;
-      }
     } catch (err) {
       console.error("@Error: ", err);
       isChargeStatusRunning.current = false;
-      iotExceptionCount.current = iotExceptionCount.current + 1;
-      setInitialized(true);
       if (err instanceof AxiosError) {
         const errorMsg = err.response?.data.message;
         if (errorMsg === "ChargingIoT exception occurred") {
-          // setAlertMsg('Connecting to IOT API stay tuned...');
           setAlertType("info");
         } else {
           setAlertMsg(errorMsg);
           setAlertType("error");
         }
       }
+    } finally {
+      setInitialized(true);
     }
   };
 
@@ -223,37 +137,18 @@ const Status: FC = () => {
   };
 
   const stopCharging = async () => {
-    setChargingStatusChanging(true);
+    setChargingStopping(true);
     try {
-      transactionLock.current = true;
-      const { data } = await manageCharge(Number(eventId), "stop");
-      if (data.promoted) {
-        setPromoted(true);
-      }
-      checkStatus(true);
-      setChargingStatusChanging(false);
-      if (data.status == 1) {
-        setStatus({
-          ...status,
-          sessionStatus: "stopped",
-        });
-        if (data.error) {
-          setAlertMsg(data.error);
-          setAlertType("error");
-          transactionLock.current = false;
-        }
-      } else {
-        transactionLock.current = false;
-        setAlertMsg(data.error);
-        setAlertType("error");
-      }
+      stopLock.current = true;
+      await checkStatus(true);
     } catch (error) {
-      transactionLock.current = false;
       if (error instanceof AxiosError) {
         setAlertMsg(error.response?.data.message || "");
         setAlertType("error");
       }
-      setChargingStatusChanging(false);
+    } finally {
+      stopLock.current = false;
+      setChargingStopping(false);
     }
   };
 
@@ -273,6 +168,7 @@ const Status: FC = () => {
       error: "red",
       info: "white",
       success: "green",
+      none: "blue",
     };
     className += `text-nxu-charging-${colors[alertType]}`;
     return className;
@@ -294,30 +190,30 @@ const Status: FC = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      {!eventId && (
+      {!activeSession && (
         <div className="max-w-[350px] w-full flex flex-col justify-center">
           <div className="text-nxu-charging-white text-center text-[16px]">
             No Active Sessions
           </div>
         </div>
       )}
-      {eventId && (
+      {activeSession && (
         <>
-          {!isIntialized && (
+          {!isInitialized && (
             <div className="max-w-[350px] w-full flex flex-col justify-center">
               <div className="text-nxu-charging-white text-center text-[16px]">
                 Charging started, data loading...
               </div>
             </div>
           )}
-          {isIntialized && (
+          {isInitialized && (
             <>
               <div className="mb-10" />
 
               <div className="max-w-[350px] w-full flex flex-col justify-center divide-y-2 divide-black">
                 <Row
                   left={<p className="font-extrabold text-2xl">Station</p>}
-                  right={<p className="font-extrabold text-2xl">{stationId}</p>}
+                  right={<p className="font-extrabold text-2xl">{activeSession.stationId}</p>}
                   className="min-h-min"
                 />
 
@@ -395,15 +291,6 @@ const Status: FC = () => {
                 )}
               </div>
 
-              <div className="max-w-[350px] w-full flex flex-col justify-center">
-                {isPromoted && (
-                  <label className="text-[14px] text-nxu-charging-green">
-                    Product Launch promotion: $1 per charging session. Only $1
-                    will be charged to your credit card.
-                  </label>
-                )}
-              </div>
-
               <div className="mb-3" />
 
               {![
@@ -419,10 +306,10 @@ const Status: FC = () => {
                 iotExceptionCount.current === 0 && (
                   <Button
                     onClick={stopCharging}
-                    loading={isChargingStatusChanging}
+                    loading={isChargingStopping}
                     className="mb-10"
                   >
-                    {isChargingStatusChanging
+                    {isChargingStopping
                       ? "Stopping Charge..."
                       : "Stop Charge"}
                   </Button>

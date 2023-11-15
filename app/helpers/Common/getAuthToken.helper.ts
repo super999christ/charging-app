@@ -17,12 +17,11 @@ export const getAuthToken = async (phoneNumber: string, authCode: string, notifi
   return true;
 };
 
-export const getAuthTokenWithPIN = async (phoneNumber: string, pinCode: string, notificationId: number) => {
+export const getAuthTokenWithPIN = async (phoneNumber: string, pinCode: string) => {
   const url = `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/login-with-pin`;
   const body = {
     phoneNumber,
-    pinCode,
-    notificationId,
+    pinCode
   };
   const { data } = await axios.post(url, body);
   const { token } = data;

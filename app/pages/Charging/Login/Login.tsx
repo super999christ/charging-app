@@ -2,10 +2,10 @@ import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import {
-  startCharge,
   findActiveSession,
   getCreditCard,
   getSubscriptionBillingPlanUser,
+  startCharge,
 } from "../../../helpers";
 import {
   IChargingLoginValidation,
@@ -65,11 +65,9 @@ const Login: FC = () => {
 
       setLoading(true);
 
-      const { data: chargingEvent } = await startCharge(stationId);
+      await startCharge(stationId);
       setErrors({ page: "" });
-      navigate(
-        `/charging-status?phoneNumber=${chargingEvent.phoneNumber}&stationId=${stationId}&eventId=${chargingEvent.id}`
-      );
+      window.location.href = '/charging-status';
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -80,10 +78,7 @@ const Login: FC = () => {
 
   const onChargingStatus = () => {
     if (!activeSession) return;
-    const chargingEvent = activeSession as any;
-    navigate(
-      `/charging-status?phoneNumber=${chargingEvent.phoneNumber}&stationId=${chargingEvent.stationId}&eventId=${chargingEvent.id}`
-    );
+    window.location.href = '/charging-status';
   };
 
   return (

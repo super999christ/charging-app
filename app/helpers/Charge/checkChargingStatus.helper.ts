@@ -3,18 +3,14 @@ import axios from "axios";
 
 export const checkChargingStatus = async (
   eventId: number,
-  phoneNumber: string,
-  stationId: number,
-  iotException: boolean,
+  isStopped: boolean,
 ) => {
   const url = `${
     Environment.VITE_SERVICE_CHARGING_EVENT_URL
   }/charging-status`;
   const body = {
     eventId,
-    phoneNumber,
-    stationId,
-    iotException,
+    isStopped,
   };
 
   const { data } = await axios.post(url, body);
