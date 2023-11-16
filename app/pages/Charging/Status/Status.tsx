@@ -56,6 +56,7 @@ const Status: FC = () => {
   const { data: activeSession } = useSWR("activeSession", findActiveSession, {
     suspense: true,
   });
+  const [chargingEvent, setChargingEvent] = useState<any>(null);
   const [status, setStatus] = useState<IChargeStatus>({
     chargeComplete: 0,
     chargeDeliveredKwh: 0,
@@ -72,7 +73,6 @@ const Status: FC = () => {
     statusType: 'info',
     statusMessage: ''
   });
-  const iotExceptionCount = useRef(0);
   const isChargeStatusRunning = useRef(false);
   const stopLock = useRef(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -89,11 +89,16 @@ const Status: FC = () => {
     );
     checkStatus();
     return () => clearInterval(timer);
-  }, [isTimerRunning]);
+  }, [isTimerRunning, chargingEvent]);
+
+  useEffect(() => {
+    if (activeSession)
+      setChargingEvent(activeSession);
+  }, [activeSession]);
 
   const checkStatus = async (isStopped: boolean = false) => {
     try {
-      if (!activeSession)
+      if (!chargingEvent)
         return;
       if (!isStopped) {
         if (
@@ -106,7 +111,7 @@ const Status: FC = () => {
 
       isChargeStatusRunning.current = true;
       const data: IChargeStatus = await checkChargingStatus(
-        Number(activeSession.id),
+        Number(chargingEvent.id),
         isStopped
       );
       if (data.statusMessage && data.statusType !== 'none') {
@@ -114,7 +119,10 @@ const Status: FC = () => {
         setAlertType(data.statusType);
       }
       isChargeStatusRunning.current = false;
-      setStatus(data);
+      if (data.sessionStatus) {
+        setStatus(data);
+        setInitialized(true);
+      }
     } catch (err) {
       console.error("@Error: ", err);
       isChargeStatusRunning.current = false;
@@ -127,7 +135,6 @@ const Status: FC = () => {
           setAlertType("error");
         }
       }
-    } finally {
       setInitialized(true);
     }
   };
@@ -190,14 +197,14 @@ const Status: FC = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      {!activeSession && (
+      {!chargingEvent && (
         <div className="max-w-[350px] w-full flex flex-col justify-center">
           <div className="text-nxu-charging-white text-center text-[16px]">
             No Active Sessions
           </div>
         </div>
       )}
-      {activeSession && (
+      {chargingEvent && (
         <>
           {!isInitialized && (
             <div className="max-w-[350px] w-full flex flex-col justify-center">
@@ -213,7 +220,7 @@ const Status: FC = () => {
               <div className="max-w-[350px] w-full flex flex-col justify-center divide-y-2 divide-black">
                 <Row
                   left={<p className="font-extrabold text-2xl">Station</p>}
-                  right={<p className="font-extrabold text-2xl">{activeSession.stationId}</p>}
+                  right={<p className="font-extrabold text-2xl">{chargingEvent.stationId}</p>}
                   className="min-h-min"
                 />
 
@@ -303,7 +310,7 @@ const Status: FC = () => {
                 "iot_error",
                 "payment_error",
               ].includes(status?.sessionStatus as string) &&
-                iotExceptionCount.current === 0 && (
+                (
                   <Button
                     onClick={stopCharging}
                     loading={isChargingStopping}
