@@ -11,21 +11,6 @@ import Chart from "./Chart";
 import useAuth from "@root/hooks/useAuth";
 import useSWR from "swr";
 
-type SessionStatus =
-  | "available"
-  | "stopped"
-  | "stopped_sub"
-  | "trickle"
-  | "charging"
-  | "idle"
-  | "beginning"
-  | "offline"
-  | "completed"
-  | "completed_sub"
-  | "iot_error"
-  | "in_progress"
-  | "payment_error";
-
 type AlertType = "success" | "info" | "error" | "none";
 
 interface IChargeStatus {
@@ -38,7 +23,7 @@ interface IChargeStatus {
   error: string;
   eventId: string;
   status: number;
-  sessionStatus?: SessionStatus;
+  sessionStatus?: string;
   sessionTotalDuration: number;
   sessionTotalCost: string;
   promoted?: boolean;
@@ -123,6 +108,9 @@ const Status: FC = () => {
         setStatus(data);
         setInitialized(true);
       }
+      if (["info", "error"].includes(data.statusType) || chargingStopStatuses.includes(data.sessionStatus as string)) {
+        setTimerRunning(false);
+      }
     } catch (err) {
       console.error("@Error: ", err);
       isChargeStatusRunning.current = false;
@@ -181,19 +169,23 @@ const Status: FC = () => {
     return className;
   };
 
-  const getStatus = () => {
-    const s: string = status.sessionStatus || "";
-    if (s === "charging") return "running";
-    if (s === "completed" || s === "completed_sub") return "completed";
-    return "stopped";
-  };
-
   const USDollar = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+  const chargingStopStatuses = [
+    "completed",
+    "completed_sub",
+    "stopped",
+    "stopped_sub",
+    "idle",
+    "offline",
+    "iot_error",
+    "payment_error"
+  ];
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -230,7 +222,6 @@ const Status: FC = () => {
                     <div className="flex flex-col justify-between">
                       <p className={lightText}>CHARGE</p>
                       <p className={boldText}>Status</p>
-                      <p className={lightText}>{getStatus()}</p>
                     </div>
                   }
                   right={
@@ -300,16 +291,7 @@ const Status: FC = () => {
 
               <div className="mb-3" />
 
-              {![
-                "completed",
-                "completed_sub",
-                "stopped",
-                "stopped_sub",
-                "idle",
-                "offline",
-                "iot_error",
-                "payment_error",
-              ].includes(status?.sessionStatus as string) &&
+              {isTimerRunning &&
                 (
                   <Button
                     onClick={stopCharging}
@@ -321,16 +303,7 @@ const Status: FC = () => {
                       : "Stop Charge"}
                   </Button>
                 )}
-              {[
-                "completed",
-                "completed_sub",
-                "stopped",
-                "stopped_sub",
-                "idle",
-                "offline",
-                "iot_error",
-                "payment_error",
-              ].includes(status?.sessionStatus as string) && (
+              {!isTimerRunning && (
                 <Button onClick={startNewCharging} className="mb-10">
                   Start New Charge
                 </Button>
