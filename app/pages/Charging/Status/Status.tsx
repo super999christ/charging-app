@@ -108,7 +108,7 @@ const Status: FC = () => {
         setStatus(data);
         setInitialized(true);
       }
-      if (["info", "error"].includes(data.statusType) || chargingStopStatuses.includes(data.sessionStatus as string)) {
+      if (["info", "error"].includes(data.statusType)) {
         setTimerRunning(false);
       }
     } catch (err) {
@@ -175,17 +175,6 @@ const Status: FC = () => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-
-  const chargingStopStatuses = [
-    "completed",
-    "completed_sub",
-    "stopped",
-    "stopped_sub",
-    "idle",
-    "offline",
-    "iot_error",
-    "payment_error"
-  ];
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
