@@ -108,7 +108,7 @@ const Status: FC = () => {
         setStatus(data);
         setInitialized(true);
       }
-      if (["info", "error"].includes(data.statusType)) {
+      if (["info", "error", "success"].includes(data.statusType)) {
         setTimerRunning(false);
       }
     } catch (err) {
@@ -135,6 +135,15 @@ const Status: FC = () => {
     setChargingStopping(true);
     try {
       stopLock.current = true;
+      const waiter = new Promise((resolve, reject) => {
+        const timer = setInterval(() => {
+          if (!isChargeStatusRunning.current) {
+            resolve(true);
+            clearInterval(timer);
+          }
+        }, 500);
+      });
+      await waiter;
       await checkStatus(true);
     } catch (error) {
       if (error instanceof AxiosError) {
