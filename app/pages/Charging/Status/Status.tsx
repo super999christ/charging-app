@@ -141,7 +141,7 @@ const Status: FC = () => {
             resolve(true);
             clearInterval(timer);
           }
-        }, 500);
+        }, 100);
       });
       await waiter;
       await checkStatus(true);
