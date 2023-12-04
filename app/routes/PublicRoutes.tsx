@@ -8,7 +8,7 @@ const AuthForgotPasswordPage = React.lazy(
 const AuthResetPasswordPage = React.lazy(
   () => import("../pages/Auth/ResetPassword")
 );
-const ChargingLoginPage = React.lazy(() => import("../pages/Charging/Login"));
+const ChargingStationPage = React.lazy(() => import("../pages/Charging/Station"));
 
 export const publicRoutes = [
   {
@@ -27,8 +27,8 @@ export const publicRoutes = [
     role: "none",
   },
   {
-    path: "/charging-login",
-    component: ChargingLoginPage,
+    path: "/charging-station",
+    component: ChargingStationPage,
     role: "none",
   },
   {

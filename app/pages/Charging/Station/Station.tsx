@@ -8,7 +8,7 @@ import {
   startCharge,
 } from "../../../helpers";
 import {
-  IChargingLoginValidation,
+  IChargingStationValidation,
   IAuthCodeValidation,
 } from "../../../types/ValidationErrors.type";
 import { AxiosError } from "axios";
@@ -18,15 +18,24 @@ import useCachedForm from "@root/hooks/useCachedForm";
 import Button from "@root/components/Button";
 import useAuth from "@root/hooks/useAuth";
 
-type IChargingLoginError = IAuthCodeValidation &
-  IChargingLoginValidation & { page: string };
+type IChargingStationError = IAuthCodeValidation &
+  IChargingStationValidation & { page: string };
+
+type AlertType = "success" | "info" | "error" | "none";
+
+interface IStartStatus {
+  statusMessage: string;
+  statusType: AlertType;
+};
 
 const Login: FC = () => {
   const [{ stationId }, handleChange] = useCachedForm("stationForm", {
     stationId: "001",
   });
-  const [errors, setErrors] = useState<Partial<IChargingLoginError>>();
+  const [errors, setErrors] = useState<Partial<IChargingStationError>>();
   const [loading, setLoading] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+  const [alertType, setAlertType] = useState<AlertType>("error");
 
   const { data: creditCard } = useSWR("creditCard", getCreditCard, {
     suspense: true,
@@ -65,14 +74,21 @@ const Login: FC = () => {
 
       setLoading(true);
 
-      await startCharge(stationId);
-      setErrors({ page: "" });
-      window.location.href = '/charging-status';
+      const data: IStartStatus = await startCharge(stationId);
+      if (data.statusMessage && data.statusType !== 'none') {
+        setAlertMsg(data.statusMessage);
+        setAlertType(data.statusType);
+      }
+      if (data.statusType === 'info' || data.statusType === 'success')
+        window.location.href = '/charging-status';
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      if (err instanceof AxiosError)
-        setErrors({ page: err.response?.data.message });
+      console.error("@Error: ", err);
+      if (err instanceof AxiosError) {
+        setAlertMsg(err.response?.data.message);
+        setAlertType("error");
+      }
     }
   };
 
@@ -81,19 +97,27 @@ const Login: FC = () => {
     window.location.href = '/charging-status';
   };
 
+  const getAlertClass = () => {
+    let className = "text-[14px] ";
+    const colors = {
+      error: "red",
+      info: "white",
+      success: "green",
+      none: "blue",
+    };
+    className += `text-nxu-charging-${colors[alertType]}`;
+    return className;
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
         <div className="flex flex-col w-full gap-5 mb-5">
-          {!activeSession && creditCard && (
-            <div className="text-nxu-charging-white text-[16px]">
-              You must plug charger connector into car before pressing start.
-            </div>
-          )}
-          {activeSession && (
-            <div className="text-nxu-charging-white text-[16px]">
-              Active Charge Session in-progress, click below to view status
-            </div>
+          {alertMsg && (
+            <label className={getAlertClass()}>
+              {alertMsg}
+              <span className="text-nxu-charging-green"></span>
+            </label>
           )}
           {!creditCard && (
             <div className="text-nxu-charging-white text-[14px]">
@@ -149,12 +173,6 @@ const Login: FC = () => {
               </div>
             )}
           </div>
-
-          {errors?.page && (
-            <label className="text-nxu-charging-red text-[12px]">
-              {errors.page}
-            </label>
-          )}
         </div>
       </div>
     </div>

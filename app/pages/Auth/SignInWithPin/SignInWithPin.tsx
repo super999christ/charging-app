@@ -79,7 +79,7 @@ const SignInWithPin: FC = () => {
       if (shouldRedirectToBillingPlan) {
         navigate("/billing-plans");
       } else {
-        navigate("/charging-login");
+        navigate("/charging-station");
       }
       setLoading(false);
     } catch (err) {

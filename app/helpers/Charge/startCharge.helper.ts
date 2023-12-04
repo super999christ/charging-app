@@ -7,7 +7,8 @@ export const startCharge = async (stationId: string) => {
     stationId,
   };
 
-  return await axios.post(url, body);
+  const { data } = await axios.post(url, body);
+  return data;
 };
 
 export const findActiveSession = async () => {

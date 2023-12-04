@@ -50,7 +50,7 @@ export interface IProfileFormValidation {
   confirmPassword: string;
 }
 
-export interface IChargingLoginValidation {
+export interface IChargingStationValidation {
   validationResult: boolean;
   phoneNumber: string;
   stationId: string;

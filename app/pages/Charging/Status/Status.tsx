@@ -23,7 +23,6 @@ interface IChargeStatus {
   error: string;
   eventId: string;
   status: number;
-  sessionStatus?: string;
   sessionTotalDuration: number;
   sessionTotalCost: string;
   promoted?: boolean;
@@ -54,7 +53,6 @@ const Status: FC = () => {
     status: 0,
     sessionTotalDuration: 0,
     sessionTotalCost: "",
-    sessionStatus: "beginning",
     statusType: 'info',
     statusMessage: ''
   });
@@ -104,7 +102,7 @@ const Status: FC = () => {
         setAlertType(data.statusType);
       }
       isChargeStatusRunning.current = false;
-      if (data.sessionStatus) {
+      if (data.statusType) {
         setStatus(data);
         setInitialized(true);
       }
@@ -128,7 +126,7 @@ const Status: FC = () => {
   };
 
   const startNewCharging = async () => {
-    navigate("/charging-login");
+    navigate("/charging-station");
   };
 
   const stopCharging = async () => {
@@ -245,13 +243,7 @@ const Status: FC = () => {
                   }
                   right={
                     <p className={boldText}>
-                      {([
-                        "completed",
-                        "completed_sub",
-                        "stopped",
-                        "stopped_sub",
-                        "idle",
-                      ].includes(status?.sessionStatus as string)
+                      {(["info", "error", "success"].includes(status?.statusType as string)
                         ? "0.00"
                         : status?.chargeSpeedKwh) || "0.00"}
                       kW
