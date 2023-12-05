@@ -79,7 +79,7 @@ const Login: FC = () => {
         setAlertMsg(data.statusMessage);
         setAlertType(data.statusType);
       }
-      if (data.statusType === 'info' || data.statusType === 'success')
+      if (data.statusType !== 'error')
         window.location.href = '/charging-status';
       setLoading(false);
     } catch (err) {
