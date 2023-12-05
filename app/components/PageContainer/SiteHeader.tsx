@@ -16,7 +16,7 @@ const SiteHeader: FC = () => {
   return (
     <nav className="w-full h-[75px] bg-nxu-charging-black flex justify-between items-center px-5">
       <FlagIcon />
-      <Link to="/charging-login" className="cursor-pointer">
+      <Link to="/charging-station" className="cursor-pointer">
         <LogoIcon style={{ height: "45px" }} className="hover:opacity-80" />
       </Link>
       <div style={{ visibility: shouldShowProfile() ? "visible" : "hidden" }}>

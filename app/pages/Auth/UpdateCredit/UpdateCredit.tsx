@@ -91,7 +91,7 @@ function Page() {
           getCreditCard().then((cc) => {
             setLoading(false);
             mutate({ ...cc });
-            navigate("/charging-login");
+            navigate("/charging-station");
             toast.success("Successfully updated Credit Card.");
           });
         });

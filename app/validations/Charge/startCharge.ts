@@ -1,10 +1,10 @@
-import { IChargingLoginValidation } from "../../types/ValidationErrors.type";
+import { IChargingStationValidation } from "../../types/ValidationErrors.type";
 import { VALIDATION_ERROR_MESSAGE } from "../validationMessage.const";
 
 export const validateStartChargeForm = (
   stationId: string
 ) => {
-  let errors: Partial<IChargingLoginValidation> = {};
+  let errors: Partial<IChargingStationValidation> = {};
   const stationIdTmp = Number(stationId);
   if (!stationIdTmp)
     errors = {
