@@ -72,6 +72,9 @@ const Login: FC = () => {
         return;
       }
 
+      // Clears the error message
+      setAlertMsg('');
+
       setLoading(true);
 
       const data: IStartStatus = await startCharge(stationId);
