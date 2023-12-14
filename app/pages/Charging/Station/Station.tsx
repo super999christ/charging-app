@@ -5,6 +5,7 @@ import {
   findActiveSession,
   getCreditCard,
   getSubscriptionBillingPlanUser,
+  isCreditCardExpired,
   startCharge,
 } from "../../../helpers";
 import {
@@ -134,8 +135,20 @@ const Login: FC = () => {
               </Link>
             </div>
           )}
+          {isCreditCardExpired(creditCard) && (
+            <div className="text-nxu-charging-white text-[14px]">
+              Your credit card was expired in {creditCard.expMonth}/{creditCard.expYear}.
+              Please update your credit card information in your{" "}
+              <Link
+                to={`/profile-creditcard`}
+                className="text-nxu-charging-gold"
+              >
+                account profile
+              </Link>
+            </div>
+          )}
 
-          {!activeSession && creditCard && (
+          {!activeSession && creditCard && !isCreditCardExpired(creditCard) && (
             <div className="flex flex-col">
               <label className="text-white">Charger ID</label>
               <input
@@ -161,7 +174,7 @@ const Login: FC = () => {
             </div>
           )}
           <div className="flex flex-col">
-            {!activeSession && creditCard && (
+            {!activeSession && creditCard && !isCreditCardExpired(creditCard) && (
               <div className="flex flex-row gap-[10px]">
                 <Button onClick={onSubmit} loading={loading}>
                   {loading ? "Starting Charge..." : "Start Charge"}

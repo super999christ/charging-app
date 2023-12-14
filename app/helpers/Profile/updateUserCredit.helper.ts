@@ -39,6 +39,15 @@ export const getCreditCard = async (): Promise<CreditCard> => {
     });
 };
 
+export const isCreditCardExpired = (cc: CreditCard) => {
+  if (!cc)
+    return false;
+  if (new Date() >= new Date(cc.expYear, cc.expMonth)) {
+    return true;
+  }
+  return false;
+};
+
 export const createStripeCustomer = async (): Promise<void> => {
   return axios.post(
     `${Environment.VITE_SERVICE_PAYMENT_URL}/customer`,
