@@ -95,7 +95,8 @@ const Status: FC = () => {
       isChargeStatusRunning.current = true;
       const data: IChargeStatus = await checkChargingStatus(
         Number(chargingEvent.id),
-        isStopped
+        isStopped,
+        getSMSNotificationEnabledStatus()
       );
       if (data.statusMessage && data.statusType !== 'none') {
         setAlertMsg(data.statusMessage);
@@ -183,8 +184,19 @@ const Status: FC = () => {
     maximumFractionDigits: 2,
   });
 
+  const getSMSNotificationEnabledStatus = () => {
+    if (localStorage.getItem("smsNotificationEnabled") === 'true')
+      return true;
+    return false;
+  }
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
+      <div className="max-w-[350px] w-full flex flex-col justify-center">
+        <div className="text-nxu-charging-white text-center text-[16px]">
+          Charging SMS Notifications: {getSMSNotificationEnabledStatus() ? "Yes" : "No"}
+        </div>
+      </div>
       {!chargingEvent && (
         <div className="max-w-[350px] w-full flex flex-col justify-center">
           <div className="text-nxu-charging-white text-center text-[16px]">

@@ -4,6 +4,7 @@ import axios from "axios";
 export const checkChargingStatus = async (
   eventId: number,
   isStopped: boolean,
+  smsNotificationEnabled?: boolean
 ) => {
   const url = `${
     Environment.VITE_SERVICE_CHARGING_EVENT_URL
@@ -11,6 +12,7 @@ export const checkChargingStatus = async (
   const body = {
     eventId,
     isStopped,
+    smsNotificationEnabled
   };
 
   const { data } = await axios.post(url, body);
