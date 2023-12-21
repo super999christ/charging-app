@@ -12,6 +12,7 @@ export interface ISignUpFormValidation {
   lastName: string;
   phoneNumber: string;
   authCode: string;
+  accountCode: string;
   pinCode: string;
   pinConfirmCode: string;
 }
@@ -29,6 +30,7 @@ export interface IConfirmRegisterFormValidation {
   phoneNumber: string;
   password: string;
   confirmPassword: string;
+  accountCode: string;
   authCode: string;
   pinCode: string;
   pinConfirmCode: string;

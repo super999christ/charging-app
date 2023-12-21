@@ -5,6 +5,7 @@ import {
   findActiveSession,
   getCreditCard,
   getSubscriptionBillingPlanUser,
+  getUserProfile,
   startCharge,
 } from "../../../helpers";
 import {
@@ -41,6 +42,10 @@ const Login: FC = () => {
     suspense: true,
     errorRetryCount: 5,
     errorRetryInterval: 2000,
+  });
+  
+  const { data: user } = useSWR("user", getUserProfile, {
+    suspense: true,
   });
 
   const { data: activeSession } = useSWR("activeSession", findActiveSession, {
@@ -112,6 +117,10 @@ const Login: FC = () => {
     return className;
   };
 
+  const isChargingAvailable = () => {
+    return creditCard || user?.billingPlanId === 3;
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="max-w-[350px] w-full flex flex-col justify-center gap-[30px]">
@@ -122,7 +131,7 @@ const Login: FC = () => {
               <span className="text-nxu-charging-green"></span>
             </label>
           )}
-          {!creditCard && (
+          {!isChargingAvailable() && (
             <div className="text-nxu-charging-white text-[14px]">
               Credit Card is required for charging. Please enter your credit
               card information in your{" "}
@@ -135,7 +144,7 @@ const Login: FC = () => {
             </div>
           )}
 
-          {!activeSession && creditCard && (
+          {!activeSession && isChargingAvailable() && (
             <div className="flex flex-col">
               <label className="text-white">Charger ID</label>
               <input
@@ -161,7 +170,7 @@ const Login: FC = () => {
             </div>
           )}
           <div className="flex flex-col">
-            {!activeSession && creditCard && (
+            {!activeSession && isChargingAvailable() && (
               <div className="flex flex-row gap-[10px]">
                 <Button onClick={onSubmit} loading={loading}>
                   {loading ? "Starting Charge..." : "Start Charge"}

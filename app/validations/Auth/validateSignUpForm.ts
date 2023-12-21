@@ -7,7 +7,7 @@ export const validateSignUpForm = (
   lastName: string,
   phoneNumber: string,
   authCode: string,
-
+  accountCode: string,
   pinCode?: string,
   pinConfirmCode?: string
 ) => {
@@ -72,6 +72,28 @@ export const validateSignUpForm = (
       validationResult: false,
       authCode: VALIDATION_ERROR_MESSAGE.authcode_invalid,
     };
+  
+  const accountCodeRegExp = /^[a-zA-Z0-9]{7,16}$/;
+  if (!accountCode) {
+    errors = {
+      ...errors,
+      validationResult: false,
+      accountCode: VALIDATION_ERROR_MESSAGE.accountcode_required
+    }
+  } else if (accountCode.length < 7 || accountCode.length > 16) {
+    errors = {
+      ...errors,
+      validationResult: false,
+      accountCode: VALIDATION_ERROR_MESSAGE.accountcode_length
+    }
+  }
+  else if (!accountCodeRegExp.test(accountCode)) {
+    errors = {
+      ...errors,
+      validationResult: false,
+      accountCode: VALIDATION_ERROR_MESSAGE.accountcode_invalid
+    }
+  }
 
   const pinCodeRegExp = /^(?=.*[a-zA-Z])(?=.*\d).{7,}$/;
   if (pinCode !== undefined && pinConfirmCode !== undefined) {

@@ -74,7 +74,7 @@ const SignInWithPin: FC = () => {
     // token check
     try {
       setLoading(true);
-      const { shouldRedirectToBillingPlan } = await getAuthTokenWithPIN(phoneNumber, pinCode, notificationId);
+      const { shouldRedirectToBillingPlan } = await getAuthTokenWithPIN(phoneNumber, pinCode);
       clearCachedForm();
       if (shouldRedirectToBillingPlan) {
         navigate("/billing-plans");

@@ -77,12 +77,14 @@ const Profile: FC = () => {
               Password
             </Button>
 
-            <Button
-              className="w-[calc(50%_-_10px)] px-[23px]"
-              onClick={() => navigate("/profile-creditcard")}
-            >
-              Credit Card
-            </Button>
+            {user.billingPlanId !== 3 && (
+              <Button
+                className="w-[calc(50%_-_10px)] px-[23px]"
+                onClick={() => navigate("/profile-creditcard")}
+              >
+                Credit Card
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from "react";
+import { useState, FC, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router";
 import { validateSignUpForm } from "../../../validations";
 import { registerUserWithPIN } from "../../../helpers";
@@ -9,12 +9,15 @@ import { setRequestHeader } from "@root/utils/setRequestHeader";
 import useToast from "@root/hooks/useToast";
 import useCachedForm from "@root/hooks/useCachedForm";
 import Button from "@root/components/Button";
+import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { classNames } from "@root/utils/style";
 
 type ISignUpErrors = ISignUpFormValidation & { page: string };
 
 const SignUpWithPin: FC = () => {
   const [
-    { email, firstName, lastName, phoneNumber, isTnCChecked },
+    { email, firstName, lastName, phoneNumber, isTnCChecked, accountCode },
     handleChange,
     clearCachedForm,
   ] = useCachedForm("signupForm", {
@@ -23,6 +26,7 @@ const SignUpWithPin: FC = () => {
     lastName: "",
     phoneNumber: "",
     isTnCChecked: false,
+    accountCode: ""
   });
 
   const [errors, setErrors] = useState<Partial<ISignUpErrors>>({});
@@ -33,6 +37,7 @@ const SignUpWithPin: FC = () => {
   const [loading, setLoading] = useState(false);
   const [isPasswordFocus, setPasswordFocus] = useState(false);
   const [isConfirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
+  const [isPartnerAccount, setPartnerAccount] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -44,6 +49,7 @@ const SignUpWithPin: FC = () => {
       lastName,
       phoneNumber,
       "111111",
+      accountCode,
       pinCode,
       pinConfirmCode
     );
@@ -76,6 +82,7 @@ const SignUpWithPin: FC = () => {
       lastName,
       phoneNumber,
       "111111",
+      accountCode,
       pinCode,
       pinConfirmCode
     );
@@ -91,12 +98,15 @@ const SignUpWithPin: FC = () => {
     }
 
     setLoading(true);
-    registerUserWithPIN(email, firstName, lastName, phoneNumber, pinCode)
+    registerUserWithPIN(email, firstName, lastName, phoneNumber, pinCode, accountCode, isPartnerAccount)
       .then((res) => {
         setRequestHeader(res.data.token);
         localStorage.setItem("appToken", res.data.token);
         clearCachedForm();
-        navigate("/profile-creditcard");
+        if (res.data.user.billingPlanId === 3)
+          navigate("/");
+        else
+          navigate("/profile-creditcard");
         toast.success("Successfully signed up!");
         setLoading(false);
       })
@@ -172,6 +182,80 @@ const SignUpWithPin: FC = () => {
                 </label>
               )}
             </div>
+            <div className="flex flex-col">
+              <label className="text-white">Partner Account</label>
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white h-11 px-3 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    { isPartnerAccount ? "Yes" : "No" }
+                    <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </Menu.Button>
+                </div>
+
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      <Menu.Item>
+                        <div
+                          className={classNames(
+                            !isPartnerAccount ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                            'block px-4 py-2 text-sm cursor-pointer hover:bg-gray-300'
+                          )}
+                          data-te-toggle="tooltip"
+                          data-te-placement="top"
+                          data-te-ripple-init
+                          data-te-ripple-color="light"
+                          title="No SMS notifications configured"
+                          onClick={() => setPartnerAccount(false)}
+                        >
+                          No
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <div
+                          className={classNames(
+                            isPartnerAccount ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                            'block px-4 py-2 text-sm cursor-pointer hover:bg-gray-300'
+                          )}
+                          data-te-toggle="tooltip"
+                          data-te-placement="top"
+                          data-te-ripple-init
+                          data-te-ripple-color="light"
+                          title="Charging Notifications will be sent via SMS to the Login Phone. If needed Customer can sign out of the App after Charge Status page is loaded."
+                          onClick={() => setPartnerAccount(true)}
+                        >
+                          Yes
+                        </div>
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
+            {isPartnerAccount && (
+              <div className="flex flex-col">
+                <input
+                  name="accountCode"
+                  className={inputStyle}
+                  placeholder="Account Code"
+                  value={accountCode}
+                  onChange={handleChange}
+                />
+                {errors.accountCode && (
+                  <label className="text-nxu-charging-red text-[12px]">
+                    {errors.accountCode}
+                  </label>
+                )}
+              </div>
+            )}
             <div className="flex flex-col">
               <input
                 type="password"

@@ -13,6 +13,9 @@ export const VALIDATION_ERROR_MESSAGE = {
   lastname_required: "Last Name is required.",
   authcode_required: "SMS AuthCode is required.",
   authcode_invalid: "SMS AuthCode is invalid.",
+  accountcode_required: "Account Code is required.",
+  accountcode_length: "Account Code length must be between 7 and 16 that include alphanumeric characters.",
+  accountcode_invalid: "Account Code must include only alphanumeric characteres.",
   pincode_required: "Password is required.",
   pincode_length: "Password length must be at least 7 characters that include both numeric and alphabetic characters.",
   pincode_invalid:

@@ -7,7 +7,9 @@ export const registerUserWithPIN = async (
   firstName: string,
   lastName: string,
   phoneNumber: string,
-  pinCode: string
+  pinCode: string,
+  accountCode: string,
+  isPartnerAccount: boolean
 ) => {
   const url = `${Environment.VITE_SERVICE_USER_MANAGEMENT_URL}/register-confirm-with-pin`;
   const body = {
@@ -16,6 +18,8 @@ export const registerUserWithPIN = async (
     lastName,
     phoneNumber,
     pinCode,
+    accountCode,
+    isPartnerAccount
   };
   return await axios.post(url, body);
 };

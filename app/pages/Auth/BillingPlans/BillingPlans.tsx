@@ -124,7 +124,7 @@ export default function BillingPlans() {
           NXU Billing Plans
         </div>
 
-        {!creditCard && (
+        {!creditCard && user?.billingPlanId !== 3 && (
           <div className="text-nxu-charging-white text-[14px]">
             Credit Card is required for managing billing plans. Please enter
             your credit card information in your{" "}
